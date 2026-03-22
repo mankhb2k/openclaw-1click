@@ -1,0 +1,415 @@
+/*
+ * Onboarding window — align tokens with control-ui/src/styles/base.css (claw dark + light).
+ * Update both together when the Control UI palette changes.
+ */
+
+:root {
+  --bg: #0e1015;
+  --bg-accent: #13151b;
+  --bg-elevated: #191c24;
+  --bg-hover: #1f2330;
+  --bg-muted: #1f2330;
+
+  --card: #161920;
+  --card-foreground: #f0f0f2;
+  --popover: #191c24;
+  --popover-foreground: #f0f0f2;
+
+  --panel: #0e1015;
+  --panel-strong: #191c24;
+  --panel-hover: #1f2330;
+
+  --text: #d4d4d8;
+  --text-strong: #f4f4f5;
+  --muted: #838387;
+  --muted-strong: #62626a;
+
+  --border: #1e2028;
+  --border-strong: #2e3040;
+  --border-hover: #3e4050;
+  --input: #1e2028;
+  --ring: #ff5c5c;
+
+  --accent: #ff5c5c;
+  --accent-hover: #ff7070;
+  --accent-subtle: rgba(255, 92, 92, 0.1);
+  --accent-glow: rgba(255, 92, 92, 0.2);
+  --primary-foreground: #ffffff;
+
+  --secondary: #161920;
+  --secondary-foreground: #f0f0f2;
+
+  --destructive: #ef4444;
+  --danger: #ef4444;
+  --danger-subtle: rgba(239, 68, 68, 0.08);
+  --warn: #f59e0b;
+  --warn-subtle: rgba(245, 158, 11, 0.08);
+  --ok: #22c55e;
+  --info: #3b82f6;
+
+  --mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.4);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 100ms;
+
+  color-scheme: dark;
+}
+
+:root[data-theme-mode='light'] {
+  --bg: #f8f9fa;
+  --bg-accent: #f1f3f5;
+  --bg-elevated: #ffffff;
+  --bg-hover: #eceef0;
+  --bg-muted: #eceef0;
+
+  --card: #ffffff;
+  --card-foreground: #1a1a1e;
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1e;
+
+  --panel: #f8f9fa;
+  --panel-strong: #f1f3f5;
+  --panel-hover: #e6e8eb;
+
+  --text: #3c3c43;
+  --text-strong: #1a1a1e;
+  --muted: #6e6e73;
+  --muted-strong: #545458;
+
+  --border: #e5e5ea;
+  --border-strong: #d1d1d6;
+  --border-hover: #aeaeb2;
+  --input: #e5e5ea;
+
+  --accent: #dc2626;
+  --accent-hover: #ef4444;
+  --accent-subtle: rgba(220, 38, 38, 0.08);
+  --accent-glow: rgba(220, 38, 38, 0.1);
+  --primary-foreground: #ffffff;
+
+  --secondary: #f1f3f5;
+  --secondary-foreground: #3c3c43;
+
+  --destructive: #dc2626;
+  --danger: #dc2626;
+  --danger-subtle: rgba(220, 38, 38, 0.08);
+  --warn: #b45309;
+  --warn-subtle: rgba(180, 83, 9, 0.08);
+  --ok: #15803d;
+  --info: #2563eb;
+
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.08);
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  padding: 24px;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.onboard-shell {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: calc(100vh - 48px);
+}
+
+.onboard-card {
+  width: min(480px, 100%);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 28px 22px;
+  box-shadow: var(--shadow-lg);
+}
+
+.onboard-card h1 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-strong);
+  margin: 0 0 8px;
+}
+
+.onboard-lead {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.field:first-of-type {
+  margin-top: 0;
+}
+
+.field-label {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-strong);
+}
+
+.field-hint {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.ram-badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  font-size: 11px;
+  font-family: var(--mono);
+  color: var(--muted-strong);
+}
+
+fieldset.onboard-fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+fieldset.onboard-fieldset legend {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-strong);
+  padding: 0;
+  margin-bottom: 8px;
+}
+
+.radio-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radio-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+}
+
+.radio-row:hover {
+  border-color: var(--border-strong);
+  background: var(--bg-hover);
+}
+
+.radio-row input {
+  margin-top: 3px;
+  accent-color: var(--accent);
+}
+
+.radio-row .radio-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.radio-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-strong);
+}
+
+.radio-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+select,
+input[type='password'],
+input[type='text'] {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+}
+
+select:focus,
+input[type='password']:focus,
+input[type='text']:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.section-hidden {
+  display: none !important;
+}
+
+.callout {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  line-height: 1.45;
+  border: 1px solid var(--border);
+}
+
+.callout--info {
+  background: color-mix(in srgb, var(--info) 8%, var(--bg-elevated));
+  border-color: color-mix(in srgb, var(--info) 25%, var(--border));
+  color: var(--text);
+}
+
+.callout--warn {
+  background: var(--warn-subtle);
+  border-color: color-mix(in srgb, var(--warn) 35%, var(--border));
+  color: var(--text);
+}
+
+.ollama-missing-banner {
+  margin-bottom: 12px;
+}
+
+.ollama-checking-line {
+  margin-bottom: 10px;
+}
+
+.row-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.row-check input {
+  margin-top: 3px;
+  accent-color: var(--accent);
+}
+
+.row-check label {
+  margin: 0;
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 120px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
+}
+
+.btn.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--primary-foreground);
+  box-shadow: 0 1px 3px var(--accent-subtle);
+}
+
+.btn.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  box-shadow: 0 2px 12px var(--accent-glow);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--danger-subtle);
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--border));
+  color: var(--danger);
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 320px;
+  overflow: auto;
+  display: none;
+}
+
+.error.visible {
+  display: block;
+}
+
+.mono-inline {
+  font-family: var(--mono);
+  font-size: 11px;
+}

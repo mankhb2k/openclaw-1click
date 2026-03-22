@@ -1,0 +1,32 @@
+{
+  "name": "openclaw-desktop",
+  "version": "1.0.0",
+  "description": "OpenClaw desktop shell: Electron + dashboard + OpenClaw CLI",
+  "main": "dist/main/main.js",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "build:ts": "tsc -p tsconfig.json && node scripts/copy-renderer.cjs",
+    "dev": "npm run build:ts && electron .",
+    "dev:watch": "concurrently -k \"tsc -p tsconfig.json -w\" \"wait-on dist/main/main.js dist/backend/start.js && electron .\"",
+    "pack": "npm run build:ts && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --dir",
+    "dist": "npm run build:ts && cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder",
+    "control-ui:install": "npm install --prefix control-ui",
+    "control-ui:build": "npm run build --prefix control-ui",
+    "control-ui:dev": "npm run dev --prefix control-ui",
+    "control-ui:vendor": "node scripts/sync-control-ui.cjs"
+  },
+  "dependencies": {
+    "openclaw": "^2026.3.13",
+    "tree-kill": "^1.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "concurrently": "^9.1.0",
+    "cross-env": "^7.0.3",
+    "electron": "35.7.5",
+    "electron-builder": "^25.1.8",
+    "typescript": "^5.7.2",
+    "wait-on": "^8.0.1"
+  }
+}

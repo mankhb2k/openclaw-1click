@@ -1,0 +1,9 @@
+node_modules/
+dist/
+release/
+.openclaw-desktop-data/
+*.log
+.DS_Store
+
+# Local fork of Control UI (npm run control-ui:vendor); remove this line to commit a custom UI.
+vendor/control-ui/

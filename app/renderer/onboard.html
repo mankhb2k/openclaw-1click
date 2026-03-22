@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenClaw — Thiết lập lần đầu</title>
+    <link rel="stylesheet" href="onboard.css" />
+  </head>
+  <body>
+    <div class="onboard-shell">
+      <div class="onboard-card">
+        <h1>Chào mừng đến OpenClaw Desktop</h1>
+        <p class="onboard-lead">
+          Chọn cách dùng AI cho lần đầu. Bạn có thể dùng DeepSeek-R1 cục bộ qua
+          Ollama (không cần API cloud), hoặc cấu hình API nhà cung cấp. Bạn cũng
+          có thể bỏ qua và cấu hình sau trong Dashboard.
+        </p>
+
+        <fieldset class="onboard-fieldset field">
+          <legend>Cách thiết lập</legend>
+          <div class="radio-stack">
+            <label class="radio-row">
+              <input
+                type="radio"
+                name="setupKind"
+                value="ollama"
+                id="setupOllama"
+                checked
+              />
+              <span class="radio-body">
+                <span class="radio-title">DeepSeek-R1 (Ollama — cục bộ)</span>
+                <span class="radio-desc"
+                  >Không cần API key Model sẽ được tải qua khi bạn chạy thiết
+                  lập.</span
+                >
+              </span>
+            </label>
+            <label class="radio-row">
+              <input type="radio" name="setupKind" value="api" id="setupApi" />
+              <span class="radio-body">
+                <span class="radio-title">API nhà cung cấp</span>
+                <span class="radio-desc"
+                  >Anthropic, Google Gemini hoặc OpenAI — cần API key.</span
+                >
+              </span>
+            </label>
+          </div>
+        </fieldset>
+
+        <p class="field-hint" id="ramLine" style="margin-top: 10px">
+          Đang đọc thông tin bộ nhớ…
+        </p>
+
+        <div id="sectionOllama">
+          <div
+            id="ollamaMissingBanner"
+            class="callout callout--warn ollama-missing-banner"
+            style="display: none"
+            role="status"
+          >
+            Máy tính của bạn chưa có Ollama (hoặc Ollama chưa chạy).
+            <a
+              href="https://ollama.com/download"
+              target="_blank"
+              rel="noreferrer"
+              >Hãy tải Ollama tại đây</a
+            >. Sau khi cài, mở ứng dụng Ollama — cửa sổ này sẽ tự kiểm tra lại.
+          </div>
+          <p id="ollamaCheckingLine" class="field-hint ollama-checking-line" style="display: none">
+            Đang kiểm tra Ollama…
+          </p>
+
+          <fieldset class="onboard-fieldset field">
+            <legend>Model DeepSeek-R1 (distill)</legend>
+            <div class="radio-stack">
+              <label class="radio-row">
+                <input
+                  type="radio"
+                  name="ollamaModel"
+                  value="deepseek-r1:1.5b"
+                  id="model15"
+                />
+                <span class="radio-body">
+                  <span class="radio-title">1.5B — nhẹ, phù hợp máy yếu</span>
+                  <span class="radio-desc"
+                    >Tag Ollama:
+                    <code class="mono-inline">deepseek-r1:1.5b</code></span
+                  >
+                </span>
+              </label>
+              <label class="radio-row">
+                <input
+                  type="radio"
+                  name="ollamaModel"
+                  value="deepseek-r1:8b"
+                  id="model8"
+                />
+                <span class="radio-body">
+                  <span class="radio-title">8B — chất lượng tốt hơn</span>
+                  <span class="radio-desc"
+                    >Tag Ollama:
+                    <code class="mono-inline">deepseek-r1:8b</code></span
+                  >
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="callout callout--info">
+            Cài đặt và mở <strong>Ollama</strong> trước khi chạy thiết lập.
+            <a
+              href="https://ollama.com/download"
+              target="_blank"
+              rel="noreferrer"
+              >ollama.com/download</a
+            >
+          </div>
+
+          <div
+            class="callout callout--warn"
+            id="warn8b"
+            style="display: none; margin-top: 10px"
+          >
+            Máy có dưới 14&nbsp;GB RAM: model 8B có thể chậm hoặc thiếu bộ nhớ.
+            RAM khác với VRAM — GPU yếu vẫn có thể gặp lỗi dù đủ RAM.
+          </div>
+        </div>
+
+        <div id="sectionApi" class="section-hidden">
+          <div class="field">
+            <span class="field-label" id="providerLabel">Nhà cung cấp AI</span>
+            <select id="provider" aria-describedby="provider-hint">
+              <option value="anthropic">Anthropic (Claude) — API key</option>
+              <option value="gemini">Google Gemini — API key</option>
+              <option value="openai">OpenAI — API key</option>
+            </select>
+            <p id="provider-hint" class="field-hint">
+              Khóa chỉ dùng trên máy bạn để chạy lệnh onboard; không gửi qua
+              mạng khác ngoài API nhà cung cấp.
+            </p>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="apiKey">API key</label>
+            <input
+              type="password"
+              id="apiKey"
+              autocomplete="off"
+              placeholder="Dán khóa API của bạn"
+            />
+          </div>
+        </div>
+
+        <div class="row-check">
+          <input type="checkbox" id="acceptRisk" />
+          <label for="acceptRisk">
+            Tôi hiểu agent có quyền truy cập hệ thống và chấp nhận rủi ro (bắt
+            buộc để chạy thiết lập tự động).
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn" id="btnSkip">Bỏ qua</button>
+          <button type="button" class="btn primary" id="btnRun">
+            Chạy thiết lập
+          </button>
+        </div>
+
+        <div class="error" id="errorBox" role="alert"></div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var MODEL_15 = "deepseek-r1:1.5b";
+        var MODEL_8 = "deepseek-r1:8b";
+
+        function resolveThemeMode() {
+          if (
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: light)").matches
+          ) {
+            return "light";
+          }
+          return "dark";
+        }
+
+        document.documentElement.dataset.themeMode = resolveThemeMode();
+
+        var api = window.openclawDesktopOnboard;
+        if (!api || typeof api.run !== "function") {
+          document.getElementById("errorBox").textContent =
+            "Lỗi: không kết nối được với ứng dụng (preload).";
+          document.getElementById("errorBox").classList.add("visible");
+          return;
+        }
+
+        var setupOllama = document.getElementById("setupOllama");
+        var setupApi = document.getElementById("setupApi");
+        var sectionOllama = document.getElementById("sectionOllama");
+        var sectionApi = document.getElementById("sectionApi");
+        var model15 = document.getElementById("model15");
+        var model8 = document.getElementById("model8");
+        var provider = document.getElementById("provider");
+        var apiKey = document.getElementById("apiKey");
+        var acceptRisk = document.getElementById("acceptRisk");
+        var btnSkip = document.getElementById("btnSkip");
+        var btnRun = document.getElementById("btnRun");
+        var errorBox = document.getElementById("errorBox");
+        var ramLine = document.getElementById("ramLine");
+        var warn8b = document.getElementById("warn8b");
+        var ollamaMissingBanner = document.getElementById("ollamaMissingBanner");
+        var ollamaCheckingLine = document.getElementById("ollamaCheckingLine");
+
+        var ollamaOk = false;
+        var isBusy = false;
+        var ollamaPollTimer = null;
+        var ollamaProbeUnsupported = false;
+
+        /** From this total RAM (GiB) upward, default to DeepSeek-R1 8B. */
+        var RAM_GIB_DEFAULT_8B = 14;
+
+        var totalRamBytes = 16 * 1024 * 1024 * 1024;
+
+        function bytesToGiB(n) {
+          return n / (1024 * 1024 * 1024);
+        }
+
+        function defaultModelForRam(gib) {
+          if (gib >= RAM_GIB_DEFAULT_8B) return MODEL_8;
+          return MODEL_15;
+        }
+
+        function updateWarn8b() {
+          var sel =
+            document.querySelector('input[name="ollamaModel"]:checked') ||
+            model15;
+          var v = sel ? sel.value : MODEL_15;
+          var gib = bytesToGiB(totalRamBytes);
+          var show =
+            setupOllama.checked && v === MODEL_8 && gib < RAM_GIB_DEFAULT_8B;
+          warn8b.style.display = show ? "block" : "none";
+        }
+
+        function stopOllamaPoll() {
+          if (ollamaPollTimer) {
+            clearInterval(ollamaPollTimer);
+            ollamaPollTimer = null;
+          }
+        }
+
+        function startOllamaPoll() {
+          stopOllamaPoll();
+          ollamaPollTimer = setInterval(function () {
+            if (!setupOllama.checked || ollamaOk || isBusy) return;
+            probeOllamaOnce(false);
+          }, 2500);
+        }
+
+        function updateOllamaGateUI() {
+          var ollamaMode = setupOllama.checked;
+          if (!ollamaMode || ollamaProbeUnsupported) {
+            ollamaMissingBanner.style.display = "none";
+            ollamaCheckingLine.style.display = "none";
+            return;
+          }
+          ollamaMissingBanner.style.display = ollamaOk ? "none" : "block";
+        }
+
+        function applyRunGate() {
+          var blockOllama = setupOllama.checked && !ollamaOk;
+          btnRun.disabled = isBusy || blockOllama;
+        }
+
+        function probeOllamaOnce(showChecking) {
+          if (typeof api.probeOllama !== "function") {
+            ollamaProbeUnsupported = true;
+            ollamaOk = false;
+            ollamaCheckingLine.style.display = "none";
+            updateOllamaGateUI();
+            applyRunGate();
+            return;
+          }
+          if (showChecking && setupOllama.checked && !ollamaOk) {
+            ollamaCheckingLine.style.display = "block";
+          }
+          api
+            .probeOllama()
+            .then(function (r) {
+              ollamaOk = !!(r && r.ok);
+              ollamaCheckingLine.style.display = "none";
+              updateOllamaGateUI();
+              applyRunGate();
+              if (ollamaOk) stopOllamaPoll();
+            })
+            .catch(function () {
+              ollamaOk = false;
+              ollamaCheckingLine.style.display = "none";
+              updateOllamaGateUI();
+              applyRunGate();
+            });
+        }
+
+        function scheduleOllamaChecks() {
+          stopOllamaPoll();
+          if (!setupOllama.checked || ollamaProbeUnsupported) {
+            updateOllamaGateUI();
+            applyRunGate();
+            return;
+          }
+          probeOllamaOnce(true);
+          startOllamaPoll();
+        }
+
+        function syncSections() {
+          var apiMode = setupApi.checked;
+          sectionApi.classList.toggle("section-hidden", !apiMode);
+          sectionOllama.classList.toggle("section-hidden", apiMode);
+          updateWarn8b();
+          if (apiMode) {
+            stopOllamaPoll();
+            ollamaCheckingLine.style.display = "none";
+            updateOllamaGateUI();
+          } else {
+            scheduleOllamaChecks();
+          }
+          applyRunGate();
+        }
+
+        function showError(msg) {
+          errorBox.textContent = msg || "";
+          errorBox.classList.toggle("visible", Boolean(msg));
+        }
+
+        function setBusy(busy) {
+          isBusy = busy;
+          btnSkip.disabled = busy;
+          acceptRisk.disabled = busy;
+          setupOllama.disabled = busy;
+          setupApi.disabled = busy;
+          model15.disabled = busy;
+          model8.disabled = busy;
+          provider.disabled = busy;
+          apiKey.disabled = busy;
+          btnRun.textContent = busy ? "Đang chạy…" : "Chạy thiết lập";
+          applyRunGate();
+        }
+
+        function getSelectedOllamaModel() {
+          var el = document.querySelector('input[name="ollamaModel"]:checked');
+          return el ? el.value : MODEL_15;
+        }
+
+        function applyRamAndDefaults() {
+          var gib = bytesToGiB(totalRamBytes);
+          ramLine.innerHTML =
+            'Phát hiện khoảng <span class="ram-badge">' +
+            gib.toFixed(1) +
+            " GB RAM</span> — gợi ý model đã được chọn theo mức RAM (có thể đổi).";
+
+          var def = defaultModelForRam(gib);
+          if (def === MODEL_8) {
+            model8.checked = true;
+          } else {
+            model15.checked = true;
+          }
+          updateWarn8b();
+        }
+
+        if (typeof api.getSystemInfo === "function") {
+          api
+            .getSystemInfo()
+            .then(function (info) {
+              if (
+                info &&
+                typeof info.totalMemoryBytes === "number" &&
+                info.totalMemoryBytes > 0
+              ) {
+                totalRamBytes = info.totalMemoryBytes;
+              } else if (
+                typeof navigator !== "undefined" &&
+                typeof navigator.deviceMemory === "number"
+              ) {
+                totalRamBytes = navigator.deviceMemory * 1024 * 1024 * 1024;
+              }
+              applyRamAndDefaults();
+            })
+            .catch(function () {
+              if (
+                typeof navigator !== "undefined" &&
+                typeof navigator.deviceMemory === "number"
+              ) {
+                totalRamBytes = navigator.deviceMemory * 1024 * 1024 * 1024;
+              }
+              applyRamAndDefaults();
+            });
+        } else {
+          if (
+            typeof navigator !== "undefined" &&
+            typeof navigator.deviceMemory === "number"
+          ) {
+            totalRamBytes = navigator.deviceMemory * 1024 * 1024 * 1024;
+          }
+          applyRamAndDefaults();
+        }
+
+        setupOllama.addEventListener("change", syncSections);
+        setupApi.addEventListener("change", syncSections);
+        model15.addEventListener("change", updateWarn8b);
+        model8.addEventListener("change", updateWarn8b);
+
+        document.addEventListener("visibilitychange", function () {
+          if (!document.hidden && setupOllama.checked && !ollamaOk) {
+            probeOllamaOnce(false);
+          }
+        });
+
+        syncSections();
+        applyRunGate();
+
+        btnSkip.addEventListener("click", function () {
+          showError("");
+          setBusy(true);
+          api
+            .skip()
+            .then(function (r) {
+              if (!r || !r.ok) {
+                showError((r && r.message) || "Không thể bỏ qua. Thử lại.");
+                setBusy(false);
+              }
+            })
+            .catch(function (e) {
+              showError(e && e.message ? e.message : String(e));
+              setBusy(false);
+            });
+        });
+
+        btnRun.addEventListener("click", function () {
+          showError("");
+          if (!acceptRisk.checked) {
+            showError("Vui lòng đánh dấu xác nhận rủi ro để tiếp tục.");
+            return;
+          }
+
+          if (setupOllama.checked && !ollamaOk) {
+            showError(
+              "Chưa phát hiện Ollama đang chạy. Hãy cài và mở Ollama, rồi thử lại.",
+            );
+            return;
+          }
+
+          if (setupApi.checked) {
+            var key = (apiKey.value || "").trim();
+            if (!key) {
+              showError("Vui lòng nhập API key.");
+              return;
+            }
+            setBusy(true);
+            api
+              .run({
+                kind: "api",
+                provider: provider.value,
+                apiKey: key,
+                acceptRisk: true,
+              })
+              .then(function (r) {
+                if (r && r.ok) return;
+                showError((r && r.message) || "Thiết lập thất bại.");
+                setBusy(false);
+              })
+              .catch(function (e) {
+                showError(e && e.message ? e.message : String(e));
+                setBusy(false);
+              });
+            return;
+          }
+
+          setBusy(true);
+          api
+            .run({
+              kind: "ollama",
+              ollamaModelId: getSelectedOllamaModel(),
+              acceptRisk: true,
+            })
+            .then(function (r) {
+              if (r && r.ok) return;
+              showError((r && r.message) || "Thiết lập thất bại.");
+              setBusy(false);
+            })
+            .catch(function (e) {
+              showError(e && e.message ? e.message : String(e));
+              setBusy(false);
+            });
+        });
+      })();
+    </script>
+  </body>
+</html>

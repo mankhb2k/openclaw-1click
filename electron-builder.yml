@@ -1,0 +1,35 @@
+# Windows distributables: portable .exe + NSIS installer.
+# Output: release/
+
+appId: dev.openclaw.desktop
+productName: OpenClaw Desktop
+directories:
+  output: release
+
+files:
+  - dist/**/*
+  - package.json
+  - node_modules/**/*
+
+extraResources:
+  - from: resources
+    to: resources
+    filter:
+      - "**/*"
+
+asar: true
+
+# Avoid winCodeSign extraction (symlinks) on machines without Developer Mode / admin.
+win:
+  signAndEditExecutable: false
+  target:
+    - target: portable
+      arch:
+        - x64
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
