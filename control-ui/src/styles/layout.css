@@ -11,6 +11,7 @@
   --shell-focus-duration: 200ms;
   --shell-focus-ease: var(--ease-out);
   height: 100vh;
+  min-width: var(--app-min-width);
   display: grid;
   grid-template-columns: var(--shell-nav-width) minmax(0, 1fr);
   grid-template-rows: var(--shell-topbar-height) 1fr;
@@ -856,8 +857,9 @@
   padding: 16px 20px 32px;
   display: block;
   min-height: 0;
+  min-width: 0;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 .content > * + * {
@@ -983,6 +985,8 @@
 .grid {
   display: grid;
   gap: 20px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .grid-cols-2 {

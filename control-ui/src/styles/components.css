@@ -196,6 +196,8 @@
   background: var(--card);
   border-radius: var(--radius-lg);
   padding: 18px;
+  min-width: 0;
+  max-width: 100%;
   animation: rise 0.25s var(--ease-out) backwards;
   transition:
     border-color var(--duration-normal) var(--ease-out),
@@ -709,7 +711,20 @@
 .form-grid {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+}
+
+.form-grid > .field {
+  min-width: 0;
+}
+
+.form-grid .field input,
+.form-grid .field select,
+.form-grid .field textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* ===========================================
@@ -3816,15 +3831,28 @@ td.data-table-key-col {
   margin: 18px 0 0;
 }
 
-/* Access grid */
+/* Access grid — min() lets columns wrap before squashing; fields fill track width */
 .ov-access-grid {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
 }
 
 .ov-access-grid__full {
   grid-column: 1 / -1;
+}
+
+.ov-access-grid > .field {
+  min-width: 0;
+}
+
+.ov-access-grid .field input,
+.ov-access-grid .field select,
+.ov-access-grid .field textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 /* Bottom grid (event log + log tail) */
@@ -3998,7 +4026,7 @@ details[open] > .ov-expandable-toggle::after {
   }
 
   .ov-access-grid {
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   }
 
   .ov-recent__row {

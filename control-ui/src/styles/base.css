@@ -74,6 +74,9 @@
   /* Grid */
   --grid-line: rgba(255, 255, 255, 0.03);
 
+  /* Layout floor: below this width the page scrolls horizontally (nav + main stay usable) */
+  --app-min-width: 1020px;
+
   /* Theme transition */
   --theme-switch-x: 50%;
   --theme-switch-y: 50%;
@@ -406,6 +409,8 @@ openclaw-app {
   position: relative;
   z-index: 1;
   min-height: 100vh;
+  min-width: var(--app-min-width);
+  box-sizing: border-box;
 }
 
 a {
