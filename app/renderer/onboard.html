@@ -276,8 +276,7 @@
             vramGib: vg,
             cores: cores,
             /** ~6 GB VRAM (≥5.5 GiB) + RAM/CPU — gợi ý ~14B */
-            eligible14:
-              ramGib > 16 && vg != null && vg >= 5.5 && cores >= 8,
+            eligible14: ramGib > 16 && vg != null && vg >= 5.5 && cores >= 8,
             /** ~4 GB VRAM (≥3.5 GiB) hoặc cao hơn → gợi ý 8B */
             eligible8: vg != null && vg >= 3.5,
             eligible15Low: ramGib < 8 && cores <= 4 && (vg == null || vg < 4),

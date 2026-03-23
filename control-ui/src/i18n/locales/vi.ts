@@ -85,7 +85,8 @@ export const vi: TranslationMap = {
       uptime: "Thời gian chạy",
       tickInterval: "Chu kỳ tick",
       lastChannelsRefresh: "Làm mới kênh lần cuối",
-      channelsHint: "Dùng Kênh để liên kết WhatsApp, Telegram, Discord, Signal hoặc iMessage.",
+      channelsHint:
+        "Dùng Kênh để liên kết WhatsApp, Telegram, Discord, Signal hoặc iMessage.",
     },
     stats: {
       instances: "Phiên bản",
@@ -99,14 +100,16 @@ export const vi: TranslationMap = {
       title: "Ghi chú",
       subtitle: "Nhắc nhanh cho thiết lập điều khiển từ xa.",
       tailscaleTitle: "Tailscale serve",
-      tailscaleText: "Nên dùng chế độ serve để gateway ở loopback với xác thực tailnet.",
+      tailscaleText:
+        "Nên dùng chế độ serve để gateway ở loopback với xác thực tailnet.",
       sessionTitle: "Vệ sinh phiên",
       sessionText: "Dùng /new hoặc sessions.patch để reset ngữ cảnh.",
       cronTitle: "Nhắc Cron",
       cronText: "Dùng phiên tách biệt cho các lần chạy định kỳ.",
     },
     auth: {
-      required: "Gateway cần xác thực. Thêm token hoặc mật khẩu, rồi nhấn Kết nối.",
+      required:
+        "Gateway cần xác thực. Thêm token hoặc mật khẩu, rồi nhấn Kết nối.",
       failed:
         "Xác thực thất bại. Sao chép lại URL có token bằng {command}, hoặc cập nhật token, rồi Kết nối.",
     },
@@ -123,7 +126,8 @@ export const vi: TranslationMap = {
       title: "Cách kết nối",
       step1: "Khởi động gateway trên máy chủ:",
       step2: "Lấy URL dashboard có token:",
-      step3: "Dán URL WebSocket và token phía trên, hoặc mở trực tiếp URL có token.",
+      step3:
+        "Dán URL WebSocket và token phía trên, hoặc mở trực tiếp URL có token.",
       step4: "Hoặc tạo token tái sử dụng:",
       docsHint: "Truy cập từ xa nên dùng Tailscale Serve. ",
       docsLink: "Đọc tài liệu →",
@@ -155,7 +159,8 @@ export const vi: TranslationMap = {
   },
   usage: {
     page: {
-      subtitle: "Xem token đi đâu, khi nào phiên tăng đột biến và điều gì tốn chi phí.",
+      subtitle:
+        "Xem token đi đâu, khi nào phiên tăng đột biến và điều gì tốn chi phí.",
     },
     common: {
       emptyValue: "—",
@@ -182,7 +187,7 @@ export const vi: TranslationMap = {
       startDate: "Ngày bắt đầu",
       endDate: "Ngày kết thúc",
       timeZone: "Múi giờ",
-      timeZoneLocal: "Địa phương",
+      timeZoneLocal: "Mặc Định",
       timeZoneUtc: "UTC",
       pin: "Ghim",
       pinned: "Đã ghim",
@@ -275,7 +280,8 @@ export const vi: TranslationMap = {
       errorHint: "Tỷ lệ lỗi = lỗi / tổng tin. Thấp hơn tốt hơn.",
       avgSession: "tb phiên",
       cacheHitRate: "Tỷ lệ trúng cache",
-      cacheHint: "Trúng cache = đọc cache / (đầu vào + đọc cache). Cao hơn tốt hơn.",
+      cacheHint:
+        "Trúng cache = đọc cache / (đầu vào + đọc cache). Cao hơn tốt hơn.",
       cached: "cache",
       prompt: "prompt",
       calls: "lần gọi",
@@ -311,7 +317,8 @@ export const vi: TranslationMap = {
       selected: "Đã chọn ({count})",
       copy: "Sao chép",
       copyName: "Sao chép tên phiên",
-      limitReached: "Chỉ hiển thị 1.000 phiên đầu. Thu hẹp khoảng ngày để xem đủ.",
+      limitReached:
+        "Chỉ hiển thị 1.000 phiên đầu. Thu hẹp khoảng ngày để xem đủ.",
     },
     details: {
       noUsageData: "Không có dữ liệu sử dụng cho phiên này.",
@@ -356,7 +363,8 @@ export const vi: TranslationMap = {
     mosaic: {
       title: "Hoạt động theo thời gian",
       subtitleEmpty: "Ước lượng cần mốc thời gian phiên.",
-      subtitle: "Ước lượng từ khoảng phiên (hoạt động đầu/cuối). Múi giờ: {zone}.",
+      subtitle:
+        "Ước lượng từ khoảng phiên (hoạt động đầu/cuối). Múi giờ: {zone}.",
       noTimelineData: "Chưa có dữ liệu timeline.",
       dayOfWeek: "Ngày trong tuần",
       midnight: "Nửa đêm",
@@ -497,7 +505,8 @@ export const vi: TranslationMap = {
       session: "Phiên",
       main: "Chính",
       isolated: "Tách biệt",
-      sessionHelp: "Chính đăng sự kiện hệ thống. Tách biệt chạy một lượt agent riêng.",
+      sessionHelp:
+        "Chính đăng sự kiện hệ thống. Tách biệt chạy một lượt agent riêng.",
       wakeMode: "Chế độ đánh thức",
       now: "Ngay",
       nextHeartbeat: "Nhịp tiếp theo",
@@ -507,7 +516,8 @@ export const vi: TranslationMap = {
       agentTurn: "Chạy tác vụ trợ lý (tách phiên)",
       systemEventHelp:
         "Gửi văn bản vào timeline chính của gateway (nhắc việc/kích hoạt).",
-      agentTurnHelp: "Bắt đầu lượt trợ lý trong phiên riêng với prompt của bạn.",
+      agentTurnHelp:
+        "Bắt đầu lượt trợ lý trong phiên riêng với prompt của bạn.",
       timeoutSeconds: "Hết giờ (giây)",
       timeoutPlaceholder: "Tùy chọn, vd. 90",
       timeoutHelp:
@@ -520,7 +530,8 @@ export const vi: TranslationMap = {
       announceDefault: "Thông báo tóm tắt (mặc định)",
       webhookPost: "Webhook POST",
       noneInternal: "Không (nội bộ)",
-      deliveryHelp: "Thông báo gửi tóm tắt vào chat. Không giữ thực thi nội bộ.",
+      deliveryHelp:
+        "Thông báo gửi tóm tắt vào chat. Không giữ thực thi nội bộ.",
       webhookUrl: "URL Webhook",
       channel: "Kênh",
       webhookPlaceholder: "https://example.com/cron",
@@ -528,7 +539,8 @@ export const vi: TranslationMap = {
       webhookHelp: "Gửi tóm tắt chạy tới endpoint webhook.",
       to: "Tới",
       toPlaceholder: "+1555... hoặc id chat",
-      toHelp: "Ghi đè người nhận tùy chọn (id chat, số điện thoại hoặc user id).",
+      toHelp:
+        "Ghi đè người nhận tùy chọn (id chat, số điện thoại hoặc user id).",
       advanced: "Nâng cao",
       advancedHelp:
         "Ghi đè tùy chọn cho đảm bảo gửi, jitter lịch và điều khiển model.",

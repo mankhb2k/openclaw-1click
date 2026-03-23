@@ -1,7 +1,7 @@
 import { html, nothing } from "lit";
-import { repeat } from "lit/directives/repeat.js";
 import { parseAgentSessionKey } from "@openclaw/sessions/session-key-utils.js";
 import { t } from "../i18n/index.ts";
+import { renderUiSelect } from "./components/ui-select.ts";
 import { refreshChat } from "./app-chat.ts";
 import { syncUrlWithSessionKey } from "./app-settings.ts";
 import type { AppViewState } from "./app-view-state.ts";
@@ -135,37 +135,27 @@ function renderCronFilterIcon(hiddenCount: number) {
 
 export function renderChatSessionSelect(state: AppViewState) {
   const sessionGroups = resolveSessionOptionGroups(state, state.sessionKey, state.sessionsResult);
+  const sessionOptions = sessionGroups.flatMap((group) =>
+    group.options.map((entry) => ({
+      value: entry.key,
+      label: `${group.label}: ${entry.label}`,
+    })),
+  );
   const modelSelect = renderChatModelSelect(state);
   return html`
     <div class="chat-controls__session-row">
       <label class="field chat-controls__session">
-        <select
-          .value=${state.sessionKey}
-          ?disabled=${!state.connected || sessionGroups.length === 0}
-          @change=${(e: Event) => {
-            const next = (e.target as HTMLSelectElement).value;
+        ${renderUiSelect({
+          value: state.sessionKey,
+          disabled: !state.connected || sessionOptions.length === 0,
+          options: sessionOptions,
+          onChange: (next) => {
             if (state.sessionKey === next) {
               return;
             }
             switchChatSession(state, next);
-          }}
-        >
-          ${repeat(
-            sessionGroups,
-            (group) => group.id,
-            (group) =>
-              html`<optgroup label=${group.label}>
-                ${repeat(
-                  group.options,
-                  (entry) => entry.key,
-                  (entry) =>
-                    html`<option value=${entry.key} title=${entry.title}>
-                      ${entry.label}
-                    </option>`,
-                )}
-              </optgroup>`,
-          )}
-        </select>
+          },
+        })}
       </label>
       ${modelSelect}
     </div>
@@ -409,27 +399,18 @@ export function renderChatMobileToggle(state: AppViewState) {
       }}>
         <div class="chat-controls">
           <label class="field chat-controls__session">
-            <select
-              .value=${state.sessionKey}
-              @change=${(e: Event) => {
-                const next = (e.target as HTMLSelectElement).value;
+            ${renderUiSelect({
+              value: state.sessionKey,
+              options: sessionGroups.flatMap((group) =>
+                group.options.map((opt) => ({
+                  value: opt.key,
+                  label: `${group.label}: ${opt.label}`,
+                })),
+              ),
+              onChange: (next) => {
                 switchChatSession(state, next);
-              }}
-            >
-              ${sessionGroups.map(
-                (group) => html`
-                  <optgroup label=${group.label}>
-                    ${group.options.map(
-                      (opt) => html`
-                        <option value=${opt.key} title=${opt.title}>
-                          ${opt.label}
-                        </option>
-                      `,
-                    )}
-                  </optgroup>
-                `,
-              )}
-            </select>
+              },
+            })}
           </label>
           <div class="chat-controls__thinking">
             <button
@@ -599,25 +580,17 @@ function renderChatModelSelect(state: AppViewState) {
     !state.connected || busy || (state.chatModelsLoading && options.length === 0) || !state.client;
   return html`
     <label class="field chat-controls__session chat-controls__model">
-      <select
-        data-chat-model-select="true"
-        aria-label="Chat model"
-        ?disabled=${disabled}
-        @change=${async (e: Event) => {
-          const next = (e.target as HTMLSelectElement).value.trim();
-          await switchChatModel(state, next);
-        }}
-      >
-        <option value="" ?selected=${currentOverride === ""}>${defaultLabel}</option>
-        ${repeat(
-          options,
-          (entry) => entry.value,
-          (entry) =>
-            html`<option value=${entry.value} ?selected=${entry.value === currentOverride}>
-              ${entry.label}
-            </option>`,
-        )}
-      </select>
+      ${renderUiSelect({
+        value: currentOverride,
+        disabled,
+        options: [
+          { value: "", label: defaultLabel },
+          ...options.map((entry) => ({ value: entry.value, label: entry.label })),
+        ],
+        onChange: async (next) => {
+          await switchChatModel(state, next.trim());
+        },
+      })}
     </label>
   `;
 }

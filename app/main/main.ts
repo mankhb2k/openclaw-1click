@@ -25,7 +25,7 @@ import { ENV_DESKTOP_RESOURCES } from '../backend/config';
  * Keep roughly in sync with `control-ui/src/styles/base.css` `--app-min-width` (1020px)
  * plus a little slack for window chrome / scrollbars.
  */
-const MAIN_WINDOW_MIN_WIDTH = 1060;
+const MAIN_WINDOW_MIN_WIDTH = 1180;
 const MAIN_WINDOW_MIN_HEIGHT = 700;
 
 let mainWindow: BrowserWindow | null = null;

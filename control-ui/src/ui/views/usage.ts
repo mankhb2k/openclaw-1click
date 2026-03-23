@@ -1,5 +1,6 @@
 import { html, nothing } from "lit";
 import { t } from "../../i18n/index.ts";
+import { renderUiSelect } from "../components/ui-select.ts";
 import { extractQueryTerms, filterSessionsByQuery } from "../usage-helpers.ts";
 import {
   buildAggregatesFromSessions,
@@ -597,18 +598,16 @@ export function renderUsage(props: UsageProps) {
                   filterActions.onEndDateChange((e.target as HTMLInputElement).value)}
               />
             </div>
-            <select
-              class="usage-select"
-              title=${t("usage.filters.timeZone")}
-              .value=${filters.timeZone}
-              @change=${(e: Event) =>
-                filterActions.onTimeZoneChange(
-                  (e.target as HTMLSelectElement).value as "local" | "utc",
-                )}
-            >
-              <option value="local">${t("usage.filters.timeZoneLocal")}</option>
-              <option value="utc">${t("usage.filters.timeZoneUtc")}</option>
-            </select>
+            ${renderUiSelect({
+              className: "usage-select",
+              title: t("usage.filters.timeZone"),
+              value: filters.timeZone,
+              options: [
+                { value: "local", label: t("usage.filters.timeZoneLocal") },
+                { value: "utc", label: t("usage.filters.timeZoneUtc") },
+              ],
+              onChange: (next) => filterActions.onTimeZoneChange(next as "local" | "utc"),
+            })}
             <div class="chart-toggle">
               <button
                 class="toggle-btn ${isTokenMode ? "active" : ""}"

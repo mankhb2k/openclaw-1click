@@ -86,7 +86,7 @@
   z-index: 40;
   display: flex;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 clamp(14px, 2vw, 24px);
   min-height: 58px;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 74%, transparent);
   background: color-mix(in srgb, var(--bg) 82%, transparent);
@@ -115,7 +115,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-shrink: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .topnav-shell__content {
@@ -173,6 +176,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
+  min-width: 0;
 }
 
 .topbar-status .pill {
@@ -206,6 +211,7 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
+  flex: 1 1 180px;
   min-height: 38px;
   padding: 0 14px;
   border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
@@ -218,7 +224,8 @@
     border-color var(--duration-fast) ease,
     background var(--duration-fast) ease,
     color var(--duration-fast) ease;
-  min-width: 200px;
+  min-width: min(200px, 100%);
+  max-width: 100%;
 }
 
 .topbar-search:hover {
@@ -855,7 +862,8 @@
 .content {
   grid-area: content;
   padding: 16px 20px 32px;
-  display: block;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
   min-width: 0;
   overflow-y: auto;

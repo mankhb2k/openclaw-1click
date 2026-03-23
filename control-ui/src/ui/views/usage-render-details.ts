@@ -1,6 +1,7 @@
 import { html, svg, nothing } from "lit";
 import { formatDurationCompact } from "@openclaw/infra/format-time/format-duration.ts";
 import { t } from "../../i18n/index.ts";
+import { renderUiMultiSelect } from "../components/ui-select.ts";
 import { parseToolSummary } from "../usage-helpers.ts";
 import { charsToTokens, formatCost, formatTokens } from "./usage-metrics.ts";
 import { renderInsightList } from "./usage-render-overview.ts";
@@ -1023,36 +1024,23 @@ function renderSessionLogsCompact(
         </button>
       </div>
       <div class="usage-filters-inline session-log-filters">
-        <select
-          multiple
-          size="4"
-          @change=${(event: Event) =>
-            onFilterRolesChange(
-              Array.from((event.target as HTMLSelectElement).selectedOptions).map(
-                (option) => option.value as SessionLogRole,
-              ),
-            )}
-        >
-          <option value="user" ?selected=${roleSelected.has("user")}>${t("usage.overview.user")}</option>
-          <option value="assistant" ?selected=${roleSelected.has("assistant")}>${t("usage.overview.assistant")}</option>
-          <option value="tool" ?selected=${roleSelected.has("tool")}>${t("usage.details.tool")}</option>
-          <option value="toolResult" ?selected=${roleSelected.has("toolResult")}>${t("usage.details.toolResult")}</option>
-        </select>
-        <select
-          multiple
-          size="4"
-          @change=${(event: Event) =>
-            onFilterToolsChange(
-              Array.from((event.target as HTMLSelectElement).selectedOptions).map(
-                (option) => option.value,
-              ),
-            )}
-        >
-          ${toolOptions.map(
-            (tool) =>
-              html`<option value=${tool} ?selected=${toolSelected.has(tool)}>${tool}</option>`,
-          )}
-        </select>
+        ${renderUiMultiSelect({
+          selected: Array.from(roleSelected),
+          options: [
+            { value: "user", label: t("usage.overview.user") },
+            { value: "assistant", label: t("usage.overview.assistant") },
+            { value: "tool", label: t("usage.details.tool") },
+            { value: "toolResult", label: t("usage.details.toolResult") },
+          ],
+          emptyLabel: t("usage.filters.role"),
+          onChange: (next) => onFilterRolesChange(next as SessionLogRole[]),
+        })}
+        ${renderUiMultiSelect({
+          selected: Array.from(toolSelected),
+          options: toolOptions.map((tool) => ({ value: tool, label: tool })),
+          emptyLabel: t("usage.filters.tool"),
+          onChange: (next) => onFilterToolsChange(next),
+        })}
         <label class="usage-filters-inline session-log-has-tools">
           <input
             type="checkbox"

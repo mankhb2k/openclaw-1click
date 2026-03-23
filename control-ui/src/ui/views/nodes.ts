@@ -1,14 +1,15 @@
 import { html, nothing } from "lit";
+import { renderUiSelect } from "../components/ui-select";
 import type {
   DevicePairingList,
   DeviceTokenSummary,
   PairedDevice,
   PendingDevice,
-} from "../controllers/devices.ts";
-import type { ExecApprovalsFile, ExecApprovalsSnapshot } from "../controllers/exec-approvals.ts";
-import { formatRelativeTimestamp, formatList } from "../format.ts";
-import { renderExecApprovals, resolveExecApprovalsState } from "./nodes-exec-approvals.ts";
-import { resolveConfigAgents, resolveNodeTargets, type NodeTargetOption } from "./nodes-shared.ts";
+} from "../controllers/devices";
+import type { ExecApprovalsFile, ExecApprovalsSnapshot } from "../controllers/exec-approvals";
+import { formatRelativeTimestamp, formatList } from "../format";
+import { renderExecApprovals, resolveExecApprovalsState } from "./nodes-exec-approvals";
+import { resolveConfigAgents, resolveNodeTargets, type NodeTargetOption } from "./nodes-shared";
 export type NodesProps = {
   loading: boolean;
   nodes: Array<Record<string, unknown>>;
@@ -315,25 +316,18 @@ function renderBindings(state: BindingState) {
                 <div class="list-meta">
                   <label class="field">
                     <span>Node</span>
-                    <select
-                      ?disabled=${state.disabled || !supportsBinding}
-                      @change=${(event: Event) => {
-                        const target = event.target as HTMLSelectElement;
-                        const value = target.value.trim();
+                    ${renderUiSelect({
+                      value: defaultValue,
+                      disabled: state.disabled || !supportsBinding,
+                      options: [
+                        { value: "", label: "Any node" },
+                        ...state.nodes.map((node) => ({ value: node.id, label: node.label })),
+                      ],
+                      onChange: (next) => {
+                        const value = next.trim();
                         state.onBindDefault(value ? value : null);
-                      }}
-                    >
-                      <option value="" ?selected=${defaultValue === ""}>Any node</option>
-                      ${state.nodes.map(
-                        (node) =>
-                          html`<option
-                            value=${node.id}
-                            ?selected=${defaultValue === node.id}
-                          >
-                            ${node.label}
-                          </option>`,
-                      )}
-                    </select>
+                      },
+                    })}
                   </label>
                   ${
                     !supportsBinding
@@ -379,27 +373,18 @@ function renderAgentBinding(agent: BindingAgent, state: BindingState) {
       <div class="list-meta">
         <label class="field">
           <span>Binding</span>
-          <select
-            ?disabled=${state.disabled || !supportsBinding}
-            @change=${(event: Event) => {
-              const target = event.target as HTMLSelectElement;
-              const value = target.value.trim();
+          ${renderUiSelect({
+            value: bindingValue,
+            disabled: state.disabled || !supportsBinding,
+            options: [
+              { value: "__default__", label: "Use default" },
+              ...state.nodes.map((node) => ({ value: node.id, label: node.label })),
+            ],
+            onChange: (next) => {
+              const value = next.trim();
               state.onBindAgent(agent.index, value === "__default__" ? null : value);
-            }}
-          >
-            <option value="__default__" ?selected=${bindingValue === "__default__"}>
-              Use default
-            </option>
-            ${state.nodes.map(
-              (node) =>
-                html`<option
-                  value=${node.id}
-                  ?selected=${bindingValue === node.id}
-                >
-                  ${node.label}
-                </option>`,
-            )}
-          </select>
+            },
+          })}
         </label>
       </div>
     </div>

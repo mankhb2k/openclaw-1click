@@ -588,6 +588,18 @@ export function buildModelOptions(
   return options.map((option) => html`<option value=${option.value}>${option.label}</option>`);
 }
 
+export function resolveModelOptions(
+  configForm: Record<string, unknown> | null,
+  current?: string | null,
+): ConfiguredModelOption[] {
+  const options = resolveConfiguredModels(configForm);
+  const hasCurrent = current ? options.some((option) => option.value === current) : false;
+  if (current && !hasCurrent) {
+    options.unshift({ value: current, label: `Current (${current})` });
+  }
+  return options;
+}
+
 type CompiledPattern =
   | { kind: "all" }
   | { kind: "exact"; value: string }

@@ -1,4 +1,5 @@
 import { html, nothing } from "lit";
+import { renderUiSelect } from "../components/ui-select.ts";
 import type { EventLogEntry } from "../app-events.ts";
 import { formatEventPayload } from "../presenter.ts";
 
@@ -75,19 +76,14 @@ export function renderDebug(props: DebugProps) {
         <div class="stack" style="margin-top: 16px;">
           <label class="field">
             <span>Method</span>
-            <select
-              .value=${props.callMethod}
-              @change=${(e: Event) => props.onCallMethodChange((e.target as HTMLSelectElement).value)}
-            >
-              ${
-                !props.callMethod
-                  ? html`
-                      <option value="" disabled>Select a method…</option>
-                    `
-                  : nothing
-              }
-              ${props.methods.map((m) => html`<option value=${m}>${m}</option>`)}
-            </select>
+            ${renderUiSelect({
+              value: props.callMethod,
+              options: [
+                ...(!props.callMethod ? [{ value: "", label: "Select a method…", disabled: true }] : []),
+                ...props.methods.map((m) => ({ value: m, label: m })),
+              ],
+              onChange: (next) => props.onCallMethodChange(next),
+            })}
           </label>
           <label class="field">
             <span>Params (JSON)</span>

@@ -2,6 +2,9 @@
   display: grid;
   gap: 16px;
   container-type: inline-size;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-content: start;
 }
 
 .usage-page > * {
@@ -184,6 +187,40 @@
   gap: 8px;
 }
 
+.chart-toggle {
+  padding: 3px;
+  border: 1px solid color-mix(in srgb, var(--border) 88%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg-muted) 78%, transparent);
+}
+
+.chart-toggle .toggle-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 6px 11px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.16s var(--ease-out),
+    background 0.16s var(--ease-out),
+    color 0.16s var(--ease-out);
+}
+
+.chart-toggle .toggle-btn:hover {
+  border-color: color-mix(in srgb, var(--border-strong) 86%, transparent);
+  background: color-mix(in srgb, var(--bg-hover) 84%, transparent);
+  color: var(--text);
+}
+
 .usage-date-range {
   flex-wrap: wrap;
 }
@@ -263,11 +300,10 @@
 .session-close-btn {
   appearance: none;
   border: 1px solid var(--border);
-  background: var(--secondary);
-  color: var(--secondary-foreground);
+  background: var(--bg);
+  color: var(--text);
   cursor: pointer;
   transition:
-    transform 0.18s var(--ease-out),
     border-color 0.18s var(--ease-out),
     background 0.18s var(--ease-out),
     color 0.18s var(--ease-out),
@@ -295,18 +331,18 @@
 .session-copy-btn:hover,
 .context-expand-btn:hover,
 .session-close-btn:hover {
-  border-color: color-mix(in srgb, var(--accent) 28%, var(--border));
-  background: color-mix(in srgb, var(--accent) 10%, var(--secondary));
+  border-color: color-mix(in srgb, var(--border-strong) 88%, transparent);
+  background: color-mix(in srgb, var(--bg-hover) 82%, transparent);
   color: var(--text-strong);
 }
 
 .usage-pin-btn.active,
 .usage-action-btn.usage-primary-btn,
 .chart-toggle .toggle-btn.active {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--primary-foreground);
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--accent) 28%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--border));
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg));
+  color: var(--accent);
+  box-shadow: none;
 }
 
 .usage-primary-btn:disabled,
@@ -318,8 +354,8 @@
 }
 
 .usage-secondary-btn {
-  background: var(--secondary);
-  color: var(--secondary-foreground);
+  background: var(--bg);
+  color: var(--text);
 }
 
 .usage-query-section {
@@ -571,6 +607,8 @@ details.usage-filter-select summary::-webkit-details-marker,
 .usage-overview-layout {
   display: grid;
   gap: 16px;
+  min-height: 0;
+  align-content: start;
 }
 
 .usage-summary-grid,
@@ -892,7 +930,7 @@ details.usage-filter-select summary::-webkit-details-marker,
 
 /* Expand to two columns when the detail panel column is present */
 .usage-grid:has(.usage-grid-column:nth-child(2)) {
-  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(min(320px, 100%), 0.9fr);
 }
 
 .usage-grid-column {
@@ -1503,7 +1541,7 @@ details.usage-filter-select summary::-webkit-details-marker,
 
 @container (min-width: 1400px) {
   .usage-overview-layout {
-    grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.95fr);
+    grid-template-columns: minmax(0, 1.3fr) minmax(min(320px, 100%), 0.95fr);
     align-items: start;
   }
 

@@ -1,4 +1,5 @@
 import { html, nothing } from "lit";
+import { renderUiSelect } from "../components/ui-select.ts";
 import type {
   AgentIdentityResult,
   AgentsFilesListResult,
@@ -138,26 +139,19 @@ export function renderAgents(props: AgentsProps) {
           <span class="agents-toolbar-label">Agent</span>
           <div class="agents-control-row">
             <div class="agents-control-select">
-              <select
-                class="agents-select"
-                .value=${selectedId ?? ""}
-                ?disabled=${props.loading || agents.length === 0}
-                @change=${(e: Event) => props.onSelectAgent((e.target as HTMLSelectElement).value)}
-              >
-                ${
+              ${renderUiSelect({
+                className: "agents-select",
+                value: selectedId ?? "",
+                disabled: props.loading || agents.length === 0,
+                options:
                   agents.length === 0
-                    ? html`
-                        <option value="">No agents</option>
-                      `
-                    : agents.map(
-                        (agent) => html`
-                        <option value=${agent.id} ?selected=${agent.id === selectedId}>
-                          ${normalizeAgentLabel(agent)}${agentBadgeText(agent.id, defaultId) ? ` (${agentBadgeText(agent.id, defaultId)})` : ""}
-                        </option>
-                      `,
-                      )
-                }
-              </select>
+                    ? [{ value: "", label: "No agents" }]
+                    : agents.map((agent) => ({
+                        value: agent.id,
+                        label: `${normalizeAgentLabel(agent)}${agentBadgeText(agent.id, defaultId) ? ` (${agentBadgeText(agent.id, defaultId)})` : ""}`,
+                      })),
+                onChange: (next) => props.onSelectAgent(next),
+              })}
             </div>
             <div class="agents-control-actions">
               ${

@@ -1,6 +1,7 @@
 import { html, nothing } from "lit";
 import { formatDurationCompact } from "@openclaw/infra/format-time/format-duration.ts";
 import { t } from "../../i18n/index.ts";
+import { renderUiSelect } from "../components/ui-select.ts";
 import {
   formatCost,
   formatDayLabel,
@@ -822,15 +823,17 @@ function renderSessionsCard(
         </div>
         <label class="sessions-sort">
           <span>${t("usage.sessions.sort")}</span>
-          <select
-            @change=${(e: Event) => onSessionSortChange((e.target as HTMLSelectElement).value as typeof sessionSort)}
-          >
-            <option value="cost" ?selected=${sessionSort === "cost"}>${t("usage.metrics.cost")}</option>
-            <option value="errors" ?selected=${sessionSort === "errors"}>${t("usage.overview.errors")}</option>
-            <option value="messages" ?selected=${sessionSort === "messages"}>${t("usage.overview.messages")}</option>
-            <option value="recent" ?selected=${sessionSort === "recent"}>${t("usage.sessions.recentShort")}</option>
-            <option value="tokens" ?selected=${sessionSort === "tokens"}>${t("usage.metrics.tokens")}</option>
-          </select>
+          ${renderUiSelect({
+            value: sessionSort,
+            options: [
+              { value: "cost", label: t("usage.metrics.cost") },
+              { value: "errors", label: t("usage.overview.errors") },
+              { value: "messages", label: t("usage.overview.messages") },
+              { value: "recent", label: t("usage.sessions.recentShort") },
+              { value: "tokens", label: t("usage.metrics.tokens") },
+            ],
+            onChange: (next) => onSessionSortChange(next as typeof sessionSort),
+          })}
         </label>
         <button
           class="btn btn-sm sessions-action-btn icon"

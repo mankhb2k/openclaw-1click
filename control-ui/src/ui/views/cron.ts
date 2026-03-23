@@ -1,6 +1,7 @@
 import { html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
 import { t } from "../../i18n/index.ts";
+import { renderUiSelect } from "../components/ui-select.ts";
 import type {
   CronFieldErrors,
   CronFieldKey,
@@ -454,79 +455,71 @@ export function renderCron(props: CronProps) {
             </label>
             <label class="field">
               <span>${t("cron.jobs.enabled")}</span>
-              <select
-                .value=${props.jobsEnabledFilter}
-                @change=${(e: Event) =>
-                  props.onJobsFiltersChange({
-                    cronJobsEnabledFilter: (e.target as HTMLSelectElement)
-                      .value as CronJobsEnabledFilter,
-                  })}
-              >
-                <option value="all">${t("cron.jobs.all")}</option>
-                <option value="enabled">${t("common.enabled")}</option>
-                <option value="disabled">${t("common.disabled")}</option>
-              </select>
+              ${renderUiSelect({
+                value: props.jobsEnabledFilter,
+                options: [
+                  { value: "all", label: t("cron.jobs.all") },
+                  { value: "enabled", label: t("common.enabled") },
+                  { value: "disabled", label: t("common.disabled") },
+                ],
+                onChange: (next) =>
+                  props.onJobsFiltersChange({ cronJobsEnabledFilter: next as CronJobsEnabledFilter }),
+              })}
             </label>
             <label class="field">
               <span>${t("cron.jobs.schedule")}</span>
-              <select
-                data-test-id="cron-jobs-schedule-filter"
-                .value=${props.jobsScheduleKindFilter}
-                @change=${(e: Event) =>
+              ${renderUiSelect({
+                value: props.jobsScheduleKindFilter,
+                options: [
+                  { value: "all", label: t("cron.jobs.all") },
+                  { value: "at", label: t("cron.form.at") },
+                  { value: "every", label: t("cron.form.every") },
+                  { value: "cron", label: t("cron.form.cronOption") },
+                ],
+                onChange: (next) =>
                   props.onJobsFiltersChange({
-                    cronJobsScheduleKindFilter: (e.target as HTMLSelectElement)
-                      .value as CronJobsScheduleKindFilter,
-                  })}
-              >
-                <option value="all">${t("cron.jobs.all")}</option>
-                <option value="at">${t("cron.form.at")}</option>
-                <option value="every">${t("cron.form.every")}</option>
-                <option value="cron">${t("cron.form.cronOption")}</option>
-              </select>
+                    cronJobsScheduleKindFilter: next as CronJobsScheduleKindFilter,
+                  }),
+              })}
             </label>
             <label class="field">
               <span>${t("cron.jobs.lastRun")}</span>
-              <select
-                data-test-id="cron-jobs-last-status-filter"
-                .value=${props.jobsLastStatusFilter}
-                @change=${(e: Event) =>
-                  props.onJobsFiltersChange({
-                    cronJobsLastStatusFilter: (e.target as HTMLSelectElement)
-                      .value as CronJobsLastStatusFilter,
-                  })}
-              >
-                <option value="all">${t("cron.jobs.all")}</option>
-                <option value="ok">${t("cron.runs.runStatusOk")}</option>
-                <option value="error">${t("cron.runs.runStatusError")}</option>
-                <option value="skipped">${t("cron.runs.runStatusSkipped")}</option>
-              </select>
+              ${renderUiSelect({
+                value: props.jobsLastStatusFilter,
+                options: [
+                  { value: "all", label: t("cron.jobs.all") },
+                  { value: "ok", label: t("cron.runs.runStatusOk") },
+                  { value: "error", label: t("cron.runs.runStatusError") },
+                  { value: "skipped", label: t("cron.runs.runStatusSkipped") },
+                ],
+                onChange: (next) =>
+                  props.onJobsFiltersChange({ cronJobsLastStatusFilter: next as CronJobsLastStatusFilter }),
+              })}
             </label>
             <label class="field">
               <span>${t("cron.jobs.sort")}</span>
-              <select
-                .value=${props.jobsSortBy}
-                @change=${(e: Event) =>
-                  props.onJobsFiltersChange({
-                    cronJobsSortBy: (e.target as HTMLSelectElement).value as CronJobsSortBy,
-                  })}
-              >
-                <option value="nextRunAtMs">${t("cron.jobs.nextRun")}</option>
-                <option value="updatedAtMs">${t("cron.jobs.recentlyUpdated")}</option>
-                <option value="name">${t("cron.jobs.name")}</option>
-              </select>
+              ${renderUiSelect({
+                value: props.jobsSortBy,
+                options: [
+                  { value: "nextRunAtMs", label: t("cron.jobs.nextRun") },
+                  { value: "updatedAtMs", label: t("cron.jobs.recentlyUpdated") },
+                  { value: "name", label: t("cron.jobs.name") },
+                ],
+                onChange: (next) =>
+                  props.onJobsFiltersChange({ cronJobsSortBy: next as CronJobsSortBy }),
+              })}
             </label>
             <label class="field">
               <span>${t("cron.jobs.direction")}</span>
-              <select
-                .value=${props.jobsSortDir}
-                @change=${(e: Event) =>
-                  props.onJobsFiltersChange({
-                    cronJobsSortDir: (e.target as HTMLSelectElement).value as CronSortDir,
-                  })}
-              >
-                <option value="asc">${t("cron.jobs.ascending")}</option>
-                <option value="desc">${t("cron.jobs.descending")}</option>
-              </select>
+              ${renderUiSelect({
+                value: props.jobsSortDir,
+                options: [
+                  { value: "asc", label: t("cron.jobs.ascending") },
+                  { value: "desc", label: t("cron.jobs.descending") },
+                ],
+                onChange: (next) =>
+                  props.onJobsFiltersChange({ cronJobsSortDir: next as CronSortDir }),
+              })}
             </label>
             <label class="field">
               <span>${t("cron.jobs.reset")}</span>
@@ -589,16 +582,15 @@ export function renderCron(props: CronProps) {
             <div class="cron-run-filters__row cron-run-filters__row--primary">
               <label class="field">
                 <span>${t("cron.runs.scope")}</span>
-                <select
-                  .value=${props.runsScope}
-                  @change=${(e: Event) =>
-                    props.onRunsFiltersChange({
-                      cronRunsScope: (e.target as HTMLSelectElement).value as CronRunScope,
-                    })}
-                >
-                  <option value="all">${t("cron.runs.allJobs")}</option>
-                  <option value="job" ?disabled=${props.runsJobId == null}>${t("cron.runs.selectedJob")}</option>
-                </select>
+                ${renderUiSelect({
+                  value: props.runsScope,
+                  options: [
+                    { value: "all", label: t("cron.runs.allJobs") },
+                    { value: "job", label: t("cron.runs.selectedJob"), disabled: props.runsJobId == null },
+                  ],
+                  onChange: (next) =>
+                    props.onRunsFiltersChange({ cronRunsScope: next as CronRunScope }),
+                })}
               </label>
               <label class="field cron-run-filter-search">
                 <span>${t("cron.runs.searchRuns")}</span>
@@ -613,16 +605,15 @@ export function renderCron(props: CronProps) {
               </label>
               <label class="field">
                 <span>${t("cron.jobs.sort")}</span>
-                <select
-                  .value=${props.runsSortDir}
-                  @change=${(e: Event) =>
-                    props.onRunsFiltersChange({
-                      cronRunsSortDir: (e.target as HTMLSelectElement).value as CronSortDir,
-                    })}
-                >
-                  <option value="desc">${t("cron.runs.newestFirst")}</option>
-                  <option value="asc">${t("cron.runs.oldestFirst")}</option>
-                </select>
+                ${renderUiSelect({
+                  value: props.runsSortDir,
+                  options: [
+                    { value: "desc", label: t("cron.runs.newestFirst") },
+                    { value: "asc", label: t("cron.runs.oldestFirst") },
+                  ],
+                  onChange: (next) =>
+                    props.onRunsFiltersChange({ cronRunsSortDir: next as CronSortDir }),
+                })}
               </label>
             </div>
             <div class="cron-run-filters__row cron-run-filters__row--secondary">
@@ -765,19 +756,16 @@ export function renderCron(props: CronProps) {
             <div class="form-grid cron-form-grid">
               <label class="field cron-span-2">
                 ${renderFieldLabel(t("cron.form.schedule"))}
-                <select
-                  id="cron-schedule-kind"
-                  .value=${props.form.scheduleKind}
-                  @change=${(e: Event) =>
-                    props.onFormChange({
-                      scheduleKind: (e.target as HTMLSelectElement)
-                        .value as CronFormState["scheduleKind"],
-                    })}
-                >
-                  <option value="every">${t("cron.form.every")}</option>
-                  <option value="at">${t("cron.form.at")}</option>
-                  <option value="cron">${t("cron.form.cronOption")}</option>
-                </select>
+                ${renderUiSelect({
+                  value: props.form.scheduleKind,
+                  options: [
+                    { value: "every", label: t("cron.form.every") },
+                    { value: "at", label: t("cron.form.at") },
+                    { value: "cron", label: t("cron.form.cronOption") },
+                  ],
+                  onChange: (next) =>
+                    props.onFormChange({ scheduleKind: next as CronFormState["scheduleKind"] }),
+                })}
               </label>
             </div>
             ${renderScheduleFields(props)}
@@ -789,49 +777,41 @@ export function renderCron(props: CronProps) {
             <div class="form-grid cron-form-grid">
               <label class="field">
                 ${renderFieldLabel(t("cron.form.session"))}
-                <select
-                  id="cron-session-target"
-                  .value=${props.form.sessionTarget}
-                  @change=${(e: Event) =>
-                    props.onFormChange({
-                      sessionTarget: (e.target as HTMLSelectElement)
-                        .value as CronFormState["sessionTarget"],
-                    })}
-                >
-                  <option value="main">${t("cron.form.main")}</option>
-                  <option value="isolated">${t("cron.form.isolated")}</option>
-                </select>
+                ${renderUiSelect({
+                  value: props.form.sessionTarget,
+                  options: [
+                    { value: "main", label: t("cron.form.main") },
+                    { value: "isolated", label: t("cron.form.isolated") },
+                  ],
+                  onChange: (next) =>
+                    props.onFormChange({ sessionTarget: next as CronFormState["sessionTarget"] }),
+                })}
                 <div class="cron-help">${t("cron.form.sessionHelp")}</div>
               </label>
               <label class="field">
                 ${renderFieldLabel(t("cron.form.wakeMode"))}
-                <select
-                  id="cron-wake-mode"
-                  .value=${props.form.wakeMode}
-                  @change=${(e: Event) =>
-                    props.onFormChange({
-                      wakeMode: (e.target as HTMLSelectElement).value as CronFormState["wakeMode"],
-                    })}
-                >
-                  <option value="now">${t("cron.form.now")}</option>
-                  <option value="next-heartbeat">${t("cron.form.nextHeartbeat")}</option>
-                </select>
+                ${renderUiSelect({
+                  value: props.form.wakeMode,
+                  options: [
+                    { value: "now", label: t("cron.form.now") },
+                    { value: "next-heartbeat", label: t("cron.form.nextHeartbeat") },
+                  ],
+                  onChange: (next) =>
+                    props.onFormChange({ wakeMode: next as CronFormState["wakeMode"] }),
+                })}
                 <div class="cron-help">${t("cron.form.wakeModeHelp")}</div>
               </label>
               <label class="field ${isAgentTurn ? "" : "cron-span-2"}">
                 ${renderFieldLabel(t("cron.form.payloadKind"))}
-                <select
-                  id="cron-payload-kind"
-                  .value=${props.form.payloadKind}
-                  @change=${(e: Event) =>
-                    props.onFormChange({
-                      payloadKind: (e.target as HTMLSelectElement)
-                        .value as CronFormState["payloadKind"],
-                    })}
-                >
-                  <option value="systemEvent">${t("cron.form.systemEvent")}</option>
-                  <option value="agentTurn">${t("cron.form.agentTurn")}</option>
-                </select>
+                ${renderUiSelect({
+                  value: props.form.payloadKind,
+                  options: [
+                    { value: "systemEvent", label: t("cron.form.systemEvent") },
+                    { value: "agentTurn", label: t("cron.form.agentTurn") },
+                  ],
+                  onChange: (next) =>
+                    props.onFormChange({ payloadKind: next as CronFormState["payloadKind"] }),
+                })}
                 <div class="cron-help">
                   ${
                     props.form.payloadKind === "systemEvent"
@@ -900,25 +880,18 @@ export function renderCron(props: CronProps) {
             <div class="form-grid cron-form-grid">
               <label class="field ${selectedDeliveryMode === "none" ? "cron-span-2" : ""}">
                 ${renderFieldLabel(t("cron.form.resultDelivery"))}
-                <select
-                  id="cron-delivery-mode"
-                  .value=${selectedDeliveryMode}
-                  @change=${(e: Event) =>
-                    props.onFormChange({
-                      deliveryMode: (e.target as HTMLSelectElement)
-                        .value as CronFormState["deliveryMode"],
-                    })}
-                >
-                  ${
-                    supportsAnnounce
-                      ? html`
-                          <option value="announce">${t("cron.form.announceDefault")}</option>
-                        `
-                      : nothing
-                  }
-                  <option value="webhook">${t("cron.form.webhookPost")}</option>
-                  <option value="none">${t("cron.form.noneInternal")}</option>
-                </select>
+                ${renderUiSelect({
+                  value: selectedDeliveryMode,
+                  options: [
+                    ...(supportsAnnounce
+                      ? [{ value: "announce", label: t("cron.form.announceDefault") }]
+                      : []),
+                    { value: "webhook", label: t("cron.form.webhookPost") },
+                    { value: "none", label: t("cron.form.noneInternal") },
+                  ],
+                  onChange: (next) =>
+                    props.onFormChange({ deliveryMode: next as CronFormState["deliveryMode"] }),
+                })}
                 <div class="cron-help">${t("cron.form.deliveryHelp")}</div>
               </label>
               ${
@@ -952,21 +925,17 @@ export function renderCron(props: CronProps) {
                                 />
                               `
                             : html`
-                                <select
-                                  id="cron-delivery-channel"
-                                  .value=${props.form.deliveryChannel || "last"}
-                                  @change=${(e: Event) =>
+                                ${renderUiSelect({
+                                  value: props.form.deliveryChannel || "last",
+                                  options: channelOptions.map((channel) => ({
+                                    value: channel,
+                                    label: resolveChannelLabel(props, channel),
+                                  })),
+                                  onChange: (next) =>
                                     props.onFormChange({
-                                      deliveryChannel: (e.target as HTMLSelectElement).value,
-                                    })}
-                                >
-                                  ${channelOptions.map(
-                                    (channel) =>
-                                      html`<option value=${channel}>
-                                        ${resolveChannelLabel(props, channel)}
-                                      </option>`,
-                                  )}
-                                </select>
+                                      deliveryChannel: next,
+                                    }),
+                                })}
                               `
                         }
                         ${
@@ -1097,18 +1066,18 @@ export function renderCron(props: CronProps) {
                         </label>
                         <label class="field">
                           <span>${t("cron.form.staggerUnit")}</span>
-                          <select
-                            .value=${props.form.staggerUnit}
-                            ?disabled=${props.form.scheduleExact}
-                            @change=${(e: Event) =>
+                          ${renderUiSelect({
+                            value: props.form.staggerUnit,
+                            disabled: props.form.scheduleExact,
+                            options: [
+                              { value: "seconds", label: t("cron.form.seconds") },
+                              { value: "minutes", label: t("cron.form.minutes") },
+                            ],
+                            onChange: (next) =>
                               props.onFormChange({
-                                staggerUnit: (e.target as HTMLSelectElement)
-                                  .value as CronFormState["staggerUnit"],
-                              })}
-                          >
-                            <option value="seconds">${t("cron.form.seconds")}</option>
-                            <option value="minutes">${t("cron.form.minutes")}</option>
-                          </select>
+                                staggerUnit: next as CronFormState["staggerUnit"],
+                              }),
+                          })}
                         </label>
                       </div>
                     `
@@ -1184,18 +1153,18 @@ export function renderCron(props: CronProps) {
                   ? html`
                       <label class="field cron-span-2">
                         ${renderFieldLabel("Failure alerts")}
-                        <select
-                          .value=${props.form.failureAlertMode}
-                          @change=${(e: Event) =>
+                        ${renderUiSelect({
+                          value: props.form.failureAlertMode,
+                          options: [
+                            { value: "inherit", label: "Inherit global setting" },
+                            { value: "disabled", label: "Disable for this job" },
+                            { value: "custom", label: "Custom per-job settings" },
+                          ],
+                          onChange: (next) =>
                             props.onFormChange({
-                              failureAlertMode: (e.target as HTMLSelectElement)
-                                .value as CronFormState["failureAlertMode"],
-                            })}
-                        >
-                          <option value="inherit">Inherit global setting</option>
-                          <option value="disabled">Disable for this job</option>
-                          <option value="custom">Custom per-job settings</option>
-                        </select>
+                              failureAlertMode: next as CronFormState["failureAlertMode"],
+                            }),
+                        })}
                         <div class="cron-help">
                           Control when this job sends repeated-failure alerts.
                         </div>
@@ -1252,20 +1221,17 @@ export function renderCron(props: CronProps) {
                               </label>
                               <label class="field">
                                 ${renderFieldLabel("Alert channel")}
-                                <select
-                                  .value=${props.form.failureAlertChannel || "last"}
-                                  @change=${(e: Event) =>
+                                ${renderUiSelect({
+                                  value: props.form.failureAlertChannel || "last",
+                                  options: channelOptions.map((channel) => ({
+                                    value: channel,
+                                    label: resolveChannelLabel(props, channel),
+                                  })),
+                                  onChange: (next) =>
                                     props.onFormChange({
-                                      failureAlertChannel: (e.target as HTMLSelectElement).value,
-                                    })}
-                                >
-                                  ${channelOptions.map(
-                                    (channel) =>
-                                      html`<option value=${channel}>
-                                        ${resolveChannelLabel(props, channel)}
-                                      </option>`,
-                                  )}
-                                </select>
+                                      failureAlertChannel: next,
+                                    }),
+                                })}
                               </label>
                               <label class="field">
                                 ${renderFieldLabel("Alert to")}
@@ -1284,17 +1250,18 @@ export function renderCron(props: CronProps) {
                               </label>
                               <label class="field">
                                 ${renderFieldLabel("Alert mode")}
-                                <select
-                                  .value=${props.form.failureAlertDeliveryMode || "announce"}
-                                  @change=${(e: Event) =>
+                                ${renderUiSelect({
+                                  value: props.form.failureAlertDeliveryMode || "announce",
+                                  options: [
+                                    { value: "announce", label: "Announce (via channel)" },
+                                    { value: "webhook", label: "Webhook (HTTP POST)" },
+                                  ],
+                                  onChange: (next) =>
                                     props.onFormChange({
-                                      failureAlertDeliveryMode: (e.target as HTMLSelectElement)
-                                        .value as CronFormState["failureAlertDeliveryMode"],
-                                    })}
-                                >
-                                  <option value="announce">Announce (via channel)</option>
-                                  <option value="webhook">Webhook (HTTP POST)</option>
-                                </select>
+                                      failureAlertDeliveryMode:
+                                        next as CronFormState["failureAlertDeliveryMode"],
+                                    }),
+                                })}
                               </label>
                               <label class="field">
                                 ${renderFieldLabel("Alert account ID")}
@@ -1435,17 +1402,18 @@ function renderScheduleFields(props: CronProps) {
         </label>
         <label class="field">
           <span>${t("cron.form.unit")}</span>
-          <select
-            .value=${form.everyUnit}
-            @change=${(e: Event) =>
+          ${renderUiSelect({
+            value: form.everyUnit,
+            options: [
+              { value: "minutes", label: t("cron.form.minutes") },
+              { value: "hours", label: t("cron.form.hours") },
+              { value: "days", label: t("cron.form.days") },
+            ],
+            onChange: (next) =>
               props.onFormChange({
-                everyUnit: (e.target as HTMLSelectElement).value as CronFormState["everyUnit"],
-              })}
-          >
-            <option value="minutes">${t("cron.form.minutes")}</option>
-            <option value="hours">${t("cron.form.hours")}</option>
-            <option value="days">${t("cron.form.days")}</option>
-          </select>
+                everyUnit: next as CronFormState["everyUnit"],
+              }),
+          })}
         </label>
       </div>
     `;

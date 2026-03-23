@@ -1,9 +1,10 @@
 import { html, nothing } from "lit";
+import { renderUiSelect } from "../components/ui-select.ts";
 import type { AgentIdentityResult, AgentsFilesListResult, AgentsListResult } from "../types.ts";
 import {
-  buildModelOptions,
   normalizeModelValue,
   parseFallbackList,
+  resolveModelOptions,
   resolveAgentConfig,
   resolveModelFallbacks,
   resolveModelLabel,
@@ -120,23 +121,22 @@ export function renderAgentOverview(params: {
         <div class="agent-model-fields">
           <label class="field">
             <span>Primary model${isDefault ? " (default)" : ""}</span>
-            <select
-              .value=${isDefault ? (effectivePrimary ?? "") : (entryPrimary ?? "")}
-              ?disabled=${disabled}
-              @change=${(e: Event) =>
-                onModelChange(agent.id, (e.target as HTMLSelectElement).value || null)}
-            >
-              ${
-                isDefault
-                  ? nothing
-                  : html`
-                      <option value="">
-                        ${defaultPrimary ? `Inherit default (${defaultPrimary})` : "Inherit default"}
-                      </option>
-                    `
-              }
-              ${buildModelOptions(configForm, effectivePrimary ?? undefined)}
-            </select>
+            ${renderUiSelect({
+              value: isDefault ? (effectivePrimary ?? "") : (entryPrimary ?? ""),
+              disabled,
+              options: [
+                ...(!isDefault
+                  ? [{
+                      value: "",
+                      label: defaultPrimary
+                        ? `Inherit default (${defaultPrimary})`
+                        : "Inherit default",
+                    }]
+                  : []),
+                ...resolveModelOptions(configForm, effectivePrimary ?? undefined),
+              ],
+              onChange: (next) => onModelChange(agent.id, next || null),
+            })}
           </label>
           <div class="field">
             <span>Fallbacks</span>

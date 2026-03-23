@@ -1,4 +1,5 @@
 import { html, nothing, type TemplateResult } from "lit";
+import { renderUiSelect } from "../components/ui-select.ts";
 import { icons as sharedIcons } from "../icons.ts";
 import type { ConfigUiHints } from "../types.ts";
 import {
@@ -790,22 +791,18 @@ function renderSelect(params: {
       ${showLabel ? html`<label class="cfg-field__label">${label}</label>` : nothing}
       ${help ? html`<div class="cfg-field__help">${help}</div>` : nothing}
       ${renderTags(tags)}
-      <select
-        class="cfg-select"
-        ?disabled=${disabled}
-        .value=${currentIndex >= 0 ? String(currentIndex) : unset}
-        @change=${(e: Event) => {
-          const val = (e.target as HTMLSelectElement).value;
+      ${renderUiSelect({
+        className: "cfg-select",
+        disabled,
+        value: currentIndex >= 0 ? String(currentIndex) : unset,
+        options: [
+          { value: unset, label: "Select..." },
+          ...options.map((opt, idx) => ({ value: String(idx), label: String(opt) })),
+        ],
+        onChange: (val) => {
           onPatch(path, val === unset ? undefined : options[Number(val)]);
-        }}
-      >
-        <option value=${unset}>Select...</option>
-        ${options.map(
-          (opt, idx) => html`
-          <option value=${String(idx)}>${String(opt)}</option>
-        `,
-        )}
-      </select>
+        },
+      })}
     </div>
   `;
 }

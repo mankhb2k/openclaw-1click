@@ -1,5 +1,6 @@
 import { html, nothing } from "lit";
 import { t, i18n, SUPPORTED_LOCALES, type Locale, isSupportedLocale } from "../../i18n/index.ts";
+import { renderUiSelect } from "../components/ui-select.ts";
 import type { EventLogEntry } from "../app-events.ts";
 import { buildExternalLinkRel, EXTERNAL_LINK_TARGET } from "../external-link.ts";
 import { formatRelativeTimestamp, formatDurationHuman } from "../format.ts";
@@ -287,21 +288,18 @@ export function renderOverview(props: OverviewProps) {
           </label>
           <label class="field">
             <span>${t("overview.access.language")}</span>
-            <select
-              .value=${currentLocale}
-              @change=${(e: Event) => {
-                const v = (e.target as HTMLSelectElement).value as Locale;
+            ${renderUiSelect({
+              value: currentLocale,
+              options: SUPPORTED_LOCALES.map((loc) => {
+                const key = loc.replace(/-([a-zA-Z])/g, (_, c) => c.toUpperCase());
+                return { value: loc, label: t(`languages.${key}`) };
+              }),
+              onChange: (next) => {
+                const v = next as Locale;
                 void i18n.setLocale(v);
                 props.onSettingsChange({ ...props.settings, locale: v });
-              }}
-            >
-              ${SUPPORTED_LOCALES.map((loc) => {
-                const key = loc.replace(/-([a-zA-Z])/g, (_, c) => c.toUpperCase());
-                return html`<option value=${loc} ?selected=${currentLocale === loc}>
-                  ${t(`languages.${key}`)}
-                </option>`;
-              })}
-            </select>
+              },
+            })}
           </label>
         </div>
         <div class="row" style="margin-top: 14px;">

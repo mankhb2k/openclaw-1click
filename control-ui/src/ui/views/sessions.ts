@@ -1,4 +1,5 @@
 import { html, nothing } from "lit";
+import { renderUiSelect } from "../components/ui-select.ts";
 import { formatRelativeTimestamp } from "../format.ts";
 import { icons } from "../icons.ts";
 import { pathForTab } from "../navigation.ts";
@@ -288,7 +289,7 @@ export function renderSessions(props: SessionsProps) {
           : nothing
       }
 
-      <div class="data-table-wrapper">
+      <div class="data-table-wrapper data-table-wrapper--sessions">
         <div class="data-table-toolbar">
           <div class="data-table-search">
             <input
@@ -393,14 +394,11 @@ export function renderSessions(props: SessionsProps) {
                     of ${totalRows} row${totalRows === 1 ? "" : "s"}
                   </div>
                   <div class="data-table-pagination__controls">
-                    <select
-                      style="height: 32px; padding: 0 8px; font-size: 13px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--card);"
-                      .value=${String(props.pageSize)}
-                      @change=${(e: Event) =>
-                        props.onPageSizeChange(Number((e.target as HTMLSelectElement).value))}
-                    >
-                      ${PAGE_SIZES.map((s) => html`<option value=${s}>${s} per page</option>`)}
-                    </select>
+                    ${renderUiSelect({
+                      value: String(props.pageSize),
+                      options: PAGE_SIZES.map((s) => ({ value: String(s), label: `${s} per page` })),
+                      onChange: (next) => props.onPageSizeChange(Number(next)),
+                    })}
                     <button
                       ?disabled=${page <= 0}
                       @click=${() => props.onPageChange(page - 1)}
@@ -526,74 +524,46 @@ function renderRow(
       <td>${updated}</td>
       <td>${formatSessionTokens(row)}</td>
       <td>
-        <select
-          ?disabled=${disabled}
-          style="padding: 6px 10px; font-size: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); min-width: 90px;"
-          @change=${(e: Event) => {
-            const value = (e.target as HTMLSelectElement).value;
+        ${renderUiSelect({
+          value: thinking,
+          disabled,
+          options: thinkLevels.map((level) => ({ value: level, label: level || "inherit" })),
+          onChange: (value) => {
             onPatch(row.key, {
               thinkingLevel: resolveThinkLevelPatchValue(value, isBinaryThinking),
             });
-          }}
-        >
-          ${thinkLevels.map(
-            (level) =>
-              html`<option value=${level} ?selected=${thinking === level}>
-                ${level || "inherit"}
-              </option>`,
-          )}
-        </select>
+          },
+        })}
       </td>
       <td>
-        <select
-          ?disabled=${disabled}
-          style="padding: 6px 10px; font-size: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); min-width: 90px;"
-          @change=${(e: Event) => {
-            const value = (e.target as HTMLSelectElement).value;
+        ${renderUiSelect({
+          value: fastMode,
+          disabled,
+          options: fastLevels.map((level) => ({ value: level.value, label: level.label })),
+          onChange: (value) => {
             onPatch(row.key, { fastMode: value === "" ? null : value === "on" });
-          }}
-        >
-          ${fastLevels.map(
-            (level) =>
-              html`<option value=${level.value} ?selected=${fastMode === level.value}>
-                ${level.label}
-              </option>`,
-          )}
-        </select>
+          },
+        })}
       </td>
       <td>
-        <select
-          ?disabled=${disabled}
-          style="padding: 6px 10px; font-size: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); min-width: 90px;"
-          @change=${(e: Event) => {
-            const value = (e.target as HTMLSelectElement).value;
+        ${renderUiSelect({
+          value: verbose,
+          disabled,
+          options: verboseLevels.map((level) => ({ value: level.value, label: level.label })),
+          onChange: (value) => {
             onPatch(row.key, { verboseLevel: value || null });
-          }}
-        >
-          ${verboseLevels.map(
-            (level) =>
-              html`<option value=${level.value} ?selected=${verbose === level.value}>
-                ${level.label}
-              </option>`,
-          )}
-        </select>
+          },
+        })}
       </td>
       <td>
-        <select
-          ?disabled=${disabled}
-          style="padding: 6px 10px; font-size: 13px; border: 1px solid var(--border); border-radius: var(--radius-sm); min-width: 90px;"
-          @change=${(e: Event) => {
-            const value = (e.target as HTMLSelectElement).value;
+        ${renderUiSelect({
+          value: reasoning,
+          disabled,
+          options: reasoningLevels.map((level) => ({ value: level, label: level || "inherit" })),
+          onChange: (value) => {
             onPatch(row.key, { reasoningLevel: value || null });
-          }}
-        >
-          ${reasoningLevels.map(
-            (level) =>
-              html`<option value=${level} ?selected=${reasoning === level}>
-                ${level || "inherit"}
-              </option>`,
-          )}
-        </select>
+          },
+        })}
       </td>
     </tr>
   `;

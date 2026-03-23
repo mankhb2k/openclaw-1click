@@ -1,4 +1,5 @@
 import { html, nothing } from "lit";
+import { renderUiSelect } from "../components/ui-select.ts";
 import type {
   ExecApprovalsAllowlistEntry,
   ExecApprovalsFile,
@@ -249,47 +250,40 @@ function renderExecApprovalsTarget(state: ExecApprovalsState) {
         <div class="list-meta">
           <label class="field">
             <span>Host</span>
-            <select
-              ?disabled=${state.disabled}
-              @change=${(event: Event) => {
-                const target = event.target as HTMLSelectElement;
-                const value = target.value;
+            ${renderUiSelect({
+              value: state.target,
+              disabled: state.disabled,
+              options: [
+                { value: "gateway", label: "Gateway" },
+                { value: "node", label: "Node" },
+              ],
+              onChange: (value) => {
                 if (value === "node") {
                   const first = state.targetNodes[0]?.id ?? null;
                   state.onSelectTarget("node", nodeValue || first);
                 } else {
                   state.onSelectTarget("gateway", null);
                 }
-              }}
-            >
-              <option value="gateway" ?selected=${state.target === "gateway"}>Gateway</option>
-              <option value="node" ?selected=${state.target === "node"}>Node</option>
-            </select>
+              },
+            })}
           </label>
           ${
             state.target === "node"
               ? html`
                 <label class="field">
                   <span>Node</span>
-                  <select
-                    ?disabled=${state.disabled || !hasNodes}
-                    @change=${(event: Event) => {
-                      const target = event.target as HTMLSelectElement;
-                      const value = target.value.trim();
+                  ${renderUiSelect({
+                    value: nodeValue,
+                    disabled: state.disabled || !hasNodes,
+                    options: [
+                      { value: "", label: "Select node" },
+                      ...state.targetNodes.map((node) => ({ value: node.id, label: node.label })),
+                    ],
+                    onChange: (next) => {
+                      const value = next.trim();
                       state.onSelectTarget("node", value ? value : null);
-                    }}
-                  >
-                    <option value="" ?selected=${nodeValue === ""}>Select node</option>
-                    ${state.targetNodes.map(
-                      (node) =>
-                        html`<option
-                          value=${node.id}
-                          ?selected=${nodeValue === node.id}
-                        >
-                          ${node.label}
-                        </option>`,
-                    )}
-                  </select>
+                    },
+                  })}
                 </label>
               `
               : nothing
@@ -362,35 +356,23 @@ function renderExecApprovalsPolicy(state: ExecApprovalsState) {
         <div class="list-meta">
           <label class="field">
             <span>Mode</span>
-            <select
-              ?disabled=${state.disabled}
-              @change=${(event: Event) => {
-                const target = event.target as HTMLSelectElement;
-                const value = target.value;
+            ${renderUiSelect({
+              value: securityValue,
+              disabled: state.disabled,
+              options: [
+                ...(!isDefaults
+                  ? [{ value: "__default__", label: `Use default (${defaults.security})` }]
+                  : []),
+                ...SECURITY_OPTIONS.map((option) => ({ value: option.value, label: option.label })),
+              ],
+              onChange: (value) => {
                 if (!isDefaults && value === "__default__") {
                   state.onRemove([...basePath, "security"]);
                 } else {
                   state.onPatch([...basePath, "security"], value);
                 }
-              }}
-            >
-              ${
-                !isDefaults
-                  ? html`<option value="__default__" ?selected=${securityValue === "__default__"}>
-                    Use default (${defaults.security})
-                  </option>`
-                  : nothing
-              }
-              ${SECURITY_OPTIONS.map(
-                (option) =>
-                  html`<option
-                    value=${option.value}
-                    ?selected=${securityValue === option.value}
-                  >
-                    ${option.label}
-                  </option>`,
-              )}
-            </select>
+              },
+            })}
           </label>
         </div>
       </div>
@@ -405,35 +387,21 @@ function renderExecApprovalsPolicy(state: ExecApprovalsState) {
         <div class="list-meta">
           <label class="field">
             <span>Mode</span>
-            <select
-              ?disabled=${state.disabled}
-              @change=${(event: Event) => {
-                const target = event.target as HTMLSelectElement;
-                const value = target.value;
+            ${renderUiSelect({
+              value: askValue,
+              disabled: state.disabled,
+              options: [
+                ...(!isDefaults ? [{ value: "__default__", label: `Use default (${defaults.ask})` }] : []),
+                ...ASK_OPTIONS.map((option) => ({ value: option.value, label: option.label })),
+              ],
+              onChange: (value) => {
                 if (!isDefaults && value === "__default__") {
                   state.onRemove([...basePath, "ask"]);
                 } else {
                   state.onPatch([...basePath, "ask"], value);
                 }
-              }}
-            >
-              ${
-                !isDefaults
-                  ? html`<option value="__default__" ?selected=${askValue === "__default__"}>
-                    Use default (${defaults.ask})
-                  </option>`
-                  : nothing
-              }
-              ${ASK_OPTIONS.map(
-                (option) =>
-                  html`<option
-                    value=${option.value}
-                    ?selected=${askValue === option.value}
-                  >
-                    ${option.label}
-                  </option>`,
-              )}
-            </select>
+              },
+            })}
           </label>
         </div>
       </div>
@@ -452,35 +420,23 @@ function renderExecApprovalsPolicy(state: ExecApprovalsState) {
         <div class="list-meta">
           <label class="field">
             <span>Fallback</span>
-            <select
-              ?disabled=${state.disabled}
-              @change=${(event: Event) => {
-                const target = event.target as HTMLSelectElement;
-                const value = target.value;
+            ${renderUiSelect({
+              value: askFallbackValue,
+              disabled: state.disabled,
+              options: [
+                ...(!isDefaults
+                  ? [{ value: "__default__", label: `Use default (${defaults.askFallback})` }]
+                  : []),
+                ...SECURITY_OPTIONS.map((option) => ({ value: option.value, label: option.label })),
+              ],
+              onChange: (value) => {
                 if (!isDefaults && value === "__default__") {
                   state.onRemove([...basePath, "askFallback"]);
                 } else {
                   state.onPatch([...basePath, "askFallback"], value);
                 }
-              }}
-            >
-              ${
-                !isDefaults
-                  ? html`<option value="__default__" ?selected=${askFallbackValue === "__default__"}>
-                    Use default (${defaults.askFallback})
-                  </option>`
-                  : nothing
-              }
-              ${SECURITY_OPTIONS.map(
-                (option) =>
-                  html`<option
-                    value=${option.value}
-                    ?selected=${askFallbackValue === option.value}
-                  >
-                    ${option.label}
-                  </option>`,
-              )}
-            </select>
+              },
+            })}
           </label>
         </div>
       </div>
