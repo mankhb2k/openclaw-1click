@@ -1,11 +1,12 @@
 /**
  * First-launch onboarding: local BrowserWindow + non-interactive `openclaw onboard`.
  */
-import { BrowserWindow, ipcMain, app } from 'electron';
+import { BrowserWindow, ipcMain, app, shell } from 'electron';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { spawn } from 'child_process';
+import { execFile, spawn } from 'child_process';
+import { promisify } from 'util';
 import type { DesktopPaths } from '../backend/config';
 import {
   buildOpenClawEnv,
@@ -18,7 +19,13 @@ const MARKER_FILE = '.openclaw-desktop-onboarded';
 const ENV_GATEWAY_NODE = 'OPENCLAW_GATEWAY_NODE';
 const DEFAULT_ONBOARD_GATEWAY_PORT = '18789';
 
-const ALLOWED_OLLAMA_MODEL_IDS = new Set(['deepseek-r1:1.5b', 'deepseek-r1:8b']);
+const ALLOWED_OLLAMA_MODEL_IDS = new Set([
+  'deepseek-r1:1.5b',
+  'deepseek-r1:8b',
+  'deepseek-r1:14b',
+]);
+
+const execFileAsync = promisify(execFile);
 
 export function onboardingMarkerPath(dataRoot: string): string {
   return path.join(dataRoot, MARKER_FILE);
@@ -227,6 +234,144 @@ function preloadOnboardPath(): string {
   return path.join(__dirname, 'preload-onboard.js');
 }
 
+function isAllowedExternalHttpUrl(raw: string): boolean {
+  try {
+    const u = new URL(raw);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+type OnboardHardwareInfo = {
+  totalMemoryBytes: number;
+  platform: NodeJS.Platform;
+  cpuCores: number;
+  /** Dedicated / adapter VRAM in bytes when detected; `null` if unknown */
+  vramBytes: number | null;
+  gpuLabel: string | null;
+};
+
+function tryReadLinuxDrmVramBytes(): number | undefined {
+  if (process.platform !== 'linux') return undefined;
+  try {
+    const drm = '/sys/class/drm';
+    if (!fs.existsSync(drm)) return undefined;
+    let max = 0;
+    for (const name of fs.readdirSync(drm)) {
+      if (!name.startsWith('card') || name.includes('-')) continue;
+      const p = path.join(drm, name, 'device', 'mem_info_vram_total');
+      if (!fs.existsSync(p)) continue;
+      const raw = parseInt(fs.readFileSync(p, 'utf8').trim(), 10);
+      if (Number.isFinite(raw) && raw > max) max = raw;
+    }
+    return max > 0 ? max : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function tryWindowsAdapterVramBytes(): Promise<number | undefined> {
+  if (process.platform !== 'win32') return undefined;
+  try {
+    const { stdout } = await execFileAsync(
+      'powershell.exe',
+      [
+        '-NoProfile',
+        '-Command',
+        '$m = (Get-CimInstance Win32_VideoController | Where-Object { $_.AdapterRAM -and $_.AdapterRAM -gt 0 } | Select-Object -ExpandProperty AdapterRAM | Measure-Object -Maximum).Maximum; if ($m) { [string][int64]$m } else { "" }',
+      ],
+      { timeout: 4500, windowsHide: true, encoding: 'utf8' },
+    );
+    const n = Number(String(stdout).trim());
+    return Number.isFinite(n) && n > 0 ? n : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function pickGpuLabelFromInfo(gpu: Record<string, unknown>): string | null {
+  const devices = gpu.gpuDevice;
+  if (!Array.isArray(devices) || devices.length === 0) return null;
+  type Dev = Record<string, unknown>;
+  const active = (devices as Dev[]).find((d) => d && d.active === true) ?? (devices as Dev[])[0];
+  if (!active || typeof active !== 'object') return null;
+  const cand =
+    (typeof active.deviceString === 'string' && active.deviceString) ||
+    (typeof active.deviceDescription === 'string' && active.deviceDescription) ||
+    (typeof active.driverVersion === 'string' && active.driverVersion);
+  return cand ? String(cand).trim().slice(0, 120) : null;
+}
+
+function pickVramBytesFromGpuInfoObject(gpu: Record<string, unknown>): number | undefined {
+  const devices = gpu.gpuDevice;
+  if (!Array.isArray(devices)) return undefined;
+  let best: number | undefined;
+  for (const raw of devices) {
+    if (!raw || typeof raw !== 'object') continue;
+    const d = raw as Record<string, unknown>;
+    for (const [k, v] of Object.entries(d)) {
+      if (typeof v !== 'number') continue;
+      const kl = k.toLowerCase();
+      if (
+        !(
+          kl.includes('memory') ||
+          kl.includes('vram') ||
+          kl.includes('video') ||
+          kl.includes('dedicated') ||
+          kl.includes('adapterram')
+        )
+      ) {
+        continue;
+      }
+      let b = v;
+      if (kl.includes('kb') || kl.includes('kilobyte')) b = v * 1024;
+      if (b >= 256 * 1024 * 1024 && b <= 96 * 1024 * 1024 * 1024) {
+        best = best == null ? Math.floor(b) : Math.max(best, Math.floor(b));
+      }
+    }
+  }
+  return best;
+}
+
+async function collectOnboardHardwareInfo(): Promise<OnboardHardwareInfo> {
+  const totalMemoryBytes = os.totalmem();
+  const cpuCores = Math.max(1, os.cpus()?.length ?? 1);
+  let vramBytes: number | undefined;
+  let gpuLabel: string | null = null;
+
+  try {
+    const gpu = await Promise.race([
+      app.getGPUInfo('complete'),
+      new Promise<never>((_, rej) => setTimeout(() => rej(new Error('gpu-timeout')), 2800)),
+    ]);
+    if (gpu && typeof gpu === 'object') {
+      const g = gpu as Record<string, unknown>;
+      gpuLabel = pickGpuLabelFromInfo(g);
+      vramBytes = pickVramBytesFromGpuInfoObject(g);
+    }
+  } catch {
+    // Chromium may omit VRAM; fall through to OS probes
+  }
+
+  if (vramBytes == null) {
+    const linux = tryReadLinuxDrmVramBytes();
+    if (linux != null) vramBytes = linux;
+  }
+  if (vramBytes == null && process.platform === 'win32') {
+    const w = await tryWindowsAdapterVramBytes();
+    if (w != null) vramBytes = w;
+  }
+
+  return {
+    totalMemoryBytes,
+    platform: process.platform,
+    cpuCores,
+    vramBytes: vramBytes ?? null,
+    gpuLabel,
+  };
+}
+
 type OnboardRunBody =
   | {
       kind: 'ollama';
@@ -273,6 +418,7 @@ export async function runFirstLaunchOnboardingIfNeeded(opts: {
       ipcMain.removeHandler('onboard:probe-ollama');
       ipcMain.removeHandler('onboard:skip');
       ipcMain.removeHandler('onboard:run');
+      ipcMain.removeHandler('onboard:open-external');
     };
 
     const finish = () => {
@@ -286,14 +432,25 @@ export async function runFirstLaunchOnboardingIfNeeded(opts: {
       if (win && !win.isDestroyed()) win.close();
     };
 
-    ipcMain.handle('onboard:system-info', async () => ({
-      totalMemoryBytes: os.totalmem(),
-      platform: process.platform,
-    }));
+    ipcMain.handle('onboard:system-info', () => collectOnboardHardwareInfo());
 
     ipcMain.handle('onboard:probe-ollama', async () => ({
       ok: await probeOllamaReachable(),
     }));
+
+    ipcMain.handle('onboard:open-external', async (_e, url: unknown) => {
+      const s = typeof url === 'string' ? url.trim() : '';
+      if (!isAllowedExternalHttpUrl(s)) {
+        return { ok: false as const };
+      }
+      try {
+        await shell.openExternal(s);
+        return { ok: true as const };
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        return { ok: false as const, message: msg };
+      }
+    });
 
     ipcMain.handle('onboard:skip', async () => {
       try {
@@ -380,7 +537,7 @@ export async function runFirstLaunchOnboardingIfNeeded(opts: {
 
     win = new BrowserWindow({
       width: 560,
-      height: 740,
+      height: 820,
       resizable: true,
       minimizable: true,
       maximizable: false,

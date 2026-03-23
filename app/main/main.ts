@@ -30,6 +30,13 @@ const MAIN_WINDOW_MIN_HEIGHT = 700;
 
 let mainWindow: BrowserWindow | null = null;
 
+/**
+ * On Windows/Linux, `window-all-closed` quits the app. During first launch the
+ * onboarding window closes before the Control UI window exists — without this
+ * guard that event would quit the app instead of continuing to `createWindow()`.
+ */
+let quitAppWhenAllWindowsClosed = false;
+
 if (app.isPackaged) {
   process.env[ENV_DESKTOP_RESOURCES] = process.resourcesPath;
 }
@@ -293,6 +300,7 @@ async function createWindow(): Promise<void> {
   );
 
   mainWindow.once('ready-to-show', () => mainWindow?.show());
+  quitAppWhenAllWindowsClosed = true;
   await mainWindow.loadURL(controlUiUrl);
 
   if (!app.isPackaged) {
@@ -357,7 +365,7 @@ if (!gotLock) {
   });
 
   app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
+    if (process.platform !== 'darwin' && quitAppWhenAllWindowsClosed) {
       app.quit();
     }
   });

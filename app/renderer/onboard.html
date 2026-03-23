@@ -30,8 +30,8 @@
               <span class="radio-body">
                 <span class="radio-title">DeepSeek-R1 (Ollama — cục bộ)</span>
                 <span class="radio-desc"
-                  >Không cần API key Model sẽ được tải qua khi bạn chạy thiết
-                  lập.</span
+                  >Không cần API key Model sẽ được tải qua Ollama khi bạn chạy
+                  thiết lập.</span
                 >
               </span>
             </label>
@@ -48,7 +48,7 @@
         </fieldset>
 
         <p class="field-hint" id="ramLine" style="margin-top: 10px">
-          Đang đọc thông tin bộ nhớ…
+          Đang đọc RAM, CPU và VRAM…
         </p>
 
         <div id="sectionOllama">
@@ -59,14 +59,15 @@
             role="status"
           >
             Máy tính của bạn chưa có Ollama (hoặc Ollama chưa chạy).
-            <a
-              href="https://ollama.com/download"
-              target="_blank"
-              rel="noreferrer"
+            <a href="https://ollama.com/download" rel="noreferrer"
               >Hãy tải Ollama tại đây</a
             >. Sau khi cài, mở ứng dụng Ollama — cửa sổ này sẽ tự kiểm tra lại.
           </div>
-          <p id="ollamaCheckingLine" class="field-hint ollama-checking-line" style="display: none">
+          <p
+            id="ollamaCheckingLine"
+            class="field-hint ollama-checking-line"
+            style="display: none"
+          >
             Đang kiểm tra Ollama…
           </p>
 
@@ -83,8 +84,8 @@
                 <span class="radio-body">
                   <span class="radio-title">1.5B — nhẹ, phù hợp máy yếu</span>
                   <span class="radio-desc"
-                    >Tag Ollama:
-                    <code class="mono-inline">deepseek-r1:1.5b</code></span
+                    >Tag: <code class="mono-inline">deepseek-r1:1.5b</code> —
+                    Q4, ưu tiên tốc độ</span
                   >
                 </span>
               </label>
@@ -96,10 +97,25 @@
                   id="model8"
                 />
                 <span class="radio-body">
-                  <span class="radio-title">8B — chất lượng tốt hơn</span>
+                  <span class="radio-title">8B — cân bằng</span>
                   <span class="radio-desc"
-                    >Tag Ollama:
-                    <code class="mono-inline">deepseek-r1:8b</code></span
+                    >Tag: <code class="mono-inline">deepseek-r1:8b</code> — Q4
+                    (cân bằng)</span
+                  >
+                </span>
+              </label>
+              <label class="radio-row">
+                <input
+                  type="radio"
+                  name="ollamaModel"
+                  value="deepseek-r1:14b"
+                  id="model14"
+                />
+                <span class="radio-body">
+                  <span class="radio-title">14B — chất lượng cao</span>
+                  <span class="radio-desc"
+                    >Tag: <code class="mono-inline">deepseek-r1:14b</code> — Q5
+                    (chất lượng cao)</span
                   >
                 </span>
               </label>
@@ -108,22 +124,14 @@
 
           <div class="callout callout--info">
             Cài đặt và mở <strong>Ollama</strong> trước khi chạy thiết lập.
-            <a
-              href="https://ollama.com/download"
-              target="_blank"
-              rel="noreferrer"
-              >ollama.com/download</a
-            >
           </div>
 
           <div
             class="callout callout--warn"
             id="warn8b"
             style="display: none; margin-top: 10px"
-          >
-            Máy có dưới 14&nbsp;GB RAM: model 8B có thể chậm hoặc thiếu bộ nhớ.
-            RAM khác với VRAM — GPU yếu vẫn có thể gặp lỗi dù đủ RAM.
-          </div>
+            role="note"
+          ></div>
         </div>
 
         <div id="sectionApi" class="section-hidden">
@@ -174,6 +182,7 @@
       (function () {
         var MODEL_15 = "deepseek-r1:1.5b";
         var MODEL_8 = "deepseek-r1:8b";
+        var MODEL_14 = "deepseek-r1:14b";
 
         function resolveThemeMode() {
           if (
@@ -195,12 +204,30 @@
           return;
         }
 
+        document.addEventListener(
+          "click",
+          function (e) {
+            var t = e.target;
+            if (!t || !t.closest) return;
+            var a = t.closest("a[href]");
+            if (!a) return;
+            var href = (a.getAttribute("href") || "").trim();
+            if (!/^https?:\/\//i.test(href)) return;
+            e.preventDefault();
+            if (typeof api.openExternal === "function") {
+              api.openExternal(href).catch(function () {});
+            }
+          },
+          true,
+        );
+
         var setupOllama = document.getElementById("setupOllama");
         var setupApi = document.getElementById("setupApi");
         var sectionOllama = document.getElementById("sectionOllama");
         var sectionApi = document.getElementById("sectionApi");
         var model15 = document.getElementById("model15");
         var model8 = document.getElementById("model8");
+        var model14 = document.getElementById("model14");
         var provider = document.getElementById("provider");
         var apiKey = document.getElementById("apiKey");
         var acceptRisk = document.getElementById("acceptRisk");
@@ -209,7 +236,9 @@
         var errorBox = document.getElementById("errorBox");
         var ramLine = document.getElementById("ramLine");
         var warn8b = document.getElementById("warn8b");
-        var ollamaMissingBanner = document.getElementById("ollamaMissingBanner");
+        var ollamaMissingBanner = document.getElementById(
+          "ollamaMissingBanner",
+        );
         var ollamaCheckingLine = document.getElementById("ollamaCheckingLine");
 
         var ollamaOk = false;
@@ -217,29 +246,90 @@
         var ollamaPollTimer = null;
         var ollamaProbeUnsupported = false;
 
-        /** From this total RAM (GiB) upward, default to DeepSeek-R1 8B. */
-        var RAM_GIB_DEFAULT_8B = 14;
-
         var totalRamBytes = 16 * 1024 * 1024 * 1024;
+        var cpuCores = 4;
+        /** `null` = không đọc được VRAM riêng */
+        var vramBytes = null;
+        var gpuLabel = null;
 
         function bytesToGiB(n) {
           return n / (1024 * 1024 * 1024);
         }
 
-        function defaultModelForRam(gib) {
-          if (gib >= RAM_GIB_DEFAULT_8B) return MODEL_8;
+        function escapeHtml(s) {
+          return String(s)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+        }
+
+        function hardwareEligibility() {
+          var ramGib = bytesToGiB(totalRamBytes);
+          var cores = cpuCores;
+          var vg =
+            vramBytes != null && typeof vramBytes === "number"
+              ? bytesToGiB(vramBytes)
+              : null;
+          return {
+            ramGib: ramGib,
+            vramGib: vg,
+            cores: cores,
+            /** ~6 GB VRAM (≥5.5 GiB) + RAM/CPU — gợi ý ~14B */
+            eligible14:
+              ramGib > 16 && vg != null && vg >= 5.5 && cores >= 8,
+            /** ~4 GB VRAM (≥3.5 GiB) hoặc cao hơn → gợi ý 8B */
+            eligible8: vg != null && vg >= 3.5,
+            eligible15Low: ramGib < 8 && cores <= 4 && (vg == null || vg < 4),
+          };
+        }
+
+        function suggestedModelId() {
+          var h = hardwareEligibility();
+          if (h.eligible14) return MODEL_14;
+          if (h.eligible8) return MODEL_8;
+          if (h.eligible15Low) return MODEL_15;
+          if (h.ramGib > 16 && h.cores >= 8 && h.vramGib == null)
+            return MODEL_8;
           return MODEL_15;
         }
 
-        function updateWarn8b() {
-          var sel =
-            document.querySelector('input[name="ollamaModel"]:checked') ||
-            model15;
-          var v = sel ? sel.value : MODEL_15;
-          var gib = bytesToGiB(totalRamBytes);
-          var show =
-            setupOllama.checked && v === MODEL_8 && gib < RAM_GIB_DEFAULT_8B;
-          warn8b.style.display = show ? "block" : "none";
+        function suggestionBlurbForModel(id) {
+          if (id === MODEL_15) {
+            return "Gợi ý: DeepSeek 1.5B — Quant Q4, ưu tiên tốc độ.";
+          }
+          if (id === MODEL_8) {
+            return "Gợi ý: DeepSeek 8B — Quant Q4 (VRAM ~4 GB trở lên).";
+          }
+          if (id === MODEL_14) {
+            return "Gợi ý: DeepSeek ~14B (tương đương khoảng 13B) — Quant Q5 (VRAM ~6 GB trở lên).";
+          }
+          return "";
+        }
+
+        function getSelectedOllamaModel() {
+          var el = document.querySelector('input[name="ollamaModel"]:checked');
+          return el ? el.value : MODEL_15;
+        }
+
+        function updateModelTierWarn() {
+          if (!setupOllama.checked) {
+            warn8b.style.display = "none";
+            warn8b.textContent = "";
+            return;
+          }
+          var sel = getSelectedOllamaModel();
+          var h = hardwareEligibility();
+          var msg = "";
+          if (sel === MODEL_14 && !h.eligible14) {
+            msg =
+              "Model ~14B được gợi ý khi: RAM > 16 GB, VRAM từ khoảng 6 GB trở lên (ngưỡng ~5.5 GB đã đo), CPU ≥ 8 nhân. Cấu hình hiện tại có thể chậm hoặc thiếu bộ nhớ.";
+          } else if (sel === MODEL_8 && !h.eligible8) {
+            msg =
+              "Model 8B được gợi ý khi đo được VRAM từ khoảng 4 GB trở lên (ngưỡng ~3.5 GB). Máy bạn không đạt hoặc không đọc được VRAM — có thể chậm hoặc thiếu bộ nhớ.";
+          }
+          warn8b.textContent = msg;
+          warn8b.style.display = msg ? "block" : "none";
         }
 
         function stopOllamaPoll() {
@@ -316,7 +406,7 @@
           var apiMode = setupApi.checked;
           sectionApi.classList.toggle("section-hidden", !apiMode);
           sectionOllama.classList.toggle("section-hidden", apiMode);
-          updateWarn8b();
+          updateModelTierWarn();
           if (apiMode) {
             stopOllamaPoll();
             ollamaCheckingLine.style.display = "none";
@@ -340,31 +430,50 @@
           setupApi.disabled = busy;
           model15.disabled = busy;
           model8.disabled = busy;
+          model14.disabled = busy;
           provider.disabled = busy;
           apiKey.disabled = busy;
           btnRun.textContent = busy ? "Đang chạy…" : "Chạy thiết lập";
           applyRunGate();
         }
 
-        function getSelectedOllamaModel() {
-          var el = document.querySelector('input[name="ollamaModel"]:checked');
-          return el ? el.value : MODEL_15;
-        }
+        function applyHardwareAndDefaults() {
+          var h = hardwareEligibility();
+          var def = suggestedModelId();
+          var blurb = suggestionBlurbForModel(def);
 
-        function applyRamAndDefaults() {
-          var gib = bytesToGiB(totalRamBytes);
-          ramLine.innerHTML =
-            'Phát hiện khoảng <span class="ram-badge">' +
-            gib.toFixed(1) +
-            " GB RAM</span> — gợi ý model đã được chọn theo mức RAM (có thể đổi).";
-
-          var def = defaultModelForRam(gib);
-          if (def === MODEL_8) {
-            model8.checked = true;
+          var vramPart;
+          if (vramBytes == null || typeof vramBytes !== "number") {
+            vramPart =
+              "VRAM: không đọc được hoặc GPU tích hợp / dùng chung RAM";
           } else {
-            model15.checked = true;
+            vramPart =
+              "VRAM: ~" +
+              bytesToGiB(vramBytes).toFixed(1) +
+              " GB" +
+              (gpuLabel
+                ? ' — <span class="mono-inline">' +
+                  escapeHtml(gpuLabel) +
+                  "</span>"
+                : "");
           }
-          updateWarn8b();
+
+          ramLine.innerHTML =
+            "<strong>" +
+            h.ramGib.toFixed(1) +
+            " GB</strong> RAM tổng · <strong>" +
+            cpuCores +
+            "</strong> nhân CPU · " +
+            vramPart +
+            '<br /><span class="field-hint" style="margin-top:6px;display:inline-block">' +
+            escapeHtml(blurb) +
+            " Có thể đổi model bên dưới.</span>";
+
+          if (def === MODEL_14) model14.checked = true;
+          else if (def === MODEL_8) model8.checked = true;
+          else model15.checked = true;
+
+          updateModelTierWarn();
         }
 
         if (typeof api.getSystemInfo === "function") {
@@ -383,7 +492,23 @@
               ) {
                 totalRamBytes = navigator.deviceMemory * 1024 * 1024 * 1024;
               }
-              applyRamAndDefaults();
+              if (
+                info &&
+                typeof info.cpuCores === "number" &&
+                info.cpuCores > 0
+              ) {
+                cpuCores = info.cpuCores;
+              }
+              if (info && "vramBytes" in info) {
+                vramBytes =
+                  typeof info.vramBytes === "number" ? info.vramBytes : null;
+              }
+              if (info && info.gpuLabel && typeof info.gpuLabel === "string") {
+                gpuLabel = info.gpuLabel;
+              } else {
+                gpuLabel = null;
+              }
+              applyHardwareAndDefaults();
             })
             .catch(function () {
               if (
@@ -392,7 +517,7 @@
               ) {
                 totalRamBytes = navigator.deviceMemory * 1024 * 1024 * 1024;
               }
-              applyRamAndDefaults();
+              applyHardwareAndDefaults();
             });
         } else {
           if (
@@ -401,13 +526,14 @@
           ) {
             totalRamBytes = navigator.deviceMemory * 1024 * 1024 * 1024;
           }
-          applyRamAndDefaults();
+          applyHardwareAndDefaults();
         }
 
         setupOllama.addEventListener("change", syncSections);
         setupApi.addEventListener("change", syncSections);
-        model15.addEventListener("change", updateWarn8b);
-        model8.addEventListener("change", updateWarn8b);
+        model15.addEventListener("change", updateModelTierWarn);
+        model8.addEventListener("change", updateModelTierWarn);
+        model14.addEventListener("change", updateModelTierWarn);
 
         document.addEventListener("visibilitychange", function () {
           if (!document.hidden && setupOllama.checked && !ollamaOk) {
