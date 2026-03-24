@@ -3,12 +3,14 @@
  */
 import { BrowserWindow, ipcMain, app, shell, type WebContents } from 'electron';
 import { resolveWindowIconPath } from './app-icon';
+import { resolveElectronRunnerPath } from './electron-runner';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { execFile, spawn } from 'child_process';
 import { promisify } from 'util';
 import type { DesktopPaths } from '../backend/config';
+import { resolveSpawnCwd } from '../shared/spawn-cwd';
 import {
   buildOpenClawEnv,
   ensureDataLayout,
@@ -187,7 +189,7 @@ function runOnboardCli(opts: RunOnboardCliInput): Promise<{ ok: boolean; output:
 
   const gatewayNodeBin = process.env[ENV_GATEWAY_NODE]?.trim();
   const useSystemNode = Boolean(gatewayNodeBin && fs.existsSync(gatewayNodeBin));
-  const runner = useSystemNode ? gatewayNodeBin! : process.execPath;
+  const runner = useSystemNode ? gatewayNodeBin! : resolveElectronRunnerPath();
 
   const tokenEnv = gatewayToken.length > 0 ? gatewayToken : undefined;
   const env: NodeJS.ProcessEnv = {
@@ -206,7 +208,7 @@ function runOnboardCli(opts: RunOnboardCliInput): Promise<{ ok: boolean; output:
       out = appendCapped(out, chunk.toString(), 14_000);
     };
     const child = spawn(runner, args, {
-      cwd: appRoot,
+      cwd: resolveSpawnCwd(appRoot, runner),
       env,
       windowsHide: true,
       stdio: ['ignore', 'pipe', 'pipe'],

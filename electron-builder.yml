@@ -6,7 +6,8 @@ productName: OpenClaw Desktop
 directories:
   output: release
 
-icon: build/icon.ico
+# NSIS yêu cầu .ico có ít nhất 256×256 (control-ui/public/favicon.ico đã có).
+icon: control-ui/public/favicon.ico
 
 files:
   - dist/**/*
@@ -20,9 +21,14 @@ extraResources:
       - "**/*"
 
 asar: true
+# Windows: icon trong .asar không load được cho taskbar → phải unpack ra đĩa (xem app-icon.ts).
+asarUnpack:
+  - "dist/main/assets/*.ico"
+  - "dist/main/assets/*.png"
 
 # Avoid winCodeSign extraction (symlinks) on machines without Developer Mode / admin.
 win:
+  icon: control-ui/public/favicon.ico
   signAndEditExecutable: false
   target:
     - target: portable
@@ -32,6 +38,19 @@ win:
       arch:
         - x64
 
+# Tên khác bản mặc định (`OpenClaw Desktop 1.0.0.exe`) để tránh ghi đè file đang bị AV/process giữ → treo build.
+portable:
+  artifactName: "${productName} Portable ${version}.${ext}"
+
 nsis:
+  installerIcon: control-ui/public/favicon.ico
+  uninstallerIcon: control-ui/public/favicon.ico
   oneClick: false
   allowToChangeInstallationDirectory: true
+  allowElevation: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: OpenClaw Desktop
+  uninstallDisplayName: OpenClaw Desktop
+  # Output: release/OpenClaw Desktop Setup x.x.x.exe
+  artifactName: "${productName} Setup ${version}.${ext}"

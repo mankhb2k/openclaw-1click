@@ -38,6 +38,23 @@ export type ConfigState = {
   updateNotice: string | null;
 };
 
+type DesktopUpdateBridge = {
+  runUpdateOpenclaw: () => Promise<
+    { ok: true } | { ok: false; error?: string; stderrTail?: string }
+  >;
+};
+
+function getDesktopUpdateBridge(): DesktopUpdateBridge | undefined {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+  const bridge = (window as Window & { openclawDesktop?: DesktopUpdateBridge }).openclawDesktop;
+  if (bridge && typeof bridge.runUpdateOpenclaw === "function") {
+    return bridge;
+  }
+  return undefined;
+}
+
 export async function loadConfig(state: ConfigState) {
   if (!state.client || !state.connected) {
     return;
@@ -219,7 +236,34 @@ export async function applyConfig(state: ConfigState) {
 }
 
 export async function runUpdate(state: ConfigState) {
-  if (!state.client || !state.connected) {
+  if (!state.connected) {
+    return;
+  }
+
+  const desktopBridge = getDesktopUpdateBridge();
+  if (desktopBridge) {
+    state.updateRunning = true;
+    state.lastError = null;
+    state.updateNotice = null;
+    try {
+      const res = await desktopBridge.runUpdateOpenclaw();
+      if (!res.ok) {
+        const extra = res.stderrTail?.trim() ? `\n\n${res.stderrTail.trim()}` : "";
+        state.lastError = (res.error ?? "Cập nhật thất bại.") + extra;
+        return;
+      }
+      state.lastError = null;
+      state.updateNotice =
+        "Đã chạy npm run update:openclaw (kèm postinstall vá Desktop). Đóng hoàn toàn OpenClaw Desktop rồi mở lại để gateway nạp bản mới.";
+    } catch (err) {
+      state.lastError = String(err);
+    } finally {
+      state.updateRunning = false;
+    }
+    return;
+  }
+
+  if (!state.client) {
     return;
   }
   state.updateRunning = true;

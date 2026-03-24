@@ -373,6 +373,52 @@ describe("runUpdate", () => {
     });
   });
 
+  it("uses Electron desktop bridge when present", async () => {
+    const runUpdateOpenclaw = vi.fn().mockResolvedValue({ ok: true });
+    vi.stubGlobal("window", {
+      openclawDesktop: { runUpdateOpenclaw },
+    } as unknown as Window & { openclawDesktop: { runUpdateOpenclaw: typeof runUpdateOpenclaw } });
+    try {
+      const request = vi.fn();
+      const state = createState();
+      state.connected = true;
+      state.client = { request } as unknown as ConfigState["client"];
+
+      await runUpdate(state);
+
+      expect(runUpdateOpenclaw).toHaveBeenCalledOnce();
+      expect(request).not.toHaveBeenCalled();
+      expect(state.updateNotice).toContain("npm run update:openclaw");
+      expect(state.lastError).toBeNull();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("surfaces desktop bridge failure", async () => {
+    const runUpdateOpenclaw = vi.fn().mockResolvedValue({
+      ok: false,
+      error: "npm failed",
+      stderrTail: "ERR!",
+    });
+    vi.stubGlobal("window", {
+      openclawDesktop: { runUpdateOpenclaw },
+    } as unknown as Window & { openclawDesktop: { runUpdateOpenclaw: typeof runUpdateOpenclaw } });
+    try {
+      const state = createState();
+      state.connected = true;
+      state.client = null;
+
+      await runUpdate(state);
+
+      expect(state.lastError).toContain("npm failed");
+      expect(state.lastError).toContain("ERR!");
+      expect(state.updateNotice).toBeNull();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it("surfaces update errors returned in response payload", async () => {
     const request = vi.fn().mockResolvedValue({
       ok: false,

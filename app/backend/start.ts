@@ -13,6 +13,7 @@ import {
   ensureGatewayDesktopAuth,
   resolveDesktopPaths,
 } from './config';
+import { resolveSpawnCwd } from '../shared/spawn-cwd';
 import { allocateGatewayPort, waitForTcpPort } from './ports';
 import { registerChildProcess, shutdownChildren } from './process-registry';
 
@@ -29,6 +30,24 @@ const ENV_OPENCLAW_CLI = 'OPENCLAW_CLI_SCRIPT';
 const ENV_SEED_WORKSPACE = 'OPENCLAW_SEED_WORKSPACE';
 /** Optional: absolute path to Node.js 22.12+ for gateway only (when Electron still ships Node 20). */
 const ENV_GATEWAY_NODE = 'OPENCLAW_GATEWAY_NODE';
+/** Set by Electron main so gateway spawn uses the real exe (fixes portable / Temp ENOENT). */
+const ENV_ELECTRON_RUNNER = 'OPENCLAW_ELECTRON_RUNNER';
+
+function resolveElectronExeForGateway(): string {
+  const fromEnv = process.env[ENV_ELECTRON_RUNNER]?.trim();
+  if (fromEnv && fs.existsSync(fromEnv)) {
+    try {
+      return fs.realpathSync(fromEnv);
+    } catch {
+      return fromEnv;
+    }
+  }
+  try {
+    return fs.realpathSync(process.execPath);
+  } catch {
+    return process.execPath;
+  }
+}
 
 function maybeSeedWorkspace(workspaceDir: string, seedDir: string | undefined): void {
   if (!seedDir || !fs.existsSync(seedDir)) return;
@@ -82,7 +101,7 @@ async function main(): Promise<void> {
   const gatewayTokenEnv = tokenForUrl.length > 0 ? tokenForUrl : undefined;
   const baseEnv = buildOpenClawEnv(paths, gatewayTokenEnv, appRoot);
 
-  const execPath = process.execPath;
+  const electronExe = resolveElectronExeForGateway();
   const nodeEnv: NodeJS.ProcessEnv = {
     ...baseEnv,
     ELECTRON_RUN_AS_NODE: '1',
@@ -91,13 +110,15 @@ async function main(): Promise<void> {
   const cliScript = resolveOpenClawCliScript();
   const gatewayNodeBin = process.env[ENV_GATEWAY_NODE]?.trim();
   const useSystemNodeForGateway = Boolean(gatewayNodeBin && fs.existsSync(gatewayNodeBin));
-  const gatewayRunner = useSystemNodeForGateway ? gatewayNodeBin! : execPath;
+  const gatewayRunner = useSystemNodeForGateway ? gatewayNodeBin! : electronExe;
   const gatewayEnv: NodeJS.ProcessEnv = { ...nodeEnv };
   if (useSystemNodeForGateway) {
     delete gatewayEnv.ELECTRON_RUN_AS_NODE;
   } else {
     gatewayEnv.ELECTRON_RUN_AS_NODE = '1';
   }
+
+  const gatewayCwd = resolveSpawnCwd(appRoot, electronExe);
 
   logLine(
     paths,
@@ -108,7 +129,7 @@ async function main(): Promise<void> {
     gatewayRunner,
     [cliScript, 'gateway', 'run', '--port', String(gatewayPort), '--allow-unconfigured'],
     {
-      cwd: appRoot,
+      cwd: gatewayCwd,
       env: gatewayEnv,
       stdio: ['ignore', 'pipe', 'pipe'],
       windowsHide: true,

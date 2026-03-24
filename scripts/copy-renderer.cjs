@@ -26,3 +26,11 @@ if (fs.existsSync(assetsSrc)) {
     }
   }
 }
+
+/** Window/taskbar .ico: single source = control-ui/public/favicon.ico (overrides app/assets copy). */
+const controlUiFaviconIco = path.join(root, 'control-ui', 'public', 'favicon.ico');
+const windowIcoDest = path.join(assetsDest, 'openclaw-window.ico');
+if (fs.existsSync(controlUiFaviconIco)) {
+  fs.mkdirSync(assetsDest, { recursive: true });
+  fs.copyFileSync(controlUiFaviconIco, windowIcoDest);
+}

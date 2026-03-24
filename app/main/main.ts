@@ -8,6 +8,7 @@ import {
   Menu,
   dialog,
   globalShortcut,
+  ipcMain,
   shell,
   type Event as ElectronEvent,
   type WebContents,
@@ -21,6 +22,9 @@ import { ENV_DATA_ROOT } from '../backend/config';
 import { runFirstLaunchOnboardingIfNeeded } from './onboard';
 import { ENV_DESKTOP_RESOURCES } from '../backend/config';
 import { resolveWindowIconPath } from './app-icon';
+import { resolveElectronRunnerPath } from './electron-runner';
+
+const ENV_ELECTRON_RUNNER = 'OPENCLAW_ELECTRON_RUNNER';
 
 /**
  * Smallest window size the user can resize to (matches Control UI layout floor).
@@ -140,7 +144,11 @@ function startBackendLauncher(dataRoot: string): void {
     ? path.join(process.resourcesPath, 'resources', 'workspace')
     : path.resolve(getProjectRoot(), 'resources', 'workspace');
 
-  backendLauncher = spawn(process.execPath, [startScript], {
+  const electronRunner = resolveElectronRunnerPath();
+  // Windows: cwd must be a real directory — never rely on default when paths contain spaces / asar.
+  const backendCwd = path.dirname(electronRunner);
+  backendLauncher = spawn(electronRunner, [startScript], {
+    cwd: backendCwd,
     env: {
       ...process.env,
       ELECTRON_RUN_AS_NODE: '1',
@@ -148,6 +156,7 @@ function startBackendLauncher(dataRoot: string): void {
       OPENCLAW_APP_ROOT: appRoot,
       OPENCLAW_CLI_SCRIPT: cliScript,
       OPENCLAW_SEED_WORKSPACE: fs.existsSync(seedWorkspace) ? seedWorkspace : '',
+      [ENV_ELECTRON_RUNNER]: electronRunner,
     },
     stdio: ['ignore', 'pipe', 'pipe'],
     windowsHide: true,
@@ -293,6 +302,67 @@ function wireControlUiExternalLinks(wc: WebContents, controlUiUrl: string): void
   });
 }
 
+function registerDesktopUpdateHandler(): void {
+  ipcMain.removeHandler('desktop:run-update-openclaw');
+  ipcMain.handle('desktop:run-update-openclaw', async () => {
+    if (app.isPackaged) {
+      return {
+        ok: false as const,
+        error:
+          'Bản cài đặt đóng gói không chạy npm từ giao diện. Hãy tải bản OpenClaw Desktop mới, hoặc dùng bản dev (mã nguồn) và chạy npm run update:openclaw trong thư mục dự án.',
+      };
+    }
+    const appRoot = getProjectRoot();
+    const pkgPath = path.join(appRoot, 'package.json');
+    if (!fs.existsSync(pkgPath)) {
+      return {
+        ok: false as const,
+        error: 'Không tìm thấy package.json tại thư mục ứng dụng.',
+      };
+    }
+
+    return await new Promise<{ ok: true } | { ok: false; error?: string; stderrTail?: string }>(
+      (resolve) => {
+        const child = spawn('npm', ['run', 'update:openclaw'], {
+          cwd: appRoot,
+          shell: true,
+          windowsHide: true,
+          env: { ...process.env },
+        });
+        let stderr = '';
+        let stdout = '';
+        child.stderr?.on('data', (c: Buffer) => {
+          stderr += c.toString();
+          if (stderr.length > 24_000) {
+            stderr = stderr.slice(-24_000);
+          }
+        });
+        child.stdout?.on('data', (c: Buffer) => {
+          stdout += c.toString();
+          if (stdout.length > 16_000) {
+            stdout = stdout.slice(-16_000);
+          }
+        });
+        child.on('error', (err) => {
+          resolve({ ok: false, error: err.message });
+        });
+        child.on('close', (code) => {
+          if (code === 0) {
+            resolve({ ok: true });
+            return;
+          }
+          const tail = (stderr.trim() || stdout.trim() || `exit ${code}`).slice(-4000);
+          resolve({
+            ok: false,
+            error: `npm run update:openclaw thất bại (mã ${code}).`,
+            stderrTail: tail,
+          });
+        });
+      },
+    );
+  });
+}
+
 function killBackendTree(): void {
   if (backendLauncher?.pid) {
     try {
@@ -322,6 +392,7 @@ async function createWindow(): Promise<void> {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
+      preload: path.join(__dirname, 'preload-control-ui.js'),
     },
   });
 
@@ -388,6 +459,7 @@ if (!gotLock) {
   });
 
   app.whenReady().then(() => {
+    registerDesktopUpdateHandler();
     buildApplicationMenu();
     registerGlobalShortcuts();
     const dataRoot = getDataRoot();
