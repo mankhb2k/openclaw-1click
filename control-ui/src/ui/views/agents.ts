@@ -1,5 +1,6 @@
 import { html, nothing } from "lit";
-import { renderUiSelect } from "../components/ui-select.ts";
+import { t } from "../../i18n/index";
+import { renderUiSelect } from "../components/ui-select";
 import type {
   AgentIdentityResult,
   AgentsFilesListResult,
@@ -9,15 +10,15 @@ import type {
   CronStatus,
   SkillStatusReport,
   ToolsCatalogResult,
-} from "../types.ts";
-import { renderAgentOverview } from "./agents-panels-overview.ts";
+} from "../types";
+import { renderAgentOverview } from "./agents-panels-overview";
 import {
   renderAgentFiles,
   renderAgentChannels,
   renderAgentCron,
-} from "./agents-panels-status-files.ts";
-import { renderAgentTools, renderAgentSkills } from "./agents-panels-tools-skills.ts";
-import { agentBadgeText, buildAgentContext, normalizeAgentLabel } from "./agents-utils.ts";
+} from "./agents-panels-status-files";
+import { renderAgentTools, renderAgentSkills } from "./agents-panels-tools-skills";
+import { agentBadgeText, buildAgentContext, normalizeAgentLabel } from "./agents-utils";
 
 export type AgentsPanel = "overview" | "files" | "tools" | "skills" | "channels" | "cron";
 
@@ -136,23 +137,25 @@ export function renderAgents(props: AgentsProps) {
     <div class="agents-layout">
       <section class="agents-toolbar">
         <div class="agents-toolbar-row">
-          <span class="agents-toolbar-label">Agent</span>
+          <span class="agents-toolbar-label">${t("agents.toolbarLabel")}</span>
           <div class="agents-control-row">
-            <div class="agents-control-select">
-              ${renderUiSelect({
-                className: "agents-select",
-                value: selectedId ?? "",
-                disabled: props.loading || agents.length === 0,
-                options:
-                  agents.length === 0
-                    ? [{ value: "", label: "No agents" }]
-                    : agents.map((agent) => ({
-                        value: agent.id,
-                        label: `${normalizeAgentLabel(agent)}${agentBadgeText(agent.id, defaultId) ? ` (${agentBadgeText(agent.id, defaultId)})` : ""}`,
-                      })),
-                onChange: (next) => props.onSelectAgent(next),
-              })}
-            </div>
+            ${renderUiSelect({
+              className: "agents-select",
+              value: selectedId ?? "",
+              disabled: props.loading || agents.length === 0,
+              options:
+                agents.length === 0
+                  ? [{ value: "", label: t("agents.noAgents") }]
+                  : agents.map((agent) => ({
+                      value: agent.id,
+                      label: `${normalizeAgentLabel(agent)}${
+                        agentBadgeText(agent.id, defaultId)
+                          ? ` (${t("agents.badgeDefault")})`
+                          : ""
+                      }`,
+                    })),
+              onChange: (next) => props.onSelectAgent(next),
+            })}
             <div class="agents-control-actions">
               ${
                 selectedAgent
@@ -172,7 +175,7 @@ export function renderAgents(props: AgentsProps) {
                                   <button type="button" @click=${() => {
                                     void navigator.clipboard.writeText(selectedAgent.id);
                                     actionsMenuOpen = false;
-                                  }}>Copy agent ID</button>
+                                  }}>${t("agents.copyAgentId")}</button>
                                   <button
                                     type="button"
                                     ?disabled=${Boolean(defaultId && selectedAgent.id === defaultId)}
@@ -181,7 +184,7 @@ export function renderAgents(props: AgentsProps) {
                                       actionsMenuOpen = false;
                                     }}
                                   >
-                                    ${defaultId && selectedAgent.id === defaultId ? "Already default" : "Set as default"}
+                                    ${defaultId && selectedAgent.id === defaultId ? t("agents.alreadyDefault") : t("agents.setAsDefault")}
                                   </button>
                                 </div>
                               `
@@ -192,7 +195,7 @@ export function renderAgents(props: AgentsProps) {
                   : nothing
               }
               <button class="btn btn--sm agents-refresh-btn" ?disabled=${props.loading} @click=${props.onRefresh}>
-                ${props.loading ? "Loading…" : "Refresh"}
+                ${props.loading ? t("agents.loading") : t("channels.actions.refresh")}
               </button>
             </div>
           </div>
@@ -208,8 +211,8 @@ export function renderAgents(props: AgentsProps) {
           !selectedAgent
             ? html`
                 <div class="card">
-                  <div class="card-title">Select an agent</div>
-                  <div class="card-sub">Pick an agent to inspect its workspace and tools.</div>
+                  <div class="card-title">${t("agents.emptyTitle")}</div>
+                  <div class="card-sub">${t("agents.emptySub")}</div>
                 </div>
               `
             : html`
@@ -344,29 +347,41 @@ export function renderAgents(props: AgentsProps) {
 
 let actionsMenuOpen = false;
 
+function agentPanelTabLabel(id: AgentsPanel): string {
+  switch (id) {
+    case "overview":
+      return t("tabs.overview");
+    case "files":
+      return t("tabs.files");
+    case "tools":
+      return t("tabs.tools");
+    case "skills":
+      return t("tabs.skills");
+    case "channels":
+      return t("tabs.channels");
+    case "cron":
+      return t("agents.cronTab");
+    default:
+      return id;
+  }
+}
+
 function renderAgentTabs(
   active: AgentsPanel,
   onSelect: (panel: AgentsPanel) => void,
   counts: Record<string, number | null>,
 ) {
-  const tabs: Array<{ id: AgentsPanel; label: string }> = [
-    { id: "overview", label: "Overview" },
-    { id: "files", label: "Files" },
-    { id: "tools", label: "Tools" },
-    { id: "skills", label: "Skills" },
-    { id: "channels", label: "Channels" },
-    { id: "cron", label: "Cron Jobs" },
-  ];
+  const tabs: AgentsPanel[] = ["overview", "files", "tools", "skills", "channels", "cron"];
   return html`
     <div class="agent-tabs">
       ${tabs.map(
-        (tab) => html`
+        (id) => html`
           <button
-            class="agent-tab ${active === tab.id ? "active" : ""}"
+            class="agent-tab ${active === id ? "active" : ""}"
             type="button"
-            @click=${() => onSelect(tab.id)}
+            @click=${() => onSelect(id)}
           >
-            ${tab.label}${counts[tab.id] != null ? html`<span class="agent-tab-count">${counts[tab.id]}</span>` : nothing}
+            ${agentPanelTabLabel(id)}${counts[id] != null ? html`<span class="agent-tab-count">${counts[id]}</span>` : nothing}
           </button>
         `,
       )}

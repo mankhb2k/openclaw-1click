@@ -129,13 +129,14 @@ export async function runExec(
       execArgs = args;
     }
     const useCmdWrapper = isWindowsBatchCommand(execCommand);
+    const winHide = process.platform === "win32" ? { windowsHide: true as const } : {};
     const { stdout, stderr } = useCmdWrapper
       ? await execFileAsync(
           process.env.ComSpec ?? "cmd.exe",
           ["/d", "/s", "/c", buildCmdExeCommandLine(execCommand, execArgs)],
-          { ...options, windowsVerbatimArguments: true },
+          { ...options, windowsVerbatimArguments: true, ...winHide },
         )
-      : await execFileAsync(execCommand, execArgs, options);
+      : await execFileAsync(execCommand, execArgs, { ...options, ...winHide });
     if (shouldLogVerbose()) {
       if (stdout.trim()) {
         logDebug(stdout.trim());
@@ -234,6 +235,7 @@ export async function runCommandWithTimeout(
       cwd,
       env: resolvedEnv,
       windowsVerbatimArguments: useCmdWrapper ? true : windowsVerbatimArguments,
+      ...(process.platform === "win32" ? { windowsHide: true } : {}),
       ...(shouldSpawnWithShell({ resolvedCommand, platform: process.platform })
         ? { shell: true }
         : {}),

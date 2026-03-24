@@ -36,6 +36,7 @@ function createState(): ConfigState {
     connected: false,
     lastError: null,
     updateRunning: false,
+    updateNotice: null,
   };
 }
 
@@ -384,6 +385,37 @@ describe("runUpdate", () => {
 
     await runUpdate(state);
 
-    expect(state.lastError).toBe("Update error: network unavailable");
+    expect(state.lastError).toContain("network unavailable");
+    expect(state.lastError).toMatch(/Cập nhật thất bại/);
+  });
+
+  it("treats skipped not-git-install as failure with guidance", async () => {
+    const request = vi.fn().mockResolvedValue({
+      ok: true,
+      result: { status: "skipped", reason: "not-git-install" },
+    });
+    const state = createState();
+    state.connected = true;
+    state.client = { request } as unknown as ConfigState["client"];
+
+    await runUpdate(state);
+
+    expect(state.updateNotice).toBeNull();
+    expect(state.lastError).toContain("npm run update:openclaw");
+  });
+
+  it("shows notice only when update result status is ok", async () => {
+    const request = vi.fn().mockResolvedValue({
+      ok: true,
+      result: { status: "ok", before: { version: "1" }, after: { version: "2" } },
+    });
+    const state = createState();
+    state.connected = true;
+    state.client = { request } as unknown as ConfigState["client"];
+
+    await runUpdate(state);
+
+    expect(state.lastError).toBeNull();
+    expect(state.updateNotice).toContain("Đã chạy cập nhật");
   });
 });

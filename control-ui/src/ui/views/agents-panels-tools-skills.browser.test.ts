@@ -1,6 +1,6 @@
 import { render } from "lit";
 import { describe, expect, it } from "vitest";
-import { renderAgentTools } from "./agents-panels-tools-skills.ts";
+import { renderAgentTools } from "./agents-panels-tools-skills";
 
 function createBaseParams(overrides: Partial<Parameters<typeof renderAgentTools>[0]> = {}) {
   return {

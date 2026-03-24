@@ -1,7 +1,8 @@
 /**
  * First-launch onboarding: local BrowserWindow + non-interactive `openclaw onboard`.
  */
-import { BrowserWindow, ipcMain, app, shell } from 'electron';
+import { BrowserWindow, ipcMain, app, shell, type WebContents } from 'electron';
+import { resolveWindowIconPath } from './app-icon';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -190,7 +191,7 @@ function runOnboardCli(opts: RunOnboardCliInput): Promise<{ ok: boolean; output:
 
   const tokenEnv = gatewayToken.length > 0 ? gatewayToken : undefined;
   const env: NodeJS.ProcessEnv = {
-    ...buildOpenClawEnv(paths, tokenEnv),
+    ...buildOpenClawEnv(paths, tokenEnv, appRoot),
     OPENCLAW_APP_ROOT: appRoot,
   };
   if (useSystemNode) {
@@ -241,6 +242,30 @@ function isAllowedExternalHttpUrl(raw: string): boolean {
   } catch {
     return false;
   }
+}
+
+/** Trang onboard (file://): mở http(s) trong trình duyệt hệ thống, không dùng cửa sổ Electron mới. */
+function wireOnboardExternalLinks(wc: WebContents): void {
+  wc.setWindowOpenHandler(({ url }) => {
+    if (isAllowedExternalHttpUrl(url)) {
+      void shell.openExternal(url);
+    }
+    return { action: 'deny' };
+  });
+  wc.on('will-navigate', (event, url) => {
+    try {
+      const u = new URL(url);
+      if (u.protocol === 'file:') {
+        return;
+      }
+      if (isAllowedExternalHttpUrl(url)) {
+        event.preventDefault();
+        void shell.openExternal(url);
+      }
+    } catch {
+      /* ignore malformed URL */
+    }
+  });
 }
 
 type OnboardHardwareInfo = {
@@ -535,6 +560,7 @@ export async function runFirstLaunchOnboardingIfNeeded(opts: {
       },
     );
 
+    const windowIcon = resolveWindowIconPath();
     win = new BrowserWindow({
       width: 560,
       height: 820,
@@ -544,6 +570,7 @@ export async function runFirstLaunchOnboardingIfNeeded(opts: {
       fullscreenable: false,
       title: 'OpenClaw — Thiết lập lần đầu',
       show: false,
+      ...(windowIcon ? { icon: windowIcon } : {}),
       webPreferences: {
         preload: preloadOnboardPath(),
         contextIsolation: true,
@@ -560,6 +587,8 @@ export async function runFirstLaunchOnboardingIfNeeded(opts: {
         app.quit();
       }
     });
+
+    wireOnboardExternalLinks(win.webContents);
 
     void win.loadFile(htmlPath);
   });

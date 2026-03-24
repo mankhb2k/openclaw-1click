@@ -1,21 +1,21 @@
 import { html, nothing } from "lit";
 import { formatDurationCompact } from "@openclaw/infra/format-time/format-duration.ts";
-import { t } from "../../i18n/index.ts";
-import { renderUiSelect } from "../components/ui-select.ts";
+import { t } from "../../i18n/index";
+import { renderUiSelect } from "../components/ui-select";
 import {
   formatCost,
   formatDayLabel,
   formatFullDate,
   formatTokens,
   UsageInsightStats,
-} from "./usage-metrics.ts";
+} from "./usage-metrics";
 import {
   UsageAggregates,
   UsageColumnId,
   UsageSessionEntry,
   UsageTotals,
   CostDailyEntry,
-} from "./usageTypes.ts";
+} from "./usageTypes";
 
 function pct(part: number, total: number): number {
   if (total === 0) {

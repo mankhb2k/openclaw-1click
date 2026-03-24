@@ -206,7 +206,8 @@ export function ensureDataLayout(paths: DesktopPaths): void {
  */
 export function buildOpenClawEnv(
   paths: DesktopPaths,
-  gatewayToken: string | undefined
+  gatewayToken: string | undefined,
+  desktopAppRoot?: string,
 ): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = {
     ...process.env,
@@ -219,6 +220,10 @@ export function buildOpenClawEnv(
   };
   if (gatewayToken && gatewayToken.length > 0) {
     env.OPENCLAW_GATEWAY_TOKEN = gatewayToken;
+  }
+  const root = desktopAppRoot?.trim();
+  if (root) {
+    env.OPENCLAW_DESKTOP_APP_ROOT = root;
   }
   return env;
 }

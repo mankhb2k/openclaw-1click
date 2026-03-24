@@ -1,6 +1,6 @@
 import { render } from "lit";
 import { describe, expect, it } from "vitest";
-import { renderAgents, type AgentsProps } from "./agents.ts";
+import { renderAgents, type AgentsProps } from "./agents";
 
 function createSkill() {
   return {

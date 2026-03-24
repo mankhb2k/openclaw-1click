@@ -1,7 +1,7 @@
 import { html, nothing } from "lit";
-import { t } from "../../i18n/index.ts";
-import { renderUiSelect } from "../components/ui-select.ts";
-import { extractQueryTerms, filterSessionsByQuery } from "../usage-helpers.ts";
+import { t } from "../../i18n/index";
+import { renderUiSelect } from "../components/ui-select";
+import { extractQueryTerms, filterSessionsByQuery } from "../usage-helpers";
 import {
   buildAggregatesFromSessions,
   buildPeakErrorHours,
@@ -12,7 +12,7 @@ import {
   getZonedHour,
   renderUsageMosaic,
   setToHourEnd,
-} from "./usage-metrics.ts";
+} from "./usage-metrics";
 import {
   addQueryToken,
   applySuggestionToQuery,
@@ -23,15 +23,15 @@ import {
   normalizeQueryText,
   removeQueryToken,
   setQueryTokensForKey,
-} from "./usage-query.ts";
-import { renderSessionDetailPanel } from "./usage-render-details.ts";
+} from "./usage-query";
+import { renderSessionDetailPanel } from "./usage-render-details";
 import {
   renderCostBreakdownCompact,
   renderDailyChartCompact,
   renderFilterChips,
   renderSessionsCard,
   renderUsageInsights,
-} from "./usage-render-overview.ts";
+} from "./usage-render-overview";
 import {
   SessionLogEntry,
   SessionLogRole,
@@ -40,7 +40,7 @@ import {
   UsageProps,
   UsageSessionEntry,
   UsageTotals,
-} from "./usageTypes.ts";
+} from "./usageTypes";
 
 export type { UsageColumnId, SessionLogEntry, SessionLogRole };
 

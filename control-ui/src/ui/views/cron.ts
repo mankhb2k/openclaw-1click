@@ -1,17 +1,17 @@
 import { html, nothing } from "lit";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { t } from "../../i18n/index.ts";
-import { renderUiSelect } from "../components/ui-select.ts";
+import { t } from "../../i18n/index";
+import { renderUiSelect } from "../components/ui-select";
 import type {
   CronFieldErrors,
   CronFieldKey,
   CronJobsLastStatusFilter,
   CronJobsScheduleKindFilter,
-} from "../controllers/cron.ts";
-import { formatRelativeTimestamp, formatMs } from "../format.ts";
-import { pathForTab } from "../navigation.ts";
-import { formatCronSchedule, formatNextRun } from "../presenter.ts";
-import type { ChannelUiMetaEntry, CronJob, CronRunLogEntry, CronStatus } from "../types.ts";
+} from "../controllers/cron";
+import { formatRelativeTimestamp, formatMs } from "../format";
+import { pathForTab } from "../navigation";
+import { formatCronSchedule, formatNextRun } from "../presenter";
+import type { ChannelUiMetaEntry, CronJob, CronRunLogEntry, CronStatus } from "../types";
 import type {
   CronDeliveryStatus,
   CronJobsEnabledFilter,
@@ -20,8 +20,8 @@ import type {
   CronJobsSortBy,
   CronRunsStatusFilter,
   CronSortDir,
-} from "../types.ts";
-import type { CronFormState } from "../ui-types.ts";
+} from "../types";
+import type { CronFormState } from "../ui-types";
 
 export type CronProps = {
   basePath: string;

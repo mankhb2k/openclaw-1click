@@ -1,5 +1,6 @@
 import { html, nothing } from "lit";
-import { formatRelativeTimestamp } from "../format.ts";
+import { t } from "../../i18n/index";
+import { formatRelativeTimestamp } from "../format";
 import type {
   ChannelAccountSnapshot,
   ChannelUiMetaEntry,
@@ -13,18 +14,18 @@ import type {
   SlackStatus,
   TelegramStatus,
   WhatsAppStatus,
-} from "../types.ts";
-import { renderChannelConfigSection } from "./channels.config.ts";
-import { renderDiscordCard } from "./channels.discord.ts";
-import { renderGoogleChatCard } from "./channels.googlechat.ts";
-import { renderIMessageCard } from "./channels.imessage.ts";
-import { renderNostrCard } from "./channels.nostr.ts";
-import { channelEnabled, renderChannelAccountCount } from "./channels.shared.ts";
-import { renderSignalCard } from "./channels.signal.ts";
-import { renderSlackCard } from "./channels.slack.ts";
-import { renderTelegramCard } from "./channels.telegram.ts";
-import type { ChannelKey, ChannelsChannelData, ChannelsProps } from "./channels.types.ts";
-import { renderWhatsAppCard } from "./channels.whatsapp.ts";
+} from "../types";
+import { renderChannelConfigSection } from "./channels.config";
+import { renderDiscordCard } from "./channels.discord";
+import { renderGoogleChatCard } from "./channels.googlechat";
+import { renderIMessageCard } from "./channels.imessage";
+import { renderNostrCard } from "./channels.nostr";
+import { channelEnabled, renderChannelAccountCount } from "./channels.shared";
+import { renderSignalCard } from "./channels.signal";
+import { renderSlackCard } from "./channels.slack";
+import { renderTelegramCard } from "./channels.telegram";
+import type { ChannelKey, ChannelsChannelData, ChannelsProps } from "./channels.types";
+import { renderWhatsAppCard } from "./channels.whatsapp";
 
 export function renderChannels(props: ChannelsProps) {
   const channels = props.snapshot?.channels as Record<string, unknown> | null;
@@ -70,10 +71,10 @@ export function renderChannels(props: ChannelsProps) {
     <section class="card" style="margin-top: 18px;">
       <div class="row" style="justify-content: space-between;">
         <div>
-          <div class="card-title">Channel health</div>
-          <div class="card-sub">Channel status snapshots from the gateway.</div>
+          <div class="card-title">${t("channels.page.healthTitle")}</div>
+          <div class="card-sub">${t("channels.page.healthSub")}</div>
         </div>
-        <div class="muted">${props.lastSuccessAt ? formatRelativeTimestamp(props.lastSuccessAt) : "n/a"}</div>
+        <div class="muted">${props.lastSuccessAt ? formatRelativeTimestamp(props.lastSuccessAt) : t("common.na")}</div>
       </div>
       ${
         props.lastError
@@ -83,7 +84,7 @@ export function renderChannels(props: ChannelsProps) {
           : nothing
       }
       <pre class="code-block" style="margin-top: 12px;">
-${props.snapshot ? JSON.stringify(props.snapshot, null, 2) : "No snapshot yet."}
+${props.snapshot ? JSON.stringify(props.snapshot, null, 2) : t("channels.page.noSnapshot")}
       </pre>
     </section>
   `;
@@ -194,7 +195,7 @@ function renderGenericChannelCard(
   return html`
     <div class="card">
       <div class="card-title">${label}</div>
-      <div class="card-sub">Channel status and configuration.</div>
+      <div class="card-sub">${t("channels.cardSub.generic")}</div>
       ${accountCountLabel}
 
       ${
@@ -207,16 +208,16 @@ function renderGenericChannelCard(
           : html`
             <div class="status-list" style="margin-top: 16px;">
               <div>
-                <span class="label">Configured</span>
-                <span>${configured == null ? "n/a" : configured ? "Yes" : "No"}</span>
+                <span class="label">${t("channels.labels.configured")}</span>
+                <span>${channelTriState(configured)}</span>
               </div>
               <div>
-                <span class="label">Running</span>
-                <span>${running == null ? "n/a" : running ? "Yes" : "No"}</span>
+                <span class="label">${t("channels.labels.running")}</span>
+                <span>${channelTriState(running)}</span>
               </div>
               <div>
-                <span class="label">Connected</span>
-                <span>${connected == null ? "n/a" : connected ? "Yes" : "No"}</span>
+                <span class="label">${t("channels.labels.connected")}</span>
+                <span>${channelTriState(connected)}</span>
               </div>
             </div>
           `
@@ -258,35 +259,37 @@ function hasRecentActivity(account: ChannelAccountSnapshot): boolean {
   return Date.now() - account.lastInboundAt < RECENT_ACTIVITY_THRESHOLD_MS;
 }
 
-function deriveRunningStatus(account: ChannelAccountSnapshot): "Yes" | "No" | "Active" {
-  if (account.running) {
-    return "Yes";
+function channelTriState(value: boolean | null | undefined): string {
+  if (value == null) {
+    return t("common.na");
   }
-  // If we have recent inbound activity, the channel is effectively running
-  if (hasRecentActivity(account)) {
-    return "Active";
-  }
-  return "No";
+  return value ? t("channels.status.yes") : t("channels.status.no");
 }
 
-function deriveConnectedStatus(account: ChannelAccountSnapshot): "Yes" | "No" | "Active" | "n/a" {
+function deriveRunningLabel(account: ChannelAccountSnapshot): string {
+  if (account.running) {
+    return t("channels.status.yes");
+  }
+  if (hasRecentActivity(account)) {
+    return t("channels.status.active");
+  }
+  return t("channels.status.no");
+}
+
+function deriveConnectedLabel(account: ChannelAccountSnapshot): string {
   if (account.connected === true) {
-    return "Yes";
+    return t("channels.status.yes");
   }
   if (account.connected === false) {
-    return "No";
+    return t("channels.status.no");
   }
-  // If connected is null/undefined but we have recent activity, show as active
   if (hasRecentActivity(account)) {
-    return "Active";
+    return t("channels.status.active");
   }
-  return "n/a";
+  return t("common.na");
 }
 
 function renderGenericAccount(account: ChannelAccountSnapshot) {
-  const runningStatus = deriveRunningStatus(account);
-  const connectedStatus = deriveConnectedStatus(account);
-
   return html`
     <div class="account-card">
       <div class="account-card-header">
@@ -295,20 +298,20 @@ function renderGenericAccount(account: ChannelAccountSnapshot) {
       </div>
       <div class="status-list account-card-status">
         <div>
-          <span class="label">Running</span>
-          <span>${runningStatus}</span>
+          <span class="label">${t("channels.labels.running")}</span>
+          <span>${deriveRunningLabel(account)}</span>
         </div>
         <div>
-          <span class="label">Configured</span>
-          <span>${account.configured ? "Yes" : "No"}</span>
+          <span class="label">${t("channels.labels.configured")}</span>
+          <span>${account.configured ? t("channels.status.yes") : t("channels.status.no")}</span>
         </div>
         <div>
-          <span class="label">Connected</span>
-          <span>${connectedStatus}</span>
+          <span class="label">${t("channels.labels.connected")}</span>
+          <span>${deriveConnectedLabel(account)}</span>
         </div>
         <div>
-          <span class="label">Last inbound</span>
-          <span>${account.lastInboundAt ? formatRelativeTimestamp(account.lastInboundAt) : "n/a"}</span>
+          <span class="label">${t("channels.labels.lastInbound")}</span>
+          <span>${account.lastInboundAt ? formatRelativeTimestamp(account.lastInboundAt) : t("common.na")}</span>
         </div>
         ${
           account.lastError

@@ -1,9 +1,9 @@
 import { html } from "lit";
-import { t } from "../../i18n/index.ts";
-import type { AppViewState } from "../app-view-state.ts";
-import { icons } from "../icons.ts";
-import { normalizeBasePath } from "../navigation.ts";
-import { agentLogoUrl } from "./agents-utils.ts";
+import { t } from "../../i18n/index";
+import type { AppViewState } from "../app-view-state";
+import { icons } from "../icons";
+import { normalizeBasePath } from "../navigation";
+import { agentLogoUrl } from "./agents-utils";
 
 export function renderLoginGate(state: AppViewState) {
   const basePath = normalizeBasePath(state.basePath ?? "");

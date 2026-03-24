@@ -669,10 +669,13 @@
 }
 
 .field input:focus,
+.field input:focus-visible,
 .field textarea:focus,
-.field select:focus {
-  border-color: var(--ring);
-  box-shadow: var(--focus-ring);
+.field textarea:focus-visible,
+.field select:focus,
+.field select:focus-visible {
+  border-color: var(--focus-input-border);
+  box-shadow: inset 0 1px 0 var(--card-highlight);
 }
 
 .field select {
@@ -739,8 +742,12 @@
   background: color-mix(in srgb, var(--bg-hover) 82%, transparent);
 }
 
-.ui-select[open] .ui-select__trigger {
-  box-shadow: var(--focus-ring);
+.ui-select[open] .ui-select__trigger,
+.ui-select__trigger:focus,
+.ui-select__trigger:focus-visible {
+  outline: none;
+  border-color: var(--focus-input-border);
+  box-shadow: inset 0 1px 0 var(--card-highlight);
 }
 
 .ui-select__menu {
@@ -1331,6 +1338,17 @@
 :root[data-theme-mode="light"] .field select {
   background: var(--card);
   border-color: var(--input);
+}
+
+/* Light: base rule above beats `.field input:focus` (higher specificity) — restore accent border when focused */
+:root[data-theme-mode="light"] .field input:focus,
+:root[data-theme-mode="light"] .field input:focus-visible,
+:root[data-theme-mode="light"] .field textarea:focus,
+:root[data-theme-mode="light"] .field textarea:focus-visible,
+:root[data-theme-mode="light"] .field select:focus,
+:root[data-theme-mode="light"] .field select:focus-visible {
+  border-color: var(--focus-input-border);
+  box-shadow: inset 0 1px 0 var(--card-highlight);
 }
 
 :root[data-theme-mode="light"] .btn {
@@ -2013,9 +2031,10 @@
   transition: border-color var(--duration-fast) ease;
 }
 
-.data-table-search input:focus {
-  border-color: var(--border-strong);
-  box-shadow: var(--focus-ring);
+.data-table-search input:focus,
+.data-table-search input:focus-visible {
+  border-color: var(--focus-input-border);
+  box-shadow: none;
 }
 
 .data-table-search input::placeholder {
@@ -2322,9 +2341,10 @@ td.data-table-key-col {
   transition: border-color var(--duration-fast) ease;
 }
 
-.field-inline input:focus {
-  border-color: var(--border-strong);
-  box-shadow: var(--focus-ring);
+.field-inline input:focus,
+.field-inline input:focus-visible {
+  border-color: var(--focus-input-border);
+  box-shadow: none;
 }
 
 .field-inline.checkbox {
@@ -3117,38 +3137,32 @@ td.data-table-key-col {
   min-width: 0;
 }
 
-.agents-control-select {
+/* Agent dropdown = ui-select (<details>); legacy .agents-select styled a native <select> and caused a double border around .ui-select__trigger. */
+.agents-control-row > .ui-select.agents-select {
   flex: 1;
   min-width: 0;
   max-width: 280px;
+  width: 100%;
 }
 
-.agents-select {
-  width: 100%;
-  padding: 7px 32px 7px 10px;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-md);
-  background-color: var(--bg-accent);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
+.ui-select.agents-select {
+  padding: 0;
+  border: none;
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
+  outline: none;
+  cursor: default;
+}
+
+.ui-select.agents-select .ui-select__trigger {
   font-size: 13px;
   font-weight: 500;
-  cursor: pointer;
-  outline: none;
-  appearance: none;
-  transition:
-    border-color var(--duration-fast) ease,
-    box-shadow var(--duration-fast) ease;
+  background-color: var(--bg-accent);
 }
 
-:root[data-theme-mode="light"] .agents-select {
+:root[data-theme-mode="light"] .ui-select.agents-select .ui-select__trigger {
   background-color: white;
-}
-
-.agents-select:focus {
-  border-color: var(--accent);
-  box-shadow: var(--focus-ring);
 }
 
 .agents-control-actions {
@@ -3232,6 +3246,8 @@ td.data-table-key-col {
   gap: 14px;
   flex: 1 1 auto;
   min-height: 0;
+  /* Keep tab row height to content; default grid stretch was stretching row 1 and tab buttons. */
+  align-content: start;
 }
 
 .agent-list {
@@ -3334,6 +3350,8 @@ td.data-table-key-col {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
   padding-bottom: 2px;
   border-bottom: 1px solid var(--border);
 }
@@ -3347,6 +3365,8 @@ td.data-table-key-col {
   color: var(--muted);
   background: transparent;
   cursor: pointer;
+  align-self: flex-start;
+  flex: 0 0 auto;
   transition:
     border-color var(--duration-fast) ease,
     background var(--duration-fast) ease,
@@ -3446,8 +3466,8 @@ td.data-table-key-col {
 }
 
 .agent-chip-input:focus-within {
-  border-color: var(--accent);
-  box-shadow: var(--focus-ring);
+  border-color: var(--focus-input-border);
+  box-shadow: none;
 }
 
 .agent-chip-input input {
@@ -3665,13 +3685,63 @@ td.data-table-key-col {
 .agent-skill-row {
   align-items: flex-start;
   gap: 18px;
+  /* Per-card container: stack main/meta when the card is narrow (e.g. 2-col skills grid) */
+  container-type: inline-size;
+  container-name: skill-card;
 }
 
 .agent-skill-row .list-meta {
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
-  min-width: auto;
+  /* min-width: 0 lets the meta column stay inside its grid track so wide buttons don’t paint over list-main */
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.agent-skill-row .list-meta.skills-page-skill-meta {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.skills-page-skill-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 100%;
+}
+
+.skills-page-skill-actions .btn {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.35;
+  max-width: 100%;
+}
+
+.skills-page-skill-toggle {
+  flex-shrink: 0;
+}
+
+@container skill-card (max-width: 520px) {
+  .skills-page-skill-card.agent-skill-row {
+    grid-template-columns: 1fr;
+  }
+
+  .skills-page-skill-card .list-meta.skills-page-skill-meta {
+    align-items: stretch;
+    max-width: none;
+    width: 100%;
+    text-align: left;
+  }
+
+  .skills-page-skill-card .skills-page-skill-actions {
+    justify-content: flex-start;
+  }
 }
 
 .skills-grid {
@@ -3709,7 +3779,7 @@ td.data-table-key-col {
     gap: 6px;
   }
 
-  .agents-control-select {
+  .agents-control-row > .ui-select.agents-select {
     max-width: none;
   }
 

@@ -70,6 +70,8 @@
   --focus: rgba(255, 92, 92, 0.2);
   --focus-ring: 0 0 0 2px var(--bg), 0 0 0 3px color-mix(in srgb, var(--ring) 60%, transparent);
   --focus-glow: 0 0 0 2px var(--bg), 0 0 0 3px var(--ring), 0 0 16px var(--accent-glow);
+  /* Softer than full --ring for text fields (buttons/tabs keep --ring) */
+  --focus-input-border: color-mix(in srgb, var(--ring) 52%, var(--input));
 
   /* Grid */
   --grid-line: rgba(255, 255, 255, 0.03);
@@ -177,6 +179,7 @@
   --focus: rgba(220, 38, 38, 0.15);
   --focus-ring: 0 0 0 2px var(--bg), 0 0 0 3px color-mix(in srgb, var(--ring) 50%, transparent);
   --focus-glow: 0 0 0 2px var(--bg), 0 0 0 3px var(--ring), 0 0 12px var(--accent-glow);
+  --focus-input-border: color-mix(in srgb, var(--ring) 46%, var(--border));
 
   --grid-line: rgba(0, 0, 0, 0.04);
 
@@ -593,4 +596,13 @@ select {
 :focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
+}
+
+/* Text fields / selects: no outer halo — components set a 1px accent border on focus */
+input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not(
+    [type="radio"]
+  ):not([type="range"]):not([type="file"]):not([type="image"]):focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  box-shadow: none;
 }

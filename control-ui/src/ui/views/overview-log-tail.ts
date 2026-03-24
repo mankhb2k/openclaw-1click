@@ -1,6 +1,6 @@
 import { html, nothing } from "lit";
-import { t } from "../../i18n/index.ts";
-import { icons } from "../icons.ts";
+import { t } from "../../i18n/index";
+import { icons } from "../icons";
 
 /** Strip ANSI escape codes (SGR, OSC-8) for readable log display. */
 function stripAnsi(text: string): string {

@@ -1,4 +1,4 @@
-import type { SkillStatusEntry } from "../types.ts";
+import type { SkillStatusEntry } from "../types";
 
 export type SkillGroup = {
   id: string;

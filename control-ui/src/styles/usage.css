@@ -160,7 +160,12 @@
   min-height: 96px;
   border-radius: 16px;
   border: 1px solid var(--border);
-  background: linear-gradient(90deg, var(--bg-muted) 20%, var(--bg-hover) 50%, var(--bg-muted) 80%);
+  background: linear-gradient(
+    90deg,
+    var(--bg-muted) 20%,
+    var(--bg-hover) 50%,
+    var(--bg-muted) 80%
+  );
   background-size: 200% 100%;
   animation: usage-shimmer 1.35s ease-in-out infinite;
 }
@@ -252,13 +257,18 @@
 }
 
 .usage-date-input:focus,
+.usage-date-input:focus-visible,
 .usage-select:focus,
+.usage-select:focus-visible,
 .usage-query-input:focus,
+.usage-query-input:focus-visible,
 .usage-filters-inline select:focus,
-.usage-filters-inline input[type="text"]:focus {
+.usage-filters-inline select:focus-visible,
+.usage-filters-inline input[type="text"]:focus,
+.usage-filters-inline input[type="text"]:focus-visible {
   outline: none;
-  border-color: color-mix(in srgb, var(--accent) 65%, var(--border));
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: var(--focus-input-border);
+  box-shadow: none;
 }
 
 .usage-separator,

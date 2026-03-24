@@ -35,7 +35,7 @@ export const vi: TranslationMap = {
     usage: "Sử dụng",
     cron: "Cron",
     skills: "Kỹ năng",
-    nodes: "Nút",
+    nodes: "Nodes",
     chat: "Trò chuyện",
     config: "Cấu hình",
     communications: "Liên lạc",
@@ -45,12 +45,14 @@ export const vi: TranslationMap = {
     aiAgents: "AI & Agent",
     debug: "Gỡ lỗi",
     logs: "Nhật ký",
+    files: "Tệp",
+    tools: "Công cụ",
   },
   subtitles: {
     agents: "Không gian làm việc, công cụ, danh tính.",
     overview: "Trạng thái, điểm vào, sức khỏe.",
     channels: "Kênh và cài đặt.",
-    instances: "Client và nút đã kết nối.",
+    instances: "Client và Nodes đã kết nối.",
     sessions: "Phiên đang hoạt động và mặc định.",
     usage: "Token API và chi phí.",
     cron: "Đánh thức và chạy định kỳ.",
@@ -620,6 +622,2283 @@ export const vi: TranslationMap = {
       systemEventTextRequired: "Cần văn bản sự kiện hệ thống.",
       agentMessageRequiredShort: "Cần tin agent.",
       nameRequiredShort: "Cần tên.",
+    },
+  },
+  channels: {
+    page: {
+      healthTitle: "Sức khỏe kênh",
+      healthSub: "Ảnh chụp trạng thái kênh từ gateway.",
+      noSnapshot: "Chưa có ảnh chụp.",
+    },
+    cardSub: {
+      generic: "Trạng thái và cấu hình kênh.",
+      whatsapp: "Liên kết WhatsApp Web và theo dõi sức khỏe kết nối.",
+      telegram: "Trạng thái bot và cấu hình kênh.",
+      discord: "Trạng thái bot và cấu hình kênh.",
+      slack: "Trạng thái socket mode và cấu hình kênh.",
+      signal: "Trạng thái signal-cli và cấu hình kênh.",
+      imessage: "Trạng thái cầu nối macOS và cấu hình kênh.",
+      googlechat: "Trạng thái webhook Chat API và cấu hình kênh.",
+      nostr: "Tin nhắn riêng phi tập trung qua relay Nostr (NIP-04).",
+    },
+    labels: {
+      configured: "Đã cấu hình",
+      running: "Đang chạy",
+      connected: "Đã kết nối",
+      linked: "Đã liên kết",
+      lastConnect: "Kết nối lần cuối",
+      lastMessage: "Tin nhắn cuối",
+      authAge: "Tuổi xác thực",
+      lastInbound: "Nhận lần cuối",
+      lastStart: "Khởi động lần cuối",
+      lastProbe: "Thử lần cuối",
+      credential: "Chứng chỉ",
+      audience: "Đối tượng",
+      publicKey: "Khóa công khai",
+      mode: "Chế độ",
+      baseUrl: "URL gốc",
+      name: "Tên",
+      displayName: "Tên hiển thị",
+      about: "Giới thiệu",
+      nip05: "NIP-05",
+      profile: "Hồ sơ",
+    },
+    status: {
+      yes: "Có",
+      no: "Không",
+      active: "Hoạt động",
+    },
+    config: {
+      schemaUnavailableRaw: "Không có schema. Dùng Raw.",
+      schemaUnavailableChannel: "Không tải được schema cấu hình kênh.",
+      loadingSchema: "Đang tải schema cấu hình…",
+      save: "Lưu",
+      saving: "Đang lưu…",
+      reload: "Tải lại",
+    },
+    actions: {
+      probe: "Thử kết nối",
+      refresh: "Làm mới",
+      showQr: "Hiện mã QR",
+      working: "Đang xử lý…",
+      relink: "Liên kết lại",
+      waitForScan: "Chờ quét",
+      logout: "Đăng xuất",
+    },
+    probe: {
+      lead: "Thử kết nối",
+      ok: "thành công",
+      failed: "thất bại",
+      suffix: " ·",
+    },
+    whatsappQrAlt: "Mã QR WhatsApp",
+    accounts: {
+      count: "Tài khoản ({count})",
+    },
+    agentPanel: {
+      title: "Kênh",
+      sub: "Ảnh chụp trạng thái kênh trên toàn gateway.",
+      refreshing: "Đang làm mới…",
+      lastRefresh: "Làm mới lần cuối:",
+      never: "chưa có",
+      loadHint: "Tải kênh để xem trạng thái trực tiếp.",
+      noneFound: "Không thấy kênh nào.",
+      connectedOf: "{connected}/{total} đã kết nối",
+      noAccounts: "không có tài khoản",
+      configuredCount: "{n} đã cấu hình",
+      notConfigured: "chưa cấu hình",
+      enabledCount: "{n} đã bật",
+      disabled: "đã tắt",
+      setupGuide: "Hướng dẫn thiết lập",
+      workspaceSub: "Không gian làm việc, danh tính và cấu hình model.",
+    },
+    nostr: {
+      editProfile: "Sửa hồ sơ",
+      noProfileHint:
+        "Chưa có hồ sơ. Nhấn «Sửa hồ sơ» để thêm tên, giới thiệu và ảnh đại diện.",
+      profilePictureAlt: "Ảnh đại diện",
+    },
+  },
+  agents: {
+    toolbarLabel: "Agent",
+    badgeDefault: "mặc định",
+    noAgents: "Không có agent",
+    copyAgentId: "Sao chép ID agent",
+    setAsDefault: "Đặt làm mặc định",
+    alreadyDefault: "Đã là mặc định",
+    loading: "Đang tải…",
+    emptyTitle: "Chọn một agent",
+    emptySub: "Chọn agent để xem không gian làm việc và công cụ.",
+    cronTab: "Tác vụ Cron",
+    configActions: {
+      reload: "Tải lại cấu hình",
+      save: "Lưu",
+      saving: "Đang lưu…",
+    },
+    context: {
+      title: "Ngữ cảnh agent",
+      workspace: "Không gian làm việc",
+      primaryModel: "Model chính",
+      identityName: "Tên danh tính",
+      identityAvatar: "Ảnh đại diện",
+      skillsFilter: "Bộ lọc kỹ năng",
+      defaultFlag: "Mặc định",
+      allSkills: "mọi kỹ năng",
+      skillsSelected: "Đã chọn {count}",
+      cronSubtitle: "Không gian làm việc và mục tiêu lịch chạy.",
+    },
+    scheduler: {
+      title: "Lịch chạy",
+      sub: "Trạng thái cron trên gateway.",
+      enabledStat: "Đã bật",
+      jobsStat: "Tác vụ",
+      nextWake: "Lần đánh thức tiếp",
+    },
+    cronCard: {
+      title: "Cron của agent",
+      sub: "Tác vụ đã lên lịch cho agent này.",
+      noJobs: "Chưa gán tác vụ nào.",
+      runNow: "Chạy ngay",
+      chipEnabled: "đã bật",
+      chipDisabled: "đã tắt",
+    },
+    files: {
+      title: "Tệp lõi",
+      sub: "Persona khởi tạo, danh tính và hướng dẫn công cụ.",
+      workspacePrefix: "Không gian làm việc:",
+      loadHint: "Tải tệp workspace của agent để chỉnh hướng dẫn lõi.",
+      noFiles: "Không thấy tệp.",
+      selectToEdit: "Chọn một tệp để sửa.",
+      previewTitle: "Xem trước markdown đã render",
+      preview: "Xem trước",
+      reset: "Đặt lại",
+      save: "Lưu",
+      saving: "Đang lưu…",
+      content: "Nội dung",
+      missingHint: "Tệp này chưa có. Lưu sẽ tạo tệp trong workspace của agent.",
+      close: "Đóng",
+      missingStatus: "Thiếu",
+      missingBadge: "thiếu",
+    },
+    overview: {
+      title: "Tổng quan",
+      sub: "Đường dẫn workspace và siêu dữ liệu danh tính.",
+      openFilesTab: "Mở tab Tệp",
+      unsaved: "Bạn có thay đổi cấu hình chưa lưu.",
+      modelSelection: "Chọn model",
+      primaryModelDefault: "Model chính (mặc định)",
+      primaryModel: "Model chính",
+      inheritDefaultWith: "Kế thừa mặc định ({model})",
+      inheritDefault: "Kế thừa mặc định",
+      fallbacks: "Dự phòng",
+      fallbackPlaceholder: "provider/model",
+    },
+    tools: {
+      title: "Quyền truy cập công cụ",
+      subLead: "Hồ sơ + ghi đè từng công cụ cho agent này.",
+      enabledSummary: "{enabled}/{total} đã bật.",
+      enableAll: "Bật tất cả",
+      disableAll: "Tắt tất cả",
+      loadConfigHint: "Tải cấu hình gateway để chỉnh hồ sơ công cụ.",
+      allowlistHint:
+        "Agent này dùng allowlist rõ ràng trong cấu hình. Ghi đè công cụ quản lý ở tab Cấu hình.",
+      globalAllowHint:
+        "Đã đặt tools.allow toàn cục. Ghi đè agent không thể bật công cụ bị chặn toàn cục.",
+      catalogLoading: "Đang tải danh mục công cụ runtime…",
+      catalogFallback:
+        "Không tải được danh mục runtime. Đang dùng danh sách dự phòng tích hợp.",
+      profileLabel: "Hồ sơ",
+      sourceLabel: "Nguồn",
+      statusLabel: "Trạng thái",
+      unsaved: "chưa lưu",
+      quickPresets: "Cài nhanh",
+      inherit: "Kế thừa",
+      sourceAgent: "ghi đè agent",
+      sourceGlobal: "mặc định toàn cục",
+      sourceDefault: "mặc định",
+      sections: {
+        fs: "Tệp",
+        runtime: "Thời gian chạy",
+        web: "Web",
+        memory: "Bộ nhớ",
+        sessions: "Phiên",
+        ui: "Giao diện",
+        messaging: "Tin nhắn",
+        automation: "Tự động hóa",
+        nodes: "Nodes",
+        agents: "Agent",
+        media: "Đa phương tiện",
+      },
+      descriptions: {
+        read: "Đọc nội dung tệp",
+        write: "Tạo hoặc ghi đè tệp",
+        edit: "Chỉnh sửa chính xác",
+        apply_patch: "Vá tệp (OpenAI)",
+        exec: "Chạy lệnh shell",
+        process: "Quản lý tiến trình nền",
+        web_search: "Tìm kiếm web",
+        web_fetch: "Lấy nội dung web",
+        memory_search: "Tìm kiếm ngữ nghĩa",
+        memory_get: "Đọc tệp bộ nhớ",
+        sessions_list: "Liệt kê phiên",
+        sessions_history: "Lịch sử phiên",
+        sessions_send: "Gửi tới phiên",
+        sessions_spawn: "Tạo agent con",
+        session_status: "Trạng thái phiên",
+        browser: "Điều khiển trình duyệt web",
+        canvas: "Điều khiển canvas",
+        message: "Gửi tin nhắn",
+        cron: "Lên lịch tác vụ",
+        gateway: "Điều khiển gateway",
+        nodes: "Nodes và thiết bị",
+        agents_list: "Liệt kê agent",
+        image: "Hiểu ảnh",
+        image_generate: "Ảnh tạo sinh",
+        tts: "Chuyển đổi văn bản thành giọng nói",
+      },
+      profiles: {
+        minimal: "Tối giản",
+        coding: "Lập trình",
+        messaging: "Tin nhắn",
+        full: "Đầy đủ",
+      },
+    },
+    skills: {
+      title: "Kỹ năng",
+      subLead: "Allowlist kỹ năng theo agent và kỹ năng trong workspace.",
+      pageSubtitle: "Kỹ năng đã cài và trạng thái.",
+      browseStore: "Cửa hàng kỹ năng (ClawHub)",
+      browseStoreTitle: "Xem kỹ năng trên ClawHub",
+      notConnectedGateway: "Chưa kết nối gateway.",
+      enable: "Bật",
+      disable: "Tắt",
+      installing: "Đang cài…",
+      saveKey: "Lưu khóa",
+      apiKey: "Khóa API",
+      chipEligible: "đủ điều kiện",
+      chipBlocked: "bị chặn",
+      chipDisabled: "đã tắt",
+      chipBundled: "đi kèm",
+      reasonDisabled: "đã tắt",
+      reasonBlockedByAllowlist: "bị chặn bởi allowlist",
+      toggleAria: "Bật hoặc tắt kỹ năng: {name}",
+      enableAll: "Bật tất cả",
+      disableAll: "Tắt tất cả",
+      resetTitle: "Bỏ allowlist theo agent và dùng mọi kỹ năng",
+      reset: "Đặt lại",
+      loadConfigHint: "Tải cấu hình gateway để đặt kỹ năng theo agent.",
+      allowlistActive: "Agent này dùng allowlist kỹ năng tùy chỉnh.",
+      allEnabledHint:
+        "Mọi kỹ năng đang bật. Tắt một kỹ năng sẽ tạo allowlist theo agent.",
+      loadReportHint: "Tải kỹ năng cho agent này để xem mục riêng workspace.",
+      filter: "Lọc",
+      filterPlaceholder: "Tìm kỹ năng",
+      shown: "{count} hiển thị",
+      noneFound: "Không thấy kỹ năng.",
+      missingPrefix: "Thiếu:",
+      reasonPrefix: "Lý do:",
+      groups: {
+        workspace: "Kỹ năng workspace",
+        "built-in": "Kỹ năng tích hợp",
+        installed: "Kỹ năng đã cài",
+        extra: "Kỹ năng bổ sung",
+        other: "Kỹ năng khác",
+      },
+    },
+  },
+  nodes: {
+    common: {
+      loading: "Đang tải…",
+      saving: "Đang lưu…",
+      save: "Lưu",
+    },
+    list: {
+      title: "Nodes",
+      subtitle: "Thiết bị đã ghép cặp và liên kết trực tiếp.",
+      empty: "Không tìm thấy node nào.",
+      unknown: "không rõ",
+      paired: "đã ghép cặp",
+      unpaired: "chưa ghép cặp",
+      connected: "đã kết nối",
+    },
+    devices: {
+      title: "Thiết bị",
+      subtitle: "Yêu cầu ghép cặp và token vai trò.",
+      pending: "Đang chờ",
+      paired: "Đã ghép cặp",
+      empty: "Không có thiết bị đã ghép cặp.",
+      repair: "sửa chữa",
+      roleLabel: "vai trò",
+      rolesLabel: "các vai trò",
+      scopesLabel: "phạm vi",
+      requested: "được yêu cầu",
+      approve: "Duyệt",
+      reject: "Từ chối",
+      tokensLabel: "Token",
+      none: "không có",
+      active: "đang hoạt động",
+      revoked: "đã thu hồi",
+      rotate: "Đổi token",
+      revoke: "Thu hồi",
+    },
+    binding: {
+      title: "Gán exec node",
+      subtitle: "Ghim agent vào node cụ thể khi dùng exec host=node.",
+      rawModeHint:
+        "Chuyển tab Cấu hình sang chế độ Form để sửa binding tại đây.",
+      loadHint: "Tải cấu hình để chỉnh binding.",
+      loadConfig: "Tải cấu hình",
+      defaultTitle: "Binding mặc định",
+      defaultSubtitle: "Dùng khi agent không ghi đè node binding.",
+      nodeField: "Node",
+      anyNode: "Bất kỳ node",
+      noRunnableNodes: "Không có node nào hỗ trợ system.run.",
+      defaultAgent: "agent mặc định",
+      usesDefault: "dùng mặc định ({value})",
+      override: "ghi đè: {value}",
+      bindingField: "Binding",
+      useDefault: "Dùng mặc định",
+      any: "bất kỳ",
+    },
+    approvals: {
+      title: "Phê duyệt exec",
+      subtitle: "Allowlist và chính sách phê duyệt cho exec host=gateway/node.",
+      loadHint: "Tải phê duyệt exec để chỉnh allowlist.",
+      loadButton: "Tải phê duyệt",
+      state: {
+        on: "bật",
+        off: "tắt",
+      },
+      security: {
+        deny: "Từ chối",
+        allowlist: "Allowlist",
+        full: "Toàn quyền",
+      },
+      ask: {
+        off: "Tắt",
+        onMiss: "Khi thiếu",
+        always: "Luôn hỏi",
+      },
+      target: {
+        title: "Đích",
+        subtitle: "Gateway sửa phê duyệt cục bộ; node sửa node đang chọn.",
+        hostField: "Host",
+        gateway: "Gateway",
+        node: "Node",
+        nodeField: "Node",
+        selectNode: "Chọn node",
+        empty: "Chưa có node nào công bố exec approvals.",
+      },
+      scope: {
+        label: "Phạm vi",
+        defaults: "Mặc định",
+      },
+      policy: {
+        securityTitle: "Bảo mật",
+        askTitle: "Hỏi",
+        askFallbackTitle: "Phương án hỏi dự phòng",
+        autoAllowTitle: "Tự cho phép CLI từ skill",
+        defaultSecurity: "Chế độ bảo mật mặc định.",
+        defaultAsk: "Chính sách hỏi mặc định.",
+        defaultValue: "Mặc định: {value}.",
+        modeField: "Chế độ",
+        fallbackField: "Dự phòng",
+        useDefault: "Dùng mặc định ({value})",
+        useDefaultShort: "Dùng mặc định",
+        askFallbackHelp: "Áp dụng khi prompt UI không khả dụng.",
+        autoAllowHelp: "Cho phép tệp thực thi skill do Gateway liệt kê.",
+        usingDefault: "Đang dùng mặc định ({value}).",
+        override: "Ghi đè ({value}).",
+      },
+      allowlist: {
+        title: "Allowlist",
+        subtitle: "Mẫu glob không phân biệt hoa thường.",
+        add: "Thêm mẫu",
+        empty: "Chưa có mục allowlist.",
+        never: "chưa bao giờ",
+        newPattern: "Mẫu mới",
+        lastUsed: "Dùng lần cuối: {value}",
+        patternField: "Mẫu",
+        remove: "Xóa",
+      },
+    },
+  },
+  config: {
+    settingsRoot: "Cài đặt",
+    categories: {
+      core: "Cốt lõi",
+      ai: "AI & Agent",
+      communication: "Liên lạc",
+      automation: "Tự động hóa",
+      infrastructure: "Hạ tầng",
+      appearance: "Hiển thị",
+      other: "Khác",
+    },
+    actions: {
+      unsavedRaw: "Có thay đổi chưa lưu",
+      unsavedCount: "{count} thay đổi chưa lưu",
+      noChanges: "Không có thay đổi",
+      openPath: "Mở {path}",
+      openFile: "Mở tệp cấu hình",
+      open: "Mở",
+      loading: "Đang tải…",
+      reload: "Tải lại",
+      saving: "Đang lưu…",
+      save: "Lưu",
+      applying: "Đang áp dụng…",
+      apply: "Áp dụng",
+      updating: "Đang cập nhật…",
+      update: "Cập nhật",
+    },
+    search: {
+      placeholder: "Tìm trong cài đặt...",
+      sectionsAria: "Các mục cài đặt",
+    },
+    form: {
+      schemaUnavailable: "Không có schema.",
+      unsupportedSchema: "Schema không được hỗ trợ. Dùng chế độ Raw.",
+      noMatch: 'Không có cài đặt nào khớp "{query}"',
+      noSettingsInSection: "Không có cài đặt trong mục này",
+      formUnsafeTitle: "Chế độ Form không thể sửa an toàn một số trường",
+      formMode: "Form",
+      rawMode: "Raw",
+      loadingSchema: "Đang tải schema…",
+      rawRequiredHint:
+        "Cấu hình của bạn có trường mà trình sửa Form không thể biểu diễn an toàn. Hãy dùng chế độ Raw để sửa.",
+      rawConfigLabel: "Cấu hình Raw (JSON/JSON5)",
+      secretsStatus: "{count} bí mật {state}",
+      redacted: "đã ẩn",
+      visible: "đang hiện",
+      revealSensitive: "Hiện giá trị nhạy cảm",
+      hideSensitive: "Ẩn giá trị nhạy cảm",
+      toggleRawRedaction: "Bật/tắt ẩn dữ liệu nhạy cảm trong raw config",
+    },
+    validity: {
+      invalid:
+        "Cấu hình của bạn không hợp lệ. Một số cài đặt có thể không hoạt động như mong muốn.",
+      dismiss: "Không nhắc lại",
+    },
+    diff: {
+      viewPending: "Xem {count} thay đổi chờ áp dụng",
+    },
+    env: {
+      hideValues: "Ẩn giá trị env",
+      revealValues: "Hiện giá trị env",
+      peek: "Xem nhanh",
+    },
+    appearance: {
+      title: "Hiển thị",
+      themeTitle: "Giao diện",
+      themeHint: "Chọn nhóm giao diện.",
+      roundnessTitle: "Độ bo góc",
+      roundnessHint: "Điều chỉnh độ bo góc trên toàn bộ UI.",
+      square: "Vuông",
+      round: "Tròn",
+      connectionTitle: "Kết nối",
+      gatewayLabel: "Gateway",
+      statusLabel: "Trạng thái",
+      connected: "Đã kết nối",
+      assistantLabel: "Trợ lý",
+    },
+    copy: {
+      hideValue: "Ẩn giá trị",
+      revealValue: "Hiện giá trị",
+      disableStreamModeToReveal: "Tắt stream mode để hiện giá trị",
+      unsupportedSchemaNode:
+        "Schema này chưa được hỗ trợ. Hãy dùng chế độ Raw.",
+      unsupportedType: "Kiểu dữ liệu chưa hỗ trợ: {type}. Hãy dùng chế độ Raw.",
+      resetToDefault: "Đặt lại về mặc định",
+      selectPlaceholder: "Chọn...",
+      jsonValue: "Giá trị JSON",
+      unsupportedArraySchema:
+        "Schema mảng chưa được hỗ trợ. Hãy dùng chế độ Raw.",
+      item: "mục",
+      items: "mục",
+      add: "Thêm",
+      noItemsYet: 'Chưa có mục nào. Nhấn "Thêm" để tạo.',
+      removeItem: "Xóa mục",
+      customEntries: "Mục tùy chỉnh",
+      addEntry: "Thêm mục",
+      noCustomEntries: "Chưa có mục tùy chỉnh.",
+      key: "Khóa",
+      removeEntry: "Xóa mục",
+      random: "ngẫu nhiên",
+      default: "mặc định",
+      off: "tắt",
+      old: "cũ",
+      new: "mới",
+      summarize: "tóm tắt",
+      always: "luôn luôn",
+      inbound: "đầu vào",
+      tagged: "được gắn thẻ",
+      final: "cuối cùng",
+      all: "tất cả",
+      session: "phiên",
+      targets: "đích",
+      both: "cả hai",
+      raw: "thô",
+      hash: "băm",
+      local: "cục bộ",
+      remote: "từ xa",
+      rate_limit: "giới hạn tốc độ",
+      overloaded: "quá tải",
+      network: "mạng",
+      timeout: "hết thời gian chờ",
+      server_error: "lỗi máy chủ",
+      wake: "đánh thức",
+      agent: "agent",
+      now: "ngay",
+      next_heartbeat: "nhịp kế tiếp",
+      none: "không",
+      npm: "npm",
+      archive: "gói nén",
+      path: "đường dẫn",
+      auto: "tự động",
+      lan: "mạng nội bộ",
+      loopback: "vòng lặp cục bộ",
+      custom: "tùy chỉnh",
+      tailnet: "tailnet",
+      serve: "serve",
+      funnel: "funnel",
+      direct: "trực tiếp",
+      ssh: "ssh",
+      minimal: "tối thiểu",
+      full: "đầy đủ",
+      token: "token",
+      password: "mật khẩu",
+      trusted_proxy: "proxy tin cậy",
+      update: {
+        auto: "Tự động",
+        performance: "hiệu năng",
+        advanced: "nâng cao",
+        betaCheckHours: {
+          label: "Chu kỳ kiểm tra bản Beta (giờ)",
+          help: "Tần suất kiểm tra kênh beta theo giờ (mặc định: 1).",
+        },
+        enabled: {
+          label: "Bật tự động cập nhật",
+          help: "Tự động tải gói cập nhật khi rảnh (mặc định: true).",
+        },
+        stableDelayHours: {
+          label: "Độ trễ cập nhật Stable (giờ)",
+          help: "Độ trễ tối thiểu trước khi tự áp dụng kênh stable (mặc định: 6).",
+        },
+        stableJitterHours: {
+          label: "Độ dàn trải Stable (giờ)",
+          help: "Khoảng dàn trải rollout kênh stable theo giờ (mặc định: 12).",
+        },
+        channel: {
+          label: "Kênh cập nhật",
+          help: 'Kênh cập nhật cho GUI + runtime ("stable", "beta", "dev")',
+        },
+      },
+      cli: {
+        label: "CLI",
+        help: "Điều khiển hiển thị CLI cho đầu ra lệnh cục bộ như banner và tagline.",
+      },
+      diagnostics: {
+        label: "Chẩn đoán",
+        help: "Thiết lập chẩn đoán cho trace có mục tiêu, xuất telemetry và kiểm tra cache khi debug.",
+        flagsLabel: "Cờ chẩn đoán",
+        flagsHelp:
+          'Bật log chẩn đoán theo cờ (ví dụ: ["telegram.http"]). Hỗ trợ wildcard như "telegram.*" hoặc "*".',
+      },
+      acp: {
+        label: "ACP",
+        help: "Điều khiển runtime ACP: bật dispatch, chọn backend, và tinh chỉnh luồng phản hồi.",
+      },
+      mcp: {
+        label: "MCP",
+        help: "Định nghĩa máy chủ MCP toàn cục do OpenClaw quản lý.",
+      },
+      secrets: {
+        label: "Bí mật",
+      },
+      logs: {
+        label: "Nhật ký",
+        customRedactionPatterns: {
+          label: "Mẫu che dữ liệu tùy chỉnh",
+          help: "Các mẫu regex che dữ liệu bổ sung áp dụng cho log trước khi xuất/lưu.",
+        },
+      },
+    },
+    sections: {
+      env: {
+        label: "Biến môi trường",
+        description: "Biến môi trường truyền vào tiến trình gateway",
+      },
+      update: {
+        label: "Cập nhật",
+        description: "Thiết lập tự cập nhật và kênh phát hành",
+      },
+      agents: {
+        label: "Agent",
+        description: "Cấu hình agent, mô hình và danh tính",
+      },
+      auth: { label: "Xác thực", description: "Khóa API và hồ sơ xác thực" },
+      channels: {
+        label: "Kênh",
+        description: "Các kênh nhắn tin (Telegram, Discord, Slack, ...)",
+      },
+      messages: {
+        label: "Tin nhắn",
+        description: "Thiết lập xử lý và định tuyến tin nhắn",
+      },
+      commands: { label: "Lệnh", description: "Các lệnh chéo tùy chỉnh" },
+      hooks: { label: "Hook", description: "Webhook và điểm móc sự kiện" },
+      skills: { label: "Kỹ năng", description: "Gói kỹ năng và năng lực" },
+      tools: {
+        label: "Công cụ",
+        description: "Cấu hình công cụ (trình duyệt, tìm kiếm, ...)",
+      },
+      gateway: {
+        label: "Gateway",
+        description: "Thiết lập máy chủ gateway (cổng, xác thực, liên kết)",
+      },
+      wizard: {
+        label: "Trình thiết lập",
+        description: "Trạng thái và lịch sử trình thiết lập",
+      },
+      meta: {
+        label: "Siêu dữ liệu",
+        description: "Siêu dữ liệu gateway và thông tin phiên bản",
+      },
+      logging: { label: "Nhật ký", description: "Mức log và cấu hình đầu ra" },
+      browser: {
+        label: "Trình duyệt",
+        description: "Thiết lập tự động hóa trình duyệt",
+      },
+      ui: { label: "Giao diện", description: "Tùy chọn giao diện người dùng" },
+      models: {
+        label: "Mô hình",
+        description: "Cấu hình mô hình AI và nhà cung cấp",
+      },
+      bindings: {
+        label: "Ràng buộc",
+        description: "Phím tắt và ràng buộc phím",
+      },
+      broadcast: {
+        label: "Phát sóng",
+        description: "Thiết lập phát sóng và thông báo",
+      },
+      audio: {
+        label: "Âm thanh",
+        description: "Thiết lập đầu vào/đầu ra âm thanh",
+      },
+      session: {
+        label: "Phiên",
+        description: "Quản lý phiên và lưu trữ trạng thái",
+      },
+      cron: { label: "Cron", description: "Tác vụ định kỳ và tự động hóa" },
+      web: { label: "Web", description: "Thiết lập máy chủ web và API" },
+      discovery: { label: "Khám phá", description: "Khám phá dịch vụ và mạng" },
+      canvasHost: {
+        label: "Máy chủ Canvas",
+        description: "Hiển thị và dựng canvas",
+      },
+      talk: { label: "Thoại", description: "Thiết lập giọng nói và hội thoại" },
+      plugins: {
+        label: "Tiện ích mở rộng",
+        description: "Quản lý plugin và mở rộng",
+      },
+      memory: { label: "Bộ nhớ", description: "Thiết lập bộ nhớ" },
+      approvals: {
+        label: "Phê duyệt",
+        description: "Chính sách phê duyệt và danh sách cho phép",
+      },
+      nodeHost: {
+        label: "Máy chủ Node",
+        description: "Thiết lập môi trường chạy node host",
+      },
+      media: { label: "Phương tiện", description: "Thiết lập xử lý media" },
+    },
+    fields: {
+      messages: {
+        label: "Tin nhắn",
+        help: "Thiết lập hành vi tiền tố, chat nhóm, hàng đợi và phản hồi trạng thái cho tin nhắn.",
+        messagePrefix: {
+          label: "Tiền tố tin nhắn",
+          help: "Tiền tố thêm trước tin nhắn đầu vào khi tạo prompt xử lý.",
+        },
+        responsePrefix: {
+          label: "Tiền tố phản hồi",
+          help: "Tiền tố thêm trước nội dung phản hồi gửi ra kênh.",
+        },
+        groupChat: {
+          label: "Chat nhóm",
+          help: "Thiết lập cách xử lý tin nhắn trong ngữ cảnh nhóm.",
+          mentionPatterns: {
+            label: "Mẫu nhắc tên",
+            help: "Danh sách pattern nhắc tên dùng để kích hoạt phản hồi trong nhóm.",
+          },
+          historyLimit: {
+            label: "Giới hạn lịch sử nhóm",
+            help: "Số tin lịch sử nhóm giữ lại làm ngữ cảnh.",
+          },
+        },
+        queue: {
+          label: "Hàng đợi tin nhắn",
+          help: "Thiết lập xếp hàng, debounce và giới hạn cho xử lý tin nhắn đến.",
+          mode: {
+            label: "Chế độ hàng đợi",
+            help: "Chế độ hoạt động của hàng đợi tin nhắn.",
+          },
+          byChannel: {
+            label: "Theo kênh",
+            help: "Ghi đè hàng đợi theo từng kênh.",
+          },
+          debounceMs: {
+            label: "Debounce mặc định (ms)",
+            help: "Thời gian debounce mặc định cho hàng đợi.",
+          },
+          debounceMsByChannel: {
+            label: "Debounce theo kênh (ms)",
+            help: "Ghi đè debounce theo từng kênh.",
+          },
+          cap: {
+            label: "Sức chứa hàng đợi",
+            help: "Số mục tối đa trong hàng đợi trước khi áp dụng chính sách drop.",
+          },
+          drop: {
+            label: "Chính sách drop",
+            help: "Chính sách loại bớt mục khi hàng đợi đầy.",
+          },
+        },
+        inbound: {
+          label: "Tin nhắn đầu vào",
+          help: "Thiết lập xử lý tin nhắn đầu vào theo kênh và debounce.",
+          byChannel: {
+            label: "Đầu vào theo kênh",
+            help: "Ghi đè xử lý đầu vào theo từng kênh.",
+          },
+          debounceMs: {
+            label: "Debounce đầu vào (ms)",
+            help: "Thời gian debounce cho tin nhắn đầu vào.",
+          },
+        },
+        tts: {
+          label: "TTS",
+          help: "Thiết lập chuyển văn bản thành giọng nói cho phản hồi.",
+          auto: {
+            label: "Tự động TTS",
+            help: "Khi nào tự động đọc phản hồi bằng giọng nói.",
+          },
+          mode: {
+            label: "Chế độ phát TTS",
+            help: "Đọc chỉ phản hồi cuối (`final`) hoặc tất cả phản hồi (`all`).",
+          },
+          provider: {
+            label: "Nhà cung cấp TTS",
+            help: "Nhà cung cấp TTS chính; có fallback tự động khi cần.",
+          },
+          summaryModel: {
+            label: "Model tóm tắt TTS",
+            help: "Mô hình dùng để tóm tắt khi nội dung quá dài trước khi đọc TTS.",
+          },
+          modelOverrides: {
+            label: "Ghi đè từ model",
+            help: "Cho phép mô hình tự đề xuất/ghi đè tham số TTS theo chính sách.",
+            enabled: {
+              label: "Bật ghi đè từ model",
+              help: "Công tắc tổng cho cơ chế ghi đè tham số TTS từ mô hình.",
+            },
+            allowText: {
+              label: "Cho phép ghi đè văn bản",
+              help: "Cho phép mô hình cung cấp đoạn văn bản chuyên dùng cho TTS.",
+            },
+            allowProvider: {
+              label: "Cho phép ghi đè nhà cung cấp",
+              help: "Cho phép mô hình đổi nhà cung cấp TTS (mặc định nên tắt để ổn định).",
+            },
+            allowVoice: {
+              label: "Cho phép ghi đè giọng",
+              help: "Cho phép mô hình đổi `voice`/`voiceId`.",
+            },
+            allowModelId: {
+              label: "Cho phép ghi đè model ID",
+              help: "Cho phép mô hình đổi mô hình TTS.",
+            },
+            allowVoiceSettings: {
+              label: "Cho phép ghi đè cài đặt giọng",
+              help: "Cho phép mô hình đổi các tham số tinh chỉnh giọng (stability/speed/...).",
+            },
+            allowNormalization: {
+              label: "Cho phép ghi đè chuẩn hóa",
+              help: "Cho phép mô hình đổi cài đặt chuẩn hóa văn bản hoặc ngôn ngữ.",
+            },
+            allowSeed: {
+              label: "Cho phép ghi đè seed",
+              help: "Cho phép mô hình ghi đè seed cho các nhà cung cấp hỗ trợ.",
+            },
+          },
+          edge: {
+            label: "Edge (cũ)",
+            help: "Bí danh cũ cho cấu hình Microsoft TTS (vẫn hỗ trợ để tương thích).",
+            enabled: {
+              label: "Bật Edge TTS",
+              help: "Cho phép dùng Microsoft/Edge TTS không cần API key.",
+            },
+            voice: {
+              label: "Giọng Edge",
+              help: "Giọng mặc định cho provider Edge/Microsoft.",
+            },
+            lang: {
+              label: "Ngôn ngữ Edge",
+              help: "Mã ngôn ngữ mặc định cho giọng Edge/Microsoft.",
+            },
+            outputFormat: {
+              label: "Định dạng xuất Edge",
+              help: "Định dạng âm thanh đầu ra cho Edge/Microsoft TTS.",
+            },
+            pitch: {
+              label: "Cao độ Edge",
+              help: "Điều chỉnh cao độ giọng Edge/Microsoft.",
+            },
+            rate: {
+              label: "Tốc độ đọc Edge",
+              help: "Điều chỉnh tốc độ đọc giọng Edge/Microsoft.",
+            },
+            volume: {
+              label: "Âm lượng Edge",
+              help: "Điều chỉnh âm lượng giọng Edge/Microsoft.",
+            },
+            saveSubtitles: {
+              label: "Lưu phụ đề Edge",
+              help: "Lưu phụ đề kèm file âm thanh khi dùng Edge/Microsoft.",
+            },
+            proxy: {
+              label: "Proxy Edge",
+              help: "URL proxy dùng cho yêu cầu mạng Edge/Microsoft TTS.",
+            },
+            timeoutMs: {
+              label: "Thời gian chờ Edge (ms)",
+              help: "Thời gian chờ cho yêu cầu Edge/Microsoft TTS (ms).",
+            },
+          },
+          microsoft: {
+            label: "Microsoft",
+            help: "Cấu hình nhà cung cấp giọng nói Microsoft.",
+            enabled: {
+              label: "Bật Microsoft TTS",
+              help: "Cho phép dùng Microsoft TTS không cần API key.",
+            },
+            voice: {
+              label: "Giọng Microsoft",
+              help: "Giọng mặc định cho Microsoft TTS.",
+            },
+            lang: {
+              label: "Ngôn ngữ Microsoft",
+              help: "Mã ngôn ngữ mặc định cho giọng Microsoft.",
+            },
+            outputFormat: {
+              label: "Định dạng xuất Microsoft",
+              help: "Định dạng âm thanh đầu ra cho Microsoft TTS.",
+            },
+            pitch: {
+              label: "Cao độ Microsoft",
+              help: "Điều chỉnh cao độ giọng Microsoft.",
+            },
+            rate: {
+              label: "Tốc độ đọc Microsoft",
+              help: "Điều chỉnh tốc độ đọc giọng Microsoft.",
+            },
+            volume: {
+              label: "Âm lượng Microsoft",
+              help: "Điều chỉnh âm lượng giọng Microsoft.",
+            },
+            saveSubtitles: {
+              label: "Lưu phụ đề Microsoft",
+              help: "Lưu phụ đề kèm file âm thanh khi dùng Microsoft.",
+            },
+            proxy: {
+              label: "Proxy Microsoft",
+              help: "URL proxy dùng cho yêu cầu mạng Microsoft TTS.",
+            },
+            timeoutMs: {
+              label: "Thời gian chờ Microsoft (ms)",
+              help: "Thời gian chờ cho yêu cầu Microsoft TTS (ms).",
+            },
+          },
+          openai: {
+            label: "OpenAI",
+            help: "Cấu hình nhà cung cấp OpenAI TTS.",
+            apiKey: {
+              label: "Khóa API OpenAI",
+              help: "Khóa API dùng cho OpenAI TTS.",
+            },
+            baseUrl: {
+              label: "URL gốc OpenAI",
+              help: "URL endpoint gốc cho OpenAI TTS (có thể là proxy tương thích).",
+            },
+            model: {
+              label: "Mô hình OpenAI TTS",
+              help: "Mô hình TTS dùng để tổng hợp giọng nói.",
+            },
+            voice: {
+              label: "Giọng OpenAI",
+              help: "Tên giọng mặc định của OpenAI TTS.",
+            },
+            speed: {
+              label: "Tốc độ OpenAI",
+              help: "Tốc độ phát giọng OpenAI (0.25 - 4.0).",
+            },
+            instructions: {
+              label: "Chỉ dẫn OpenAI TTS",
+              help: "Chỉ dẫn hệ thống cho model TTS khi provider hỗ trợ.",
+            },
+          },
+          prefsPath: {
+            label: "Đường dẫn prefs TTS",
+            help: "Đường dẫn file JSON lưu tùy chọn TTS cục bộ.",
+          },
+          maxTextLength: {
+            label: "Độ dài văn bản tối đa",
+            help: "Giới hạn ký tự tối đa gửi tới TTS.",
+          },
+          timeoutMs: {
+            label: "Thời gian chờ TTS (ms)",
+            help: "Thời gian chờ chung cho yêu cầu TTS (ms).",
+          },
+        },
+        removeAckAfterReply: {
+          label: "Xóa ack sau phản hồi",
+          help: "Xóa trạng thái ack sau khi đã gửi phản hồi.",
+        },
+        suppressToolErrors: {
+          label: "Ẩn lỗi công cụ",
+          help: "Ẩn lỗi công cụ khỏi phản hồi gửi tới người dùng cuối.",
+        },
+        ackReaction: {
+          label: "Emoji xác nhận (ack)",
+          help: "Emoji phản ứng dùng để xác nhận tin đến (để trống để tắt).",
+        },
+        ackReactionScope: {
+          label: "Phạm vi phản ứng ack",
+          help: "Phạm vi áp dụng phản ứng xác nhận tin nhắn.",
+        },
+        statusReactions: {
+          label: "Phản ứng trạng thái",
+          help: "Thiết lập emoji phản ứng theo trạng thái xử lý tin nhắn.",
+          enabled: {
+            label: "Bật phản ứng trạng thái",
+            help: "Bật/tắt emoji phản ứng theo trạng thái.",
+          },
+          emojis: {
+            label: "Emoji trạng thái",
+            help: "Bộ emoji cho các trạng thái (đang xử lý/thành công/lỗi...).",
+          },
+          timing: {
+            label: "Thời điểm phản ứng",
+            help: "Khi nào áp dụng/cập nhật phản ứng trạng thái.",
+          },
+        },
+      },
+      broadcast: {
+        label: "Phát sóng",
+        help: "Thiết lập map phát một tin tới nhiều đích và cách gửi tới các đích đó.",
+        strategy: {
+          label: "Chiến lược gửi phát sóng",
+          help: "parallel gửi đồng thời; sequential gửi tuần tự.",
+        },
+      },
+      audio: {
+        label: "Âm thanh",
+        help: "Thiết lập ghi âm/chuyển lời nói thành văn bản dùng cho luồng thoại.",
+        transcription: {
+          label: "Chuyển âm thanh thành văn bản",
+          help: "Thiết lập command và timeout cho bộ chuyển âm thanh sang text.",
+          command: {
+            label: "Lệnh chuyển âm thanh",
+            help: "Lệnh + tham số dùng để chạy bộ chuyển âm thanh.",
+          },
+          timeoutSeconds: {
+            label: "Timeout chuyển âm thanh (giây)",
+            help: "Thời gian timeout cho lệnh chuyển âm thanh.",
+          },
+        },
+      },
+      talk: {
+        label: "Thoại",
+        help: "Thiết lập giọng nói cho chế độ Talk: giọng, model, định dạng và ngắt lời.",
+        provider: {
+          label: "Nhà cung cấp thoại",
+          help: "ID provider thoại đang hoạt động (ví dụ elevenlabs).",
+        },
+        providers: {
+          label: "Danh sách provider thoại",
+          help: "Cấu hình thoại theo từng provider.",
+        },
+        voiceId: {
+          label: "ID giọng",
+          help: "ID giọng mặc định cho chế độ Talk.",
+        },
+        voiceAliases: {
+          label: "Bí danh giọng",
+          help: "Map bí danh giọng cho chỉ thị thoại.",
+        },
+        modelId: {
+          label: "Model thoại",
+          help: "Model ID mặc định dùng cho tổng hợp giọng nói.",
+        },
+        outputFormat: {
+          label: "Định dạng đầu ra thoại",
+          help: "Định dạng âm thanh đầu ra cho Talk mode.",
+        },
+        apiKey: {
+          label: "Khóa API thoại",
+          help: "Khóa API dùng cho provider thoại.",
+        },
+        interruptOnSpeech: {
+          label: "Ngắt khi người dùng bắt đầu nói",
+          help: "Nếu bật, dừng giọng trợ lý khi phát hiện người dùng bắt đầu nói.",
+        },
+        silenceTimeoutMs: {
+          label: "Timeout im lặng (ms)",
+          help: "Thời gian im lặng trước khi chốt transcript và gửi.",
+        },
+      },
+      wizard: {
+        label: "Trình Thiết Lập",
+        help: "Theo dõi trạng thái chạy gần nhất của trình thiết lập để hỗ trợ kiểm tra và khắc phục sự cố.",
+        lastRunAt: {
+          label: "Thời điểm chạy gần nhất",
+          help: "Mốc thời gian ISO của lần chạy trình thiết lập gần nhất trên máy này.",
+        },
+        lastRunVersion: {
+          label: "Phiên bản chạy gần nhất",
+          help: "Phiên bản OpenClaw được ghi nhận ở lần chạy trình thiết lập gần nhất.",
+        },
+        lastRunCommit: {
+          label: "Commit chạy gần nhất",
+          help: "Mã commit nguồn được ghi nhận cho lần chạy trình thiết lập gần nhất (build dev).",
+        },
+        lastRunCommand: {
+          label: "Lệnh chạy gần nhất",
+          help: "Lệnh đã được dùng để chạy trình thiết lập gần nhất.",
+        },
+        lastRunMode: {
+          label: "Chế độ chạy gần nhất",
+          help: "Chế độ chạy trình thiết lập gần nhất (`local` hoặc `remote`).",
+        },
+      },
+      ui: {
+        label: "Giao diện",
+        help: "Tùy chỉnh hiển thị giao diện như màu nhấn và thông tin trợ lý.",
+        seamColor: {
+          label: "Màu nhấn",
+          help: "Màu chủ đạo dùng cho điểm nhấn giao diện như badge và trạng thái.",
+        },
+        assistant: {
+          label: "Hiển thị trợ lý",
+          help: "Thiết lập tên và avatar hiển thị của trợ lý trong giao diện.",
+          name: {
+            label: "Tên trợ lý",
+            help: "Tên hiển thị của trợ lý trong các màn hình UI.",
+          },
+          avatar: {
+            label: "Avatar trợ lý",
+            help: "Nguồn ảnh avatar của trợ lý (URL/đường dẫn/data URI tùy runtime hỗ trợ).",
+          },
+        },
+      },
+      agents: {
+        label: "Agent",
+        help: "Cấu hình runtime agent gồm mặc định và danh sách agent cụ thể.",
+        defaults: { label: "Mặc định agent", help: "Thiết lập mặc định dùng chung cho agent nếu không ghi đè theo từng agent." },
+        list: { label: "Danh sách agent", help: "Danh sách agent và các ghi đè riêng theo từng agent." },
+      },
+      memory: {
+        label: "Bộ nhớ",
+        help: "Thiết lập hệ thống bộ nhớ, backend và lập chỉ mục QMD.",
+        backend: { label: "Backend bộ nhớ", help: "Backend bộ nhớ chính dùng cho truy xuất/ngữ cảnh." },
+        citations: { label: "Chế độ trích dẫn bộ nhớ", help: "Cách hiển thị trích dẫn khi dùng dữ liệu bộ nhớ." },
+        qmd: {
+          label: "QMD",
+          command: { label: "Lệnh QMD", help: "Đường dẫn binary/lệnh QMD." },
+          searchMode: { label: "Chế độ tìm kiếm QMD", help: "Chế độ tìm kiếm dùng trong QMD." },
+          includeDefaultMemory: { label: "Bao gồm bộ nhớ mặc định", help: "Bao gồm nguồn bộ nhớ mặc định khi truy vấn QMD." },
+          paths: { label: "Đường dẫn QMD bổ sung", help: "Danh sách đường dẫn bổ sung để QMD quét dữ liệu." },
+          sessions: {
+            label: "Lập chỉ mục phiên QMD",
+            enabled: { label: "Bật lập chỉ mục phiên", help: "Bật lập chỉ mục dữ liệu phiên cho QMD." },
+            exportDir: { label: "Thư mục xuất phiên", help: "Thư mục xuất dữ liệu phiên để QMD xử lý." },
+            retentionDays: { label: "Lưu giữ phiên (ngày)", help: "Số ngày giữ dữ liệu phiên QMD." },
+          },
+          update: {
+            label: "Cập nhật QMD",
+            interval: { label: "Chu kỳ cập nhật", help: "Chu kỳ chạy cập nhật chỉ mục QMD." },
+            debounceMs: { label: "Debounce cập nhật (ms)", help: "Khoảng debounce trước khi chạy cập nhật QMD." },
+            onBoot: { label: "Cập nhật khi khởi động", help: "Tự chạy cập nhật QMD lúc khởi động." },
+            waitForBootSync: { label: "Chờ đồng bộ khi khởi động", help: "Đợi đồng bộ QMD hoàn tất trước khi tiếp tục luồng boot." },
+            embedInterval: { label: "Chu kỳ nhúng", help: "Chu kỳ chạy tác vụ embed dữ liệu QMD." },
+            commandTimeoutMs: { label: "Timeout lệnh (ms)", help: "Timeout cho lệnh QMD." },
+            updateTimeoutMs: { label: "Timeout cập nhật (ms)", help: "Timeout cho tác vụ cập nhật QMD." },
+            embedTimeoutMs: { label: "Timeout embed (ms)", help: "Timeout cho tác vụ embed QMD." },
+          },
+          limits: {
+            label: "Giới hạn QMD",
+            maxResults: { label: "Kết quả tối đa", help: "Số kết quả QMD tối đa." },
+            maxSnippetChars: { label: "Ký tự snippet tối đa", help: "Giới hạn ký tự snippet trả về." },
+            maxInjectedChars: { label: "Ký tự inject tối đa", help: "Giới hạn ký tự được inject vào ngữ cảnh." },
+            timeoutMs: { label: "Timeout tìm kiếm (ms)", help: "Timeout truy vấn tìm kiếm QMD." },
+          },
+          scope: { label: "Phạm vi QMD", help: "Phạm vi bề mặt áp dụng QMD." },
+          mcporter: {
+            label: "MCPorter",
+            enabled: { label: "Bật MCPorter", help: "Bật tích hợp MCPorter cho QMD." },
+            serverName: { label: "Tên máy chủ MCPorter", help: "Tên server MCPorter dùng cho QMD." },
+            startDaemon: { label: "Khởi chạy daemon MCPorter", help: "Tự khởi chạy daemon MCPorter khi cần." },
+          },
+        },
+      },
+      tools: {
+        label: "Công cụ",
+        help: "Chính sách truy cập công cụ toàn cục cho web, exec, media, liên kết và quyền nâng cao.",
+        allow: { label: "Danh sách cho phép công cụ", help: "Danh sách công cụ được phép toàn cục." },
+        deny: { label: "Danh sách chặn công cụ", help: "Danh sách công cụ bị chặn toàn cục." },
+        web: { label: "Công cụ Web", help: "Thiết lập công cụ tìm kiếm và web fetch." },
+        exec: { label: "Công cụ Exec", help: "Thiết lập thực thi lệnh shell, bảo mật và phê duyệt." },
+        media: { label: "Công cụ Media", help: "Thiết lập hiểu ảnh/audio/video." },
+        links: { label: "Công cụ liên kết", help: "Thiết lập hiểu liên kết tự động." },
+        profile: { label: "Hồ sơ công cụ", help: "Hồ sơ chính sách công cụ mặc định." },
+        alsoAllow: { label: "Bổ sung danh sách cho phép", help: "Danh sách công cụ cho phép cộng thêm." },
+        byProvider: { label: "Chính sách theo provider", help: "Ghi đè cho phép/chặn công cụ theo provider." },
+        elevated: { label: "Quyền công cụ nâng cao", help: "Thiết lập quyền dùng công cụ đặc quyền." },
+        subagents: { label: "Chính sách công cụ subagent", help: "Chính sách công cụ riêng cho subagent." },
+        sandbox: { label: "Chính sách công cụ sandbox", help: "Chính sách công cụ khi chạy trong sandbox." },
+        loopDetection: { label: "Phát hiện vòng lặp công cụ", help: "Thiết lập phát hiện lặp tool-call và ngắt an toàn." },
+        agentToAgent: { label: "Công cụ agent-to-agent", help: "Chính sách cho phép agent gọi agent khác." },
+        sessions: { label: "Hiển thị công cụ phiên", help: "Thiết lập hiển thị các công cụ liên quan tới phiên." },
+        fs: { label: "Công cụ hệ tệp", help: "Thiết lập giới hạn công cụ hệ tệp theo workspace." },
+      },
+      models: {
+        label: "Mô hình",
+        help: "Thiết lập danh mục mô hình và nhà cung cấp mô hình.",
+        mode: { label: "Chế độ danh mục mô hình", help: "Chế độ quản lý danh mục mô hình." },
+        providers: { label: "Nhà cung cấp mô hình", help: "Danh sách provider mô hình và cấu hình kết nối." },
+        bedrockDiscovery: {
+          label: "Khám phá Bedrock",
+          enabled: { label: "Bật khám phá Bedrock", help: "Bật cơ chế tự khám phá mô hình Bedrock." },
+          region: { label: "Vùng Bedrock", help: "Region dùng cho khám phá Bedrock." },
+          providerFilter: { label: "Bộ lọc provider Bedrock", help: "Bộ lọc provider khi quét Bedrock." },
+          refreshInterval: { label: "Chu kỳ làm mới (giây)", help: "Chu kỳ làm mới danh sách mô hình Bedrock." },
+          defaultContextWindow: { label: "Cửa sổ ngữ cảnh mặc định", help: "Context window mặc định cho mô hình Bedrock mới." },
+          defaultMaxTokens: { label: "Max tokens mặc định", help: "Giới hạn max tokens mặc định khi khám phá Bedrock." },
+        },
+      },
+      session: {
+        label: "Phiên",
+        help: "Thiết lập phạm vi phiên, reset, ràng buộc luồng và bảo trì dữ liệu phiên.",
+        scope: { label: "Phạm vi phiên", help: "Phạm vi định danh phiên." },
+        dmScope: { label: "Phạm vi DM", help: "Phạm vi phiên cho hội thoại DM." },
+        identityLinks: { label: "Liên kết danh tính", help: "Liên kết danh tính giữa các bề mặt hội thoại." },
+        resetTriggers: { label: "Điều kiện reset", help: "Các điều kiện kích hoạt reset phiên." },
+        idleMinutes: { label: "Số phút rảnh", help: "Ngưỡng phút không hoạt động của phiên." },
+        reset: { label: "Chính sách reset", help: "Chính sách reset phiên theo thời gian/chế độ." },
+        resetByType: { label: "Reset theo loại chat", help: "Ghi đè reset theo loại hội thoại." },
+        resetByChannel: { label: "Reset theo kênh", help: "Ghi đè reset theo từng kênh." },
+        store: { label: "Đường dẫn lưu phiên", help: "Đường dẫn tệp/thư mục lưu dữ liệu phiên." },
+        typingIntervalSeconds: { label: "Chu kỳ typing (giây)", help: "Chu kỳ gửi trạng thái typing." },
+        typingMode: { label: "Chế độ typing", help: "Chế độ hiển thị typing." },
+        parentForkMaxTokens: { label: "Max token khi tách nhánh", help: "Giới hạn token khi tách phiên từ parent." },
+        mainKey: { label: "Khóa phiên chính", help: "Khóa chính dùng định tuyến phiên." },
+        sendPolicy: { label: "Chính sách gửi", help: "Chính sách gửi phản hồi theo rule." },
+        agentToAgent: { label: "Agent-to-agent", help: "Thiết lập phiên cho luồng agent gọi agent." },
+        threadBindings: { label: "Ràng buộc luồng", help: "Thiết lập ràng buộc phiên với thread/topic." },
+        maintenance: { label: "Bảo trì phiên", help: "Thiết lập dọn dẹp, xoay vòng và ngân sách lưu trữ phiên." },
+      },
+      skills: {
+        label: "Kỹ năng",
+        help: "Thiết lập nạp kỹ năng và theo dõi thay đổi kỹ năng.",
+        load: {
+          label: "Nạp kỹ năng",
+          watch: { label: "Theo dõi kỹ năng", help: "Theo dõi thay đổi tệp kỹ năng để tự nạp lại." },
+          watchDebounceMs: { label: "Debounce theo dõi (ms)", help: "Debounce khi phát hiện thay đổi kỹ năng." },
+        },
+      },
+      approvals: {
+        label: "Phê duyệt",
+        help: "Thiết lập chuyển tiếp yêu cầu phê duyệt exec tới các đích kênh ngoài phiên gốc.",
+        exec: {
+          label: "Chuyển tiếp phê duyệt thực thi",
+          help: "Nhóm cấu hình bật/tắt, chế độ, bộ lọc và danh sách đích cho phê duyệt thực thi.",
+          enabled: {
+            label: "Bật chuyển tiếp phê duyệt",
+            help: "Bật gửi yêu cầu phê duyệt exec tới các đích đã cấu hình.",
+          },
+          mode: {
+            label: "Chế độ chuyển tiếp",
+            help: "session: chỉ phiên gốc; targets: chỉ đích cấu hình; both: cả hai.",
+          },
+          agentFilter: {
+            label: "Lọc theo agent",
+            help: "Danh sách cho phép ID tác tử được chuyển tiếp phê duyệt.",
+          },
+          sessionFilter: {
+            label: "Lọc theo phiên",
+            help: "Mẫu khóa phiên (chuỗi con/regex) để giới hạn ngữ cảnh được chuyển tiếp.",
+          },
+          targets: {
+            label: "Đích chuyển tiếp",
+            help: "Danh sách đích nhận phê duyệt khi mode bao gồm targets.",
+            channel: {
+              label: "Kênh đích",
+              help: "ID kênh/nhà cung cấp nhận yêu cầu phê duyệt (vd: discord, slack).",
+            },
+            to: {
+              label: "Điểm đến",
+              help: "Định danh đích trong kênh (channel ID, user ID hoặc thread root tùy provider).",
+            },
+            accountId: {
+              label: "ID tài khoản đích",
+              help: "Chọn tài khoản cụ thể trong cấu hình đa tài khoản của kênh.",
+            },
+            threadId: {
+              label: "ID luồng đích",
+              help: "Thread/topic đích cho provider hỗ trợ gửi theo luồng.",
+            },
+          },
+        },
+      },
+      bindings: {
+        label: "Ràng buộc",
+        help: "Thiết lập ràng buộc định tuyến và sở hữu hội thoại ACP bền vững.",
+      },
+      commands: {
+        label: "Lệnh",
+        help: "Thiết lập bề mặt lệnh chat, quyền owner và quyền nâng cao theo kênh.",
+        native: {
+          label: "Lệnh gốc",
+          help: "Đăng ký lệnh slash/menu gốc với kênh hỗ trợ (Discord/Slack/Telegram).",
+        },
+        nativeSkills: {
+          label: "Lệnh kỹ năng gốc",
+          help: "Đăng ký lệnh kỹ năng ở menu lệnh gốc khi kênh hỗ trợ.",
+        },
+        text: {
+          label: "Lệnh dạng văn bản",
+          help: "Bật phân tích lệnh từ tin nhắn văn bản ngoài bề mặt lệnh gốc.",
+        },
+        bash: {
+          label: "Cho phép lệnh Bash",
+          help: "Cho phép chạy lệnh shell qua chat (`!` hoặc `/bash`).",
+        },
+        bashForegroundMs: {
+          label: "Thời gian chạy tiền cảnh Bash (ms)",
+          help: "Sau thời gian này lệnh bash sẽ chuyển chạy nền.",
+        },
+        config: {
+          label: "Cho phép /config",
+          help: "Cho phép lệnh /config đọc/ghi cấu hình trên đĩa.",
+        },
+        mcp: {
+          label: "Cho phép /mcp",
+          help: "Cho phép lệnh /mcp quản lý cấu hình MCP trong `mcp.servers`.",
+        },
+        plugins: {
+          label: "Cho phép /plugins",
+          help: "Cho phép lệnh /plugins liệt kê plugin và bật/tắt plugin trong config.",
+        },
+        debug: {
+          label: "Cho phép /debug",
+          help: "Cho phép lệnh /debug để ghi đè chỉ ở runtime.",
+        },
+        restart: {
+          label: "Cho phép khởi động lại",
+          help: "Cho phép /restart và action công cụ khởi động lại gateway.",
+        },
+        useAccessGroups: {
+          label: "Dùng nhóm truy cập",
+          help: "Áp dụng chính sách/danh sách cho phép nhóm truy cập cho lệnh.",
+        },
+        ownerAllowFrom: {
+          label: "Danh sách chủ sở hữu",
+          help: "Danh sách cho phép chủ sở hữu cho lệnh/công cụ chỉ dành cho chủ sở hữu.",
+        },
+        ownerDisplay: {
+          label: "Kiểu hiển thị ID chủ sở hữu",
+          help: "Cách hiển thị ID chủ sở hữu trong prompt hệ thống (raw/hash).",
+        },
+        ownerDisplaySecret: {
+          label: "Bí mật băm ID chủ sở hữu",
+          help: "Secret dùng HMAC khi `ownerDisplay=hash`.",
+        },
+        allowFrom: {
+          label: "Luật quyền lệnh nâng cao",
+          help: "Quy tắc cho phép quyền lệnh nâng cao theo kênh và người gửi.",
+        },
+      },
+      hooks: {
+        label: "Hook",
+        help: "Bề mặt tự động hóa webhook đầu vào để ánh xạ sự kiện bên ngoài thành hành động trong OpenClaw.",
+        enabled: {
+          label: "Bật Hook",
+          help: "Bật endpoint hook và pipeline thực thi mapping cho request webhook đến.",
+        },
+        path: {
+          label: "Đường dẫn Hook",
+          help: "Đường dẫn HTTP dùng cho endpoint hook (ví dụ `/hooks`).",
+        },
+        token: {
+          label: "Token xác thực Hook",
+          help: "Bearer token dùng để xác thực request webhook trước khi chạy mapping.",
+        },
+        defaultSessionKey: {
+          label: "Session key mặc định",
+          help: "Session key dự phòng khi request không cung cấp session key hợp lệ.",
+        },
+        allowRequestSessionKey: {
+          label: "Cho phép session key từ request",
+          help: "Cho phép caller truyền session key trong request hook khi bật.",
+        },
+        allowedSessionKeyPrefixes: {
+          label: "Tiền tố session key cho phép",
+          help: "Danh sách tiền tố session key được chấp nhận khi cho phép caller truyền key.",
+        },
+        allowedAgentIds: {
+          label: "ID agent cho phép",
+          help: "Danh sách agent mà hook mapping được phép target.",
+        },
+        maxBodyBytes: {
+          label: "Kích thước body tối đa (bytes)",
+          help: "Giới hạn kích thước payload webhook trước khi từ chối request.",
+        },
+        presets: {
+          label: "Preset Hook",
+          help: "Các gói preset hook được áp dụng khi tải cấu hình.",
+        },
+        transformsDir: {
+          label: "Thư mục transform Hook",
+          help: "Thư mục gốc chứa module transform được tham chiếu trong mapping.",
+        },
+        mappings: {
+          label: "Ánh xạ Hook",
+          help: "Danh sách rule ánh xạ theo thứ tự để match request và chọn hành động wake/agent.",
+          id: {
+            label: "ID ánh xạ",
+            help: "Định danh ổn định cho một ánh xạ hook.",
+          },
+          match: {
+            label: "Điều kiện khớp",
+            help: "Nhóm điều kiện match của ánh xạ trước khi định tuyến hành động.",
+            path: {
+              label: "Đường dẫn khớp",
+              help: "Điều kiện khớp theo path request inbound.",
+            },
+            source: {
+              label: "Nguồn khớp",
+              help: "Điều kiện khớp theo source do upstream/adapter gắn.",
+            },
+          },
+          action: {
+            label: "Hành động ánh xạ",
+            help: "Loại hành động ánh xạ: `wake` hoặc `agent`.",
+          },
+          wakeMode: {
+            label: "Chế độ đánh thức",
+            help: "Chế độ wake: `now` hoặc `next-heartbeat`.",
+          },
+          name: {
+            label: "Tên ánh xạ",
+            help: "Tên hiển thị dễ đọc cho ánh xạ trong log/UI.",
+          },
+          agentId: {
+            label: "ID agent",
+            help: "ID agent đích cho ánh xạ khi không dùng mặc định.",
+          },
+          sessionKey: {
+            label: "Session key",
+            help: "Ghi đè session key cho tin nhắn do ánh xạ gửi.",
+          },
+          messageTemplate: {
+            label: "Mẫu message",
+            help: "Template dựng nội dung message cuối cùng cho action.",
+          },
+          textTemplate: {
+            label: "Mẫu văn bản",
+            help: "Template fallback dạng text thuần khi không cần payload giàu.",
+          },
+          deliver: {
+            label: "Gửi phản hồi",
+            help: "Quyết định có gửi kết quả ánh xạ về kênh đích hay chạy im lặng.",
+          },
+          allowUnsafeExternalContent: {
+            label: "Cho phép nội dung ngoài không an toàn",
+            help: "Cho phép ánh xạ đưa dữ liệu ngoài ít sanitize hơn vào message tạo ra.",
+          },
+          channel: {
+            label: "Kênh gửi",
+            help: "Kênh gửi phản hồi cho output của ánh xạ.",
+          },
+          to: {
+            label: "Điểm đến gửi",
+            help: "Định danh đích trong kênh đã chọn để gửi phản hồi.",
+          },
+          model: {
+            label: "Ghi đè mô hình",
+            help: "Mô hình ghi đè cho lượt chạy được kích hoạt bởi ánh xạ.",
+          },
+          thinking: {
+            label: "Ghi đè mức suy luận",
+            help: "Ghi đè mức suy luận để cân bằng độ trễ/chất lượng.",
+          },
+          timeoutSeconds: {
+            label: "Thời gian chờ (giây)",
+            help: "Thời gian chạy tối đa của hành động ánh xạ.",
+          },
+          transform: {
+            label: "Biến đổi",
+            help: "Cấu hình module/export transform để xử lý payload trước khi chạy hành động.",
+            module: {
+              label: "Module transform",
+              help: "Đường dẫn module transform (tương đối trong transformsDir).",
+            },
+            export: {
+              label: "Export transform",
+              help: "Tên export sẽ được gọi trong module transform.",
+            },
+          },
+        },
+        gmail: {
+          help: "Thiết lập tích hợp Gmail push/PubSub và callback server cục bộ.",
+          account: {
+            label: "Tài khoản Gmail",
+            help: "Định danh tài khoản Google dùng cho watch/subscription.",
+          },
+          label: {
+            label: "Nhãn Gmail",
+            help: "Bộ lọc nhãn Gmail để giới hạn email kích hoạt hook.",
+          },
+          topic: {
+            label: "Topic Pub/Sub",
+            help: "Topic Pub/Sub nhận thông báo Gmail.",
+          },
+          subscription: {
+            label: "Subscription Pub/Sub",
+            help: "Subscription Pub/Sub dùng nhận push.",
+          },
+          pushToken: {
+            label: "Push token Gmail",
+            help: "Token xác thực push callback Gmail.",
+          },
+          hookUrl: {
+            label: "URL callback Hook",
+            help: "URL callback webhook cho Gmail push.",
+          },
+          includeBody: {
+            label: "Bao gồm nội dung thư",
+            help: "Khi bật sẽ kèm body email vào payload xử lý.",
+          },
+          maxBytes: {
+            label: "Kích thước tối đa (bytes)",
+            help: "Giới hạn kích thước body email trong payload.",
+          },
+          renewEveryMinutes: {
+            label: "Chu kỳ gia hạn (phút)",
+            help: "Khoảng thời gian gia hạn watch Gmail.",
+          },
+          allowUnsafeExternalContent: {
+            label: "Cho phép nội dung ngoài không an toàn",
+            help: "Cho phép đưa nội dung ngoài ít sanitize hơn vào message.",
+          },
+          serve: {
+            label: "Máy chủ local Gmail Hook",
+            bind: {
+              label: "Địa chỉ bind",
+              help: "Địa chỉ bind cho server callback local Gmail hook.",
+            },
+            port: {
+              label: "Cổng",
+              help: "Cổng server callback local Gmail hook.",
+            },
+            path: {
+              label: "Đường dẫn",
+              help: "Đường dẫn callback của server local Gmail hook.",
+            },
+          },
+          tailscale: {
+            label: "Tailscale Gmail Hook",
+            mode: {
+              label: "Chế độ Tailscale",
+              help: "Chế độ public URL qua Tailscale cho Gmail hook.",
+            },
+            path: {
+              label: "Đường dẫn Tailscale",
+              help: "Đường dẫn callback public qua Tailscale.",
+            },
+            target: {
+              label: "Đích Tailscale",
+              help: "Đích nội bộ mà URL Tailscale chuyển tiếp tới.",
+            },
+          },
+          model: {
+            label: "Ghi đè mô hình",
+            help: "Mô hình ghi đè cho lượt chạy Gmail hook.",
+          },
+          thinking: {
+            label: "Ghi đè mức suy luận",
+            help: "Mức suy luận ghi đè cho lượt chạy Gmail hook.",
+          },
+        },
+        internal: {
+          label: "Hook nội bộ",
+          help: "Hook nội bộ để xử lý sự kiện runtime bằng module handler.",
+          enabled: {
+            label: "Bật hook nội bộ",
+            help: "Bật/tắt pipeline hook nội bộ.",
+          },
+          handlers: {
+            label: "Bộ xử lý hook nội bộ",
+            event: {
+              label: "Sự kiện",
+              help: "Tên sự kiện nội bộ mà handler lắng nghe.",
+            },
+            module: { label: "Module", help: "Đường dẫn module handler." },
+            export: {
+              label: "Export",
+              help: "Tên export handler sẽ được gọi.",
+            },
+          },
+          entries: {
+            label: "Bản ghi hook nội bộ",
+            help: "Danh sách bản ghi hook nội bộ đã nạp.",
+          },
+          load: {
+            label: "Bộ nạp hook nội bộ",
+            extraDirs: {
+              label: "Thư mục bổ sung",
+              help: "Các thư mục bổ sung để quét hook nội bộ.",
+            },
+          },
+          installs: {
+            label: "Bản ghi cài đặt",
+            help: "Metadata cài đặt hook nội bộ.",
+          },
+        },
+      },
+      plugins: {
+        label: "Tiện ích mở rộng",
+        help: "Thiết lập hệ thống plugin: bật/tắt, phạm vi nạp, cấu hình entry và theo dõi cài đặt.",
+        enabled: {
+          label: "Bật plugin",
+          help: "Bật/tắt việc nạp plugin toàn cục khi khởi động và nạp lại cấu hình.",
+        },
+        allow: {
+          label: "Danh sách cho phép plugin",
+          help: "Nếu đặt, chỉ plugin có trong danh sách này mới được nạp.",
+        },
+        deny: {
+          label: "Danh sách chặn plugin",
+          help: "Plugin bị chặn tuyệt đối ngay cả khi nằm trong allowlist/đường dẫn nạp.",
+        },
+        load: {
+          label: "Bộ nạp plugin",
+          help: "Thiết lập đường dẫn file/thư mục nơi loader tìm plugin.",
+          paths: {
+            label: "Đường dẫn nạp plugin",
+            help: "Danh sách file/thư mục plugin quét thêm ngoài mặc định.",
+          },
+        },
+        slots: {
+          label: "Khe plugin",
+          help: "Chọn plugin sở hữu các slot runtime độc quyền để tránh xung đột.",
+          memory: {
+            label: "Plugin bộ nhớ",
+            help: "Plugin bộ nhớ đang hoạt động (hoặc `none`).",
+          },
+          contextEngine: {
+            label: "Plugin máy ngữ cảnh",
+            help: "Plugin đang điều phối context engine.",
+          },
+        },
+        entries: {
+          label: "Entry plugin",
+          help: "Cấu hình theo từng plugin ID gồm enablement và payload runtime riêng.",
+          enabled: {
+            label: "Bật plugin",
+            help: "Ghi đè bật/tắt cho từng plugin entry.",
+          },
+          hooks: {
+            label: "Chính sách hook plugin",
+            allowPromptInjection: {
+              label: "Cho phép hook chèn prompt",
+              help: "Cho phép plugin chỉnh sửa prompt qua typed hooks.",
+            },
+          },
+          subagent: {
+            label: "Chính sách subagent plugin",
+            allowModelOverride: {
+              label: "Cho phép ghi đè mô hình subagent",
+              help: "Cho phép plugin yêu cầu ghi đè provider/model cho subagent nền.",
+            },
+            allowedModels: {
+              label: "Mô hình subagent cho phép",
+              help: "Danh sách model đích plugin được phép ghi đè khi chạy subagent.",
+            },
+          },
+          apiKey: {
+            label: "Khóa API plugin",
+            help: "API key tùy chọn dùng cho plugin cần cấu hình khóa trực tiếp.",
+          },
+          env: {
+            label: "Biến môi trường plugin",
+            help: "Map biến môi trường chỉ áp dụng trong runtime của plugin đó.",
+          },
+          config: {
+            label: "Cấu hình plugin",
+            help: "Payload cấu hình riêng theo schema/validation của plugin.",
+          },
+        },
+        installs: {
+          label: "Bản ghi cài đặt plugin",
+          help: "Metadata cài đặt do CLI quản lý để cập nhật và truy vết nguồn plugin.",
+          source: {
+            label: "Nguồn cài đặt",
+            help: "Nguồn cài đặt (`npm`, `archive`, hoặc `path`).",
+          },
+          spec: {
+            label: "Spec cài đặt",
+            help: "Spec npm gốc dùng khi cài plugin từ npm.",
+          },
+          sourcePath: {
+            label: "Đường dẫn nguồn",
+            help: "Đường dẫn archive/path gốc dùng khi cài plugin.",
+          },
+          installPath: {
+            label: "Đường dẫn cài đặt",
+            help: "Thư mục cài đặt plugin đã resolve.",
+          },
+          version: {
+            label: "Phiên bản cài",
+            help: "Phiên bản plugin tại thời điểm cài đặt.",
+          },
+          resolvedName: {
+            label: "Tên gói đã resolve",
+            help: "Tên package đã resolve từ artifact tải về.",
+          },
+          resolvedVersion: {
+            label: "Phiên bản đã resolve",
+            help: "Phiên bản package đã resolve từ artifact.",
+          },
+          resolvedSpec: {
+            label: "Spec đã resolve",
+            help: "Spec chính xác sau resolve (dạng `<name>@<version>`).",
+          },
+          integrity: {
+            label: "Mã toàn vẹn",
+            help: "Giá trị integrity của artifact npm (nếu có).",
+          },
+          shasum: {
+            label: "Mã shasum",
+            help: "Giá trị shasum của artifact npm (nếu có).",
+          },
+          resolvedAt: {
+            label: "Thời điểm resolve",
+            help: "Mốc thời gian resolve metadata package gần nhất.",
+          },
+          installedAt: {
+            label: "Thời điểm cài đặt",
+            help: "Mốc thời gian cài đặt/cập nhật plugin gần nhất.",
+          },
+          marketplaceName: {
+            label: "Tên marketplace",
+            help: "Tên hiển thị marketplace của plugin (nếu có).",
+          },
+          marketplaceSource: {
+            label: "Nguồn marketplace",
+            help: "Nguồn marketplace dùng để resolve cài đặt.",
+          },
+          marketplacePlugin: {
+            label: "Plugin marketplace",
+            help: "Tên entry plugin trong nguồn marketplace.",
+          },
+        },
+      },
+      gateway: {
+        label: "Gateway",
+        help: "Thiết lập runtime gateway: cổng, bind, auth, TLS, UI điều khiển và chính sách phơi bày endpoint.",
+        port: { label: "Cổng Gateway", help: "Cổng TCP mà gateway lắng nghe." },
+        mode: { label: "Chế độ Gateway", help: "Chế độ vận hành gateway (`local` hoặc `remote`)." },
+        bind: { label: "Chế độ bind Gateway", help: "Kiểu bind mạng (`auto`, `lan`, `loopback`, `custom`, `tailnet`)." },
+        customBindHost: { label: "Host bind tùy chỉnh", help: "Host/IP bind khi `gateway.bind=custom`." },
+        controlUi: {
+          label: "UI điều khiển",
+          help: "Thiết lập phục vụ Control UI từ tiến trình gateway.",
+          enabled: { label: "Bật UI điều khiển", help: "Bật/tắt phục vụ Control UI." },
+          basePath: { label: "Đường dẫn gốc UI", help: "Base path để mount Control UI." },
+          root: { label: "Thư mục tài sản UI", help: "Thư mục chứa tài sản tĩnh của Control UI." },
+          allowedOrigins: { label: "Origin cho phép", help: "Danh sách origin được phép truy cập Control UI." },
+          dangerouslyAllowHostHeaderOriginFallback: {
+            label: "Cho phép fallback origin theo Host header (nguy hiểm)",
+            help: "Cho phép fallback xác định origin từ Host header khi thiếu origin hợp lệ.",
+          },
+          allowInsecureAuth: {
+            label: "Cho phép auth không bảo mật",
+            help: "Bật cơ chế auth ít an toàn cho môi trường phát triển/thử nghiệm.",
+          },
+          dangerouslyDisableDeviceAuth: {
+            label: "Tắt xác thực thiết bị (nguy hiểm)",
+            help: "Tắt device auth cho Control UI. Chỉ dùng khi hiểu rõ rủi ro.",
+          },
+        },
+        auth: {
+          label: "Xác thực Gateway",
+          help: "Chính sách xác thực HTTP/WebSocket của gateway.",
+          mode: { label: "Chế độ xác thực", help: "Chế độ auth (`none`, `token`, `password`, `trusted-proxy`)." },
+          allowTailscale: { label: "Cho phép danh tính Tailscale", help: "Cho phép identity Tailscale thỏa điều kiện auth." },
+          rateLimit: { label: "Giới hạn tần suất auth", help: "Giới hạn số lần thử đăng nhập/xác thực." },
+          trustedProxy: { label: "Trusted proxy auth", help: "Ánh xạ header auth từ proxy tin cậy." },
+          token: { label: "Token Gateway", help: "Token xác thực gateway." },
+          password: { label: "Mật khẩu Gateway", help: "Mật khẩu xác thực gateway." },
+        },
+        trustedProxies: { label: "CIDR proxy tin cậy", help: "Danh sách CIDR/IP proxy được tin cậy để chuyển tiếp IP client." },
+        allowRealIpFallback: { label: "Cho phép fallback x-real-ip", help: "Cho phép fallback `x-real-ip` khi thiếu `x-forwarded-for`." },
+        tools: {
+          label: "Chính sách công cụ Gateway",
+          help: "Allow/deny tool ở cấp gateway.",
+          allow: { label: "Danh sách cho phép tool", help: "Danh sách tool được phép ở cấp gateway." },
+          deny: { label: "Danh sách chặn tool", help: "Danh sách tool bị chặn ở cấp gateway." },
+        },
+        channelHealthCheckMinutes: { label: "Chu kỳ kiểm tra sức khỏe kênh (phút)", help: "Khoảng thời gian probe sức khỏe kênh." },
+        channelStaleEventThresholdMinutes: { label: "Ngưỡng stale event kênh (phút)", help: "Ngưỡng phút không nhận sự kiện trước khi coi kênh stale." },
+        channelMaxRestartsPerHour: { label: "Số lần restart kênh tối đa/giờ", help: "Giới hạn restart kênh do health monitor trong 1 giờ." },
+        tailscale: {
+          label: "Tailscale Gateway",
+          mode: { label: "Chế độ Tailscale", help: "Chế độ publish Tailscale (`off`, `serve`, `funnel`)." },
+          resetOnExit: { label: "Reset Tailscale khi thoát", help: "Reset trạng thái Serve/Funnel khi gateway dừng." },
+        },
+        remote: {
+          label: "Gateway từ xa",
+          transport: { label: "Transport từ xa", help: "Transport kết nối remote gateway (`direct` hoặc `ssh`)." },
+          url: { label: "URL Gateway từ xa", help: "WebSocket URL của remote gateway (`ws://` hoặc `wss://`)." },
+          sshTarget: { label: "Đích SSH", help: "Đích SSH dạng `user@host` hoặc `user@host:port`." },
+          sshIdentity: { label: "Tệp identity SSH", help: "Đường dẫn tệp SSH identity tùy chọn (`ssh -i`)." },
+          token: { label: "Token Gateway từ xa", help: "Token dùng xác thực tới remote gateway." },
+          password: { label: "Mật khẩu Gateway từ xa", help: "Mật khẩu dùng xác thực tới remote gateway." },
+          tlsFingerprint: { label: "Vân tay TLS Gateway từ xa", help: "TLS fingerprint sha256 mong đợi của remote gateway." },
+        },
+        reload: {
+          label: "Nạp lại cấu hình",
+          mode: { label: "Chế độ nạp lại", help: "Chế độ áp dụng thay đổi cấu hình runtime." },
+          debounceMs: { label: "Debounce nạp lại (ms)", help: "Cửa sổ debounce trước khi áp dụng thay đổi config." },
+          deferralTimeoutMs: { label: "Timeout trì hoãn restart (ms)", help: "Timeout tối đa cho cơ chế trì hoãn restart." },
+        },
+        tls: {
+          label: "TLS Gateway",
+          enabled: { label: "Bật TLS", help: "Bật kết nối HTTPS/WSS trực tiếp trên gateway." },
+          autoGenerate: { label: "Tự tạo chứng chỉ TLS", help: "Tự tạo cặp chứng chỉ/khóa TLS khi chưa cấu hình tệp." },
+          certPath: { label: "Đường dẫn chứng chỉ TLS", help: "Đường dẫn tệp chứng chỉ TLS." },
+          keyPath: { label: "Đường dẫn khóa TLS", help: "Đường dẫn tệp khóa riêng TLS." },
+          caPath: { label: "Đường dẫn CA TLS", help: "Đường dẫn tệp CA bundle tùy chọn." },
+        },
+        http: {
+          label: "HTTP API Gateway",
+          endpoints: {
+            label: "Endpoint HTTP",
+            chatCompletions: {
+              label: "Endpoint Chat Completions",
+              enabled: { label: "Bật Chat Completions", help: "Bật endpoint `POST /v1/chat/completions` tương thích OpenAI." },
+              maxBodyBytes: { label: "Body tối đa (bytes)", help: "Kích thước body tối đa cho endpoint Chat Completions." },
+              maxImageParts: { label: "Số image part tối đa", help: "Số phần ảnh tối đa trong một request Chat Completions." },
+              maxTotalImageBytes: { label: "Tổng dung lượng ảnh tối đa", help: "Tổng bytes ảnh tối đa trong một request." },
+              images: {
+                label: "Giới hạn ảnh",
+                allowUrl: { label: "Cho phép URL ảnh", help: "Cho phép ảnh từ `image_url`." },
+                urlAllowlist: { label: "Danh sách URL ảnh cho phép", help: "Danh sách allow URL nguồn ảnh." },
+                allowedMimes: { label: "MIME ảnh cho phép", help: "Danh sách MIME ảnh được chấp nhận." },
+                maxBytes: { label: "Kích thước ảnh tối đa (bytes)", help: "Giới hạn bytes cho từng ảnh." },
+                maxRedirects: { label: "Số redirect ảnh tối đa", help: "Số lần redirect tối đa khi fetch ảnh URL." },
+                timeoutMs: { label: "Timeout fetch ảnh (ms)", help: "Timeout fetch ảnh URL cho Chat Completions." },
+              },
+            },
+          },
+          securityHeaders: {
+            label: "Header bảo mật HTTP",
+            strictTransportSecurity: { label: "Strict-Transport-Security", help: "Giá trị header HSTS (hoặc `false` để tắt)." },
+          },
+        },
+        push: {
+          label: "Phân phối đẩy Gateway",
+          apns: {
+            label: "Phân phối APNs",
+            relay: {
+              label: "Relay APNs",
+              baseUrl: { label: "URL gốc relay APNs", help: "Base URL relay APNs." },
+              timeoutMs: { label: "Timeout relay APNs (ms)", help: "Timeout gọi relay APNs." },
+            },
+          },
+        },
+        nodes: {
+          label: "Định tuyến node",
+          browser: {
+            label: "Trình duyệt theo node",
+            mode: { label: "Chế độ trình duyệt node", help: "Chế độ định tuyến browser qua node." },
+            node: { label: "Node ghim trình duyệt", help: "Ghim định tuyến browser vào node cụ thể." },
+          },
+          allowCommands: { label: "Danh sách lệnh node cho phép", help: "Lệnh bổ sung cho phép ở node." },
+          denyCommands: { label: "Danh sách lệnh node chặn", help: "Lệnh bị chặn ở node." },
+        },
+      },
+      nodeHost: {
+        label: "Máy chủ Node",
+        help: "Thiết lập tính năng node host phơi bày cho node/client khác.",
+        browserProxy: {
+          label: "Proxy trình duyệt Node",
+          enabled: { label: "Bật proxy trình duyệt Node", help: "Cho phép định tuyến browser local qua node proxy." },
+          allowProfiles: { label: "Profile cho phép", help: "Danh sách profile browser được phép expose qua proxy node." },
+        },
+      },
+      canvasHost: {
+        label: "Máy chủ Canvas",
+        help: "Thiết lập host canvas để phục vụ tài sản canvas và live reload.",
+        enabled: { label: "Bật máy chủ Canvas", help: "Bật/tắt server canvas host." },
+        root: { label: "Thư mục gốc Canvas", help: "Thư mục gốc phục vụ file canvas." },
+        port: { label: "Cổng Canvas host", help: "Cổng TCP của server canvas host." },
+        liveReload: { label: "Live reload Canvas", help: "Bật tự động tải lại khi file canvas thay đổi." },
+      },
+      media: {
+        label: "Phương tiện",
+        help: "Thiết lập xử lý media dùng chung cho provider/công cụ nhận tệp đầu vào.",
+        preserveFilenames: { label: "Giữ nguyên tên tệp", help: "Giữ nguyên tên tệp media gốc thay vì đổi tên an toàn tạm." },
+        ttlHours: { label: "TTL lưu media (giờ)", help: "Thời gian lưu media đầu vào trước khi dọn dẹp tự động." },
+      },
+      web: {
+        label: "Web",
+        help: "Thiết lập kênh Web: heartbeat và chính sách kết nối lại.",
+        enabled: { label: "Bật kênh Web", help: "Bật/tắt runtime kênh Web." },
+        heartbeatSeconds: { label: "Heartbeat kênh Web (giây)", help: "Chu kỳ heartbeat duy trì kết nối kênh Web." },
+        reconnect: {
+          label: "Chính sách kết nối lại",
+          initialMs: { label: "Độ trễ đầu tiên (ms)", help: "Độ trễ reconnect đầu tiên sau khi mất kết nối." },
+          maxMs: { label: "Độ trễ tối đa (ms)", help: "Giới hạn trần độ trễ reconnect." },
+          factor: { label: "Hệ số backoff", help: "Hệ số tăng backoff theo cấp số nhân." },
+          jitter: { label: "Độ nhiễu reconnect", help: "Hệ số ngẫu nhiên (0-1) cho độ trễ reconnect." },
+          maxAttempts: { label: "Số lần reconnect tối đa", help: "Số lần reconnect tối đa (0 là không thử lại)." },
+        },
+      },
+      browser: {
+        label: "Trình duyệt",
+        help: "Thiết lập runtime trình duyệt cho kết nối CDP local/remote, profile và chính sách snapshot.",
+        enabled: { label: "Bật trình duyệt", help: "Bật/tắt wiring khả năng trình duyệt trong gateway." },
+        cdpUrl: { label: "URL CDP", help: "WebSocket URL CDP để attach tới trình duyệt quản lý bên ngoài." },
+        color: { label: "Màu nhấn trình duyệt", help: "Màu nhận diện mặc định cho profile/trạng thái trình duyệt." },
+        executablePath: { label: "Đường dẫn file thực thi", help: "Đường dẫn trình duyệt khi auto-discovery không phù hợp." },
+        headless: { label: "Chế độ headless", help: "Ép chạy trình duyệt ở chế độ headless khi launcher local khởi chạy." },
+        noSandbox: { label: "Chế độ no-sandbox", help: "Tắt sandbox Chromium (giảm cách ly tiến trình)." },
+        attachOnly: { label: "Chế độ chỉ attach", help: "Chỉ attach CDP, không tự khởi chạy trình duyệt local." },
+        cdpPortRangeStart: { label: "Cổng CDP bắt đầu", help: "Cổng CDP local bắt đầu cho cấp phát profile tự động." },
+        defaultProfile: { label: "Profile mặc định", help: "Tên profile mặc định khi caller không chỉ định profile." },
+        profiles: {
+          label: "Profile trình duyệt",
+          cdpPort: { label: "Cổng CDP profile", help: "Cổng CDP local theo profile." },
+          cdpUrl: { label: "URL CDP profile", help: "URL CDP theo profile để định tuyến remote rõ ràng." },
+          userDataDir: { label: "Thư mục dữ liệu người dùng", help: "Thư mục user data theo profile để attach session hiện có." },
+          driver: { label: "Driver profile", help: "Driver profile (`openclaw`/`clawd` hoặc `existing-session`)." },
+          attachOnly: { label: "Chỉ attach theo profile", help: "Bỏ qua launch local, chỉ attach endpoint CDP sẵn có cho profile." },
+          color: { label: "Màu profile", help: "Màu nhận diện theo profile trong dashboard/UI." },
+        },
+        evaluateEnabled: { label: "Bật evaluate", help: "Bật helper evaluate phía browser khi workflow cần." },
+        snapshotDefaults: {
+          label: "Mặc định snapshot",
+          mode: { label: "Chế độ snapshot", help: "Chế độ trích xuất snapshot mặc định cho tác vụ agent." },
+        },
+        ssrfPolicy: {
+          label: "Chính sách SSRF",
+          allowPrivateNetwork: { label: "Cho phép mạng private (legacy)", help: "Alias cũ cho khóa dangerouslyAllowPrivateNetwork." },
+          dangerouslyAllowPrivateNetwork: {
+            label: "Cho phép mạng private (nguy hiểm)",
+            help: "Cho phép truy cập dải địa chỉ private từ công cụ browser/network.",
+          },
+          allowedHostnames: { label: "Hostname cho phép", help: "Danh sách hostname cho phép theo ngoại lệ SSRF." },
+          hostnameAllowlist: { label: "Allowlist hostname (legacy)", help: "Trường allowlist hostname dạng legacy/alternate." },
+        },
+        remoteCdpTimeoutMs: { label: "Timeout kết nối remote CDP (ms)", help: "Timeout kết nối endpoint remote CDP." },
+        remoteCdpHandshakeTimeoutMs: { label: "Timeout handshake remote CDP (ms)", help: "Timeout bắt tay CDP sau khi đã kết nối." },
+      },
+      discovery: {
+        label: "Khám phá",
+        help: "Thiết lập khám phá dịch vụ cho mDNS cục bộ và wide-area discovery.",
+        wideArea: {
+          label: "Wide-area discovery",
+          enabled: { label: "Bật wide-area discovery", help: "Bật tín hiệu khám phá ngoài phạm vi mạng cục bộ." },
+          domain: { label: "Miền wide-area discovery", help: "Miền DNS-SD unicast cho khám phá wide-area." },
+        },
+        mdns: {
+          label: "mDNS discovery",
+          mode: { label: "Chế độ mDNS", help: "Chế độ quảng bá mDNS (`minimal`, `full`, `off`)." },
+        },
+      },
+      cron: {
+        label: "Cron",
+        help: "Thiết lập bộ lập lịch toàn cục cho job cron, thử lại và lưu giữ lịch sử chạy.",
+        enabled: {
+          label: "Bật Cron",
+          help: "Bật/tắt thực thi toàn bộ job cron đã lưu.",
+        },
+        store: {
+          label: "Đường dẫn lưu Cron",
+          help: "Đường dẫn file lưu trữ job cron để giữ lịch qua các lần restart.",
+        },
+        maxConcurrentRuns: {
+          label: "Số chạy đồng thời tối đa",
+          help: "Giới hạn số job cron chạy cùng lúc khi nhiều lịch kích hoạt đồng thời.",
+        },
+        retry: {
+          label: "Chính sách thử lại Cron",
+          help: "Ghi đè chính sách retry cho job one-shot khi lỗi tạm thời.",
+          maxAttempts: {
+            label: "Số lần thử lại tối đa",
+            help: "Số lần thử lại tối đa trước khi job bị đánh dấu lỗi vĩnh viễn.",
+          },
+          backoffMs: {
+            label: "Độ trễ thử lại (ms)",
+            help: "Danh sách độ trễ (ms) cho từng lần retry.",
+          },
+          retryOn: {
+            label: "Loại lỗi được retry",
+            help: "Các loại lỗi kích hoạt retry (rate_limit, network, timeout, ...).",
+          },
+        },
+        webhook: {
+          label: "Webhook Cron cũ",
+          help: "Webhook dự phòng cũ (deprecated), chỉ dùng cho job cũ có `notify=true`.",
+        },
+        webhookToken: {
+          label: "Token bearer webhook Cron",
+          help: "Token bearer gắn vào POST webhook khi dùng chế độ webhook.",
+        },
+        sessionRetention: {
+          label: "Lưu giữ phiên Cron",
+          help: "Thời gian giữ phiên chạy cron trước khi dọn dẹp (vd: `24h`, `7d`, hoặc `false`).",
+        },
+        runLog: {
+          label: "Dọn dẹp run log Cron",
+          help: "Thiết lập dọn dẹp file lịch sử chạy dưới `cron/runs/<jobId>.jsonl`.",
+          maxBytes: {
+            label: "Dung lượng run log tối đa",
+            help: "Khi vượt ngưỡng bytes, run log sẽ được prune giữ lại phần cuối.",
+          },
+          keepLines: {
+            label: "Số dòng run log giữ lại",
+            help: "Số dòng cuối được giữ sau khi prune do vượt `maxBytes`.",
+          },
+        },
+      },
+      env: {
+        label: "Biến môi trường",
+        help: "Thiết lập nhập và ghi đè biến môi trường dùng để cấp biến runtime cho tiến trình gateway.",
+        shellEnv: {
+          label: "Biến môi trường từ shell",
+          help: "Thiết lập nạp biến môi trường từ shell đăng nhập khi khởi động.",
+          enabled: {
+            label: "Bật nạp biến từ shell",
+            help: "Bật/tắt nạp biến môi trường từ profile shell người dùng lúc khởi tạo.",
+          },
+          timeoutMs: {
+            label: "Thời gian chờ nạp shell (ms)",
+            help: "Thời gian chờ tối đa (ms) để nạp biến từ shell trước khi fallback.",
+          },
+        },
+        vars: {
+          label: "Biến ghi đè",
+          help: "Map key/value biến môi trường ghi đè, được trộn vào môi trường runtime của OpenClaw.",
+        },
+      },
+      meta: {
+        label: "Siêu dữ liệu",
+        help: "Các trường metadata do OpenClaw tự quản lý để theo dõi lịch sử ghi/phiên bản config.",
+        lastTouchedVersion: {
+          label: "Phiên bản chạm cuối",
+          help: "Tự động cập nhật khi OpenClaw ghi config.",
+        },
+        lastTouchedAt: {
+          label: "Thời điểm chạm cuối",
+          help: "Mốc thời gian ISO của lần ghi config gần nhất (tự động).",
+        },
+      },
+      cli: {
+        label: "CLI",
+        help: "Điều khiển hiển thị CLI cho đầu ra lệnh cục bộ như banner và kiểu tagline.",
+        banner: {
+          label: "Banner CLI",
+          help: "Điều khiển banner khởi động CLI: dòng tiêu đề/phiên bản và kiểu tagline.",
+          taglineMode: {
+            label: "Chế độ tagline của banner CLI",
+            help: "Chọn kiểu tagline: random (ngẫu nhiên), default (mặc định), hoặc off (tắt).",
+          },
+        },
+      },
+      diagnostics: {
+        label: "Chẩn đoán",
+        help: "Thiết lập chẩn đoán cho trace, telemetry và kiểm tra cache khi gỡ lỗi.",
+        enabled: {
+          label: "Bật chẩn đoán",
+          help: "Công tắc tổng cho đầu ra chẩn đoán trong log và telemetry.",
+        },
+        stuckSessionWarnMs: {
+          label: "Ngưỡng cảnh báo phiên treo (ms)",
+          help: "Ngưỡng thời gian (ms) để cảnh báo phiên đang xử lý quá lâu.",
+        },
+        flags: {
+          label: "Cờ chẩn đoán",
+          help: 'Bật log chẩn đoán theo cờ (ví dụ: ["telegram.http"]). Hỗ trợ wildcard.',
+        },
+        otel: {
+          label: "OpenTelemetry",
+          help: "Thiết lập xuất OpenTelemetry cho trace, metrics và logs.",
+          enabled: {
+            label: "Bật OpenTelemetry",
+            help: "Bật pipeline xuất OTel theo endpoint/protocol đã cấu hình.",
+          },
+          endpoint: {
+            label: "Điểm cuối OpenTelemetry",
+            help: "URL collector dùng để gửi telemetry OpenTelemetry.",
+          },
+          protocol: {
+            label: "Giao thức OpenTelemetry",
+            help: "Giao thức vận chuyển OTel: http/protobuf hoặc grpc.",
+          },
+          headers: {
+            label: "Tiêu đề OpenTelemetry",
+            help: "Header metadata bổ sung gửi cùng yêu cầu export OTel.",
+          },
+          serviceName: {
+            label: "Tên dịch vụ OpenTelemetry",
+            help: "Tên dịch vụ hiển thị trong telemetry resource attributes.",
+          },
+          traces: {
+            label: "Bật trace OpenTelemetry",
+            help: "Bật xuất trace tới collector OpenTelemetry đã cấu hình.",
+          },
+          metrics: {
+            label: "Bật metrics OpenTelemetry",
+            help: "Bật xuất metrics tới collector OpenTelemetry đã cấu hình.",
+          },
+          logs: {
+            label: "Bật logs OpenTelemetry",
+            help: "Bật xuất logs qua OpenTelemetry ngoài sink log cục bộ.",
+          },
+          sampleRate: {
+            label: "Tỷ lệ lấy mẫu trace",
+            help: "Tỷ lệ sampling trace (0-1) khi xuất tới hệ thống quan sát.",
+          },
+          flushIntervalMs: {
+            label: "Chu kỳ flush OpenTelemetry (ms)",
+            help: "Khoảng thời gian flush telemetry từ buffer tới collector (ms).",
+          },
+        },
+        cacheTrace: {
+          label: "Theo dõi cache",
+          help: "Thiết lập cache-trace để quan sát quyết định cache và ngữ cảnh payload khi chạy embedded.",
+          enabled: {
+            label: "Bật cache trace",
+            help: "Ghi log cache trace cho lượt chạy embedded agent (mặc định: false).",
+          },
+          filePath: {
+            label: "Đường dẫn file cache trace",
+            help: "Đường dẫn JSONL cho log cache trace.",
+          },
+          includeMessages: {
+            label: "Bao gồm messages trong cache trace",
+            help: "Bao gồm toàn bộ payload message trong trace output (mặc định: true).",
+          },
+          includePrompt: {
+            label: "Bao gồm prompt trong cache trace",
+            help: "Bao gồm nội dung prompt trong trace output (mặc định: true).",
+          },
+          includeSystem: {
+            label: "Bao gồm system prompt trong cache trace",
+            help: "Bao gồm system prompt trong trace output (mặc định: true).",
+          },
+        },
+      },
+      acp: {
+        label: "ACP",
+        help: "Thiết lập runtime ACP: bật dispatch, chọn backend, giới hạn agent và tinh chỉnh stream.",
+        enabled: {
+          label: "Bật ACP",
+          help: "Công tắc tính năng ACP toàn cục.",
+        },
+        dispatch: {
+          label: "Điều phối ACP",
+          help: "Điều khiển độc lập việc thực thi lượt chạy ACP.",
+          enabled: {
+            label: "Bật dispatch ACP",
+            help: "Bật/tắt thực thi lượt ACP (mặc định: true).",
+          },
+        },
+        backend: {
+          label: "Backend ACP",
+          help: "ID backend ACP mặc định (ví dụ: acpx).",
+        },
+        defaultAgent: {
+          label: "Agent ACP mặc định",
+          help: "Agent đích mặc định khi spawn ACP không chỉ định agent.",
+        },
+        allowedAgents: {
+          label: "Danh sách agent ACP cho phép",
+          help: "Allowlist agent đích được phép dùng cho phiên ACP.",
+        },
+        maxConcurrentSessions: {
+          label: "Số phiên ACP đồng thời tối đa",
+          help: "Giới hạn số phiên ACP hoạt động cùng lúc trên gateway.",
+        },
+        stream: {
+          label: "Luồng ACP",
+          help: "Thiết lập projection stream ACP: kích thước chunk, hiển thị metadata và hành vi gửi.",
+          coalesceIdleMs: {
+            label: "Gộp theo thời gian rảnh (ms)",
+            help: "Cửa sổ flush theo thời gian rảnh (ms) trước khi phát block reply.",
+          },
+          maxChunkChars: {
+            label: "Số ký tự tối đa mỗi chunk",
+            help: "Kích thước chunk tối đa cho projection ACP trước khi tách.",
+          },
+          repeatSuppression: {
+            label: "Ẩn dòng lặp",
+            help: "Ẩn các dòng trạng thái/công cụ ACP bị lặp trong một lượt.",
+          },
+          deliveryMode: {
+            label: "Chế độ gửi ACP",
+            help: "live: gửi dần; final_only: đệm và chỉ gửi khi kết thúc lượt.",
+          },
+          hiddenBoundarySeparator: {
+            label: "Dấu phân cách biên ẩn",
+            help: "Dấu phân cách chèn trước đoạn text thấy được tiếp theo khi có sự kiện ACP ẩn.",
+          },
+          maxOutputChars: {
+            label: "Số ký tự output tối đa",
+            help: "Số ký tự output trợ lý tối đa cho mỗi lượt ACP trước khi cắt.",
+          },
+          maxSessionUpdateChars: {
+            label: "Số ký tự session/update tối đa",
+            help: "Số ký tự tối đa cho dòng session/update được chiếu ra.",
+          },
+          tagVisibility: {
+            label: "Hiển thị tag",
+            help: "Ghi đè hiển thị theo tag cho projection ACP (ví dụ usage_update).",
+          },
+        },
+        runtime: {
+          label: "Thời gian chạy ACP",
+          ttlMinutes: {
+            label: "TTL runtime (phút)",
+            help: "TTL rảnh (phút) của worker phiên ACP trước khi dọn.",
+          },
+          installCommand: {
+            label: "Lệnh cài đặt runtime",
+            help: "Lệnh cài đặt/thiết lập hiển thị khi backend ACP chưa sẵn sàng.",
+          },
+        },
+      },
+      mcp: {
+        label: "MCP",
+        help: "Định nghĩa máy chủ MCP toàn cục do OpenClaw quản lý.",
+        servers: {
+          label: "Máy chủ MCP",
+          help: "Danh sách server MCP theo tên. OpenClaw lưu trong config riêng và adapter runtime chọn transport phù hợp khi chạy.",
+        },
+      },
+      secrets: {
+        label: "Bí mật",
+        help: "Thiết lập quản lý và resolve secrets cho runtime/công cụ.",
+        providers: {
+          label: "Nhà cung cấp secrets",
+          help: "Map nhà cung cấp secrets theo tên (env/file/exec).",
+        },
+        defaults: {
+          label: "Mặc định secrets",
+          help: "Nhà cung cấp mặc định cho từng loại nguồn secrets (env/file/exec).",
+          env: {
+            label: "Mặc định env",
+            help: "Tên provider mặc định cho SecretRef nguồn env.",
+          },
+          file: {
+            label: "Mặc định file",
+            help: "Tên provider mặc định cho SecretRef nguồn file.",
+          },
+          exec: {
+            label: "Mặc định exec",
+            help: "Tên provider mặc định cho SecretRef nguồn exec.",
+          },
+        },
+        resolution: {
+          label: "Giải quyết secrets",
+          help: "Giới hạn đồng thời và kích thước batch khi resolve secrets.",
+          maxProviderConcurrency: {
+            label: "Đồng thời tối đa theo provider",
+            help: "Số provider có thể resolve secrets đồng thời tối đa.",
+          },
+          maxRefsPerProvider: {
+            label: "Số refs tối đa mỗi provider",
+            help: "Số SecretRef tối đa xử lý mỗi provider trong một đợt resolve.",
+          },
+          maxBatchBytes: {
+            label: "Kích thước batch tối đa (bytes)",
+            help: "Giới hạn kích thước dữ liệu batch khi resolve secrets.",
+          },
+        },
+      },
+      logging: {
+        label: "Nhật ký",
+        help: "Thiết lập mức log, đầu ra, format và che dữ liệu nhạy cảm.",
+        level: {
+          label: "Mức log chính",
+          help: "Ngưỡng mức log chính cho runtime logger (silent/fatal/error/warn/info/debug/trace).",
+        },
+        file: {
+          label: "Tệp log",
+          help: "Đường dẫn tệp log lưu bền (bổ sung hoặc thay cho console).",
+        },
+        consoleLevel: {
+          label: "Mức log console",
+          help: "Ngưỡng log riêng cho đầu ra terminal.",
+        },
+        consoleStyle: {
+          label: "Kiểu log console",
+          help: "Định dạng log console: pretty, compact hoặc json.",
+        },
+        redactSensitive: {
+          label: "Che dữ liệu nhạy cảm",
+          help: "Chế độ che dữ liệu nhạy cảm trong log: off hoặc tools.",
+        },
+        redactPatterns: {
+          label: "Mẫu che dữ liệu tùy chỉnh",
+          help: "Regex che dữ liệu bổ sung áp dụng cho log trước khi xuất/lưu.",
+        },
+      },
+      auth: {
+        label: "Xác thực",
+        help: "Gốc cấu hình hồ sơ xác thực cho đa profile nhà cung cấp và cơ chế failover theo cooldown.",
+        profiles: {
+          label: "Hồ sơ xác thực",
+          help: "Danh sách hồ sơ xác thực theo tên (provider + mode + email tùy chọn).",
+        },
+        order: {
+          label: "Thứ tự ưu tiên auth",
+          help: "Thứ tự profile auth theo từng provider (dùng cho failover tự động).",
+        },
+        cooldowns: {
+          label: "Cooldown xác thực",
+          help: "Thiết lập cooldown/backoff để tạm thời bỏ qua profile lỗi do billing và điều khiển nhịp thử lại.",
+          billingBackoffHours: {
+            label: "Backoff billing cơ bản (giờ)",
+            help: "Backoff cơ bản (giờ) khi profile lỗi do billing/thiếu credits (mặc định: 5).",
+          },
+          billingBackoffHoursByProvider: {
+            label: "Backoff billing theo provider (giờ)",
+            help: "Ghi đè backoff billing theo từng provider.",
+          },
+          billingMaxHours: {
+            label: "Giới hạn backoff billing (giờ)",
+            help: "Giới hạn tối đa backoff billing theo giờ (mặc định: 24).",
+          },
+          failureWindowHours: {
+            label: "Cửa sổ tính lỗi (giờ)",
+            help: "Cửa sổ thời gian (giờ) dùng để tính bộ đếm backoff lỗi (mặc định: 24).",
+          },
+        },
+      },
     },
   },
 };

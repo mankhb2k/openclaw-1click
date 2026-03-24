@@ -3,6 +3,7 @@ import { DEFAULT_CRON_FORM } from "../app-defaults.ts";
 import {
   addCronJob,
   cancelCronEdit,
+  isCronFormUnchanged,
   loadCronJobsPage,
   loadCronRuns,
   loadMoreCronRuns,
@@ -36,6 +37,7 @@ function createState(overrides: Partial<CronState> = {}): CronState {
     cronForm: { ...DEFAULT_CRON_FORM },
     cronFieldErrors: {},
     cronEditingJobId: null,
+    cronEditingBaseline: null,
     cronRunsJobId: null,
     cronRunsLoadingMore: false,
     cronRuns: [],
@@ -1066,5 +1068,30 @@ describe("cron controller", () => {
     await runCronJob(state, job, "due");
 
     expect(request).toHaveBeenCalledWith("cron.run", { id: "job-due", mode: "due" });
+  });
+
+  it("detects unchanged cron form against defaults and edit baseline", () => {
+    const state = createState();
+    expect(isCronFormUnchanged(state)).toBe(true);
+    state.cronForm = { ...state.cronForm, name: "n" };
+    expect(isCronFormUnchanged(state)).toBe(false);
+
+    const job = {
+      id: "job-edit",
+      name: "Daily ping",
+      enabled: true,
+      createdAtMs: 0,
+      updatedAtMs: 0,
+      schedule: { kind: "cron" as const, expr: "0 9 * * *" },
+      sessionTarget: "main" as const,
+      wakeMode: "next-heartbeat" as const,
+      payload: { kind: "systemEvent" as const, text: "ping" },
+    };
+    const editState = createState({ cronJobs: [job] });
+    startCronEdit(editState, job);
+    expect(editState.cronEditingBaseline).not.toBeNull();
+    expect(isCronFormUnchanged(editState)).toBe(true);
+    editState.cronForm = { ...editState.cronForm, name: "changed" };
+    expect(isCronFormUnchanged(editState)).toBe(false);
   });
 });

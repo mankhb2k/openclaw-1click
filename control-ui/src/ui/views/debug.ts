@@ -1,7 +1,7 @@
 import { html, nothing } from "lit";
-import { renderUiSelect } from "../components/ui-select.ts";
-import type { EventLogEntry } from "../app-events.ts";
-import { formatEventPayload } from "../presenter.ts";
+import { renderUiSelect } from "../components/ui-select";
+import type { EventLogEntry } from "../app-events";
+import { formatEventPayload } from "../presenter";
 
 export type DebugProps = {
   loading: boolean;

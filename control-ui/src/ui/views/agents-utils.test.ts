@@ -5,7 +5,7 @@ import {
   resolveAgentAvatarUrl,
   resolveEffectiveModelFallbacks,
   sortLocaleStrings,
-} from "./agents-utils.ts";
+} from "./agents-utils";
 
 describe("resolveEffectiveModelFallbacks", () => {
   it("inherits defaults when no entry fallbacks are configured", () => {

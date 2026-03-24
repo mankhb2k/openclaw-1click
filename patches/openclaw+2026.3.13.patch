@@ -1,0 +1,94 @@
+diff --git a/node_modules/openclaw/dist/update-runner-BtrC3aam.js b/node_modules/openclaw/dist/update-runner-BtrC3aam.js
+index bf98abf..00c6526 100644
+--- a/node_modules/openclaw/dist/update-runner-BtrC3aam.js
++++ b/node_modules/openclaw/dist/update-runner-BtrC3aam.js
+@@ -1447,6 +1447,42 @@ async function runGatewayUpdate(opts = {}) {
+ 			durationMs: Date.now() - startedAt
+ 		};
+ 	}
++	const desktopAppRoot = process.env.OPENCLAW_DESKTOP_APP_ROOT?.trim();
++	if (desktopAppRoot) {
++		let desktopPkgOk = false;
++		try {
++			await fs.access(path.join(desktopAppRoot, "package.json"));
++			desktopPkgOk = true;
++		} catch {
++			desktopPkgOk = false;
++		}
++		if (desktopPkgOk) {
++			const mgr = await detectPackageManager(desktopAppRoot);
++			const argv = mgr === "pnpm" ? ["pnpm", "update", "openclaw"] : mgr === "bun" ? ["bun", "update", "openclaw"] : ["npm", "update", "openclaw"];
++			const mode = mgr === "pnpm" ? "pnpm" : mgr === "bun" ? "bun" : "npm";
++			const desktopStep = await runStep({
++				runCommand,
++				name: "desktop app root update",
++				argv,
++				cwd: desktopAppRoot,
++				timeoutMs,
++				progress,
++				stepIndex: 0,
++				totalSteps: 1
++			});
++			const afterVersion = await readPackageVersion(pkgRoot);
++			return {
++				status: desktopStep.exitCode === 0 ? "ok" : "error",
++				mode,
++				root: pkgRoot,
++				reason: desktopStep.exitCode === 0 ? void 0 : "desktop-app-root-update-failed",
++				before: { version: beforeVersion },
++				after: { version: afterVersion },
++				steps: [desktopStep],
++				durationMs: Date.now() - startedAt
++			};
++		}
++	}
+ 	return {
+ 		status: "skipped",
+ 		mode: "unknown",
+diff --git a/node_modules/openclaw/dist/update-runner-DwRB0HyE.js b/node_modules/openclaw/dist/update-runner-DwRB0HyE.js
+index 29868cf..e740a99 100644
+--- a/node_modules/openclaw/dist/update-runner-DwRB0HyE.js
++++ b/node_modules/openclaw/dist/update-runner-DwRB0HyE.js
+@@ -1447,6 +1447,42 @@ async function runGatewayUpdate(opts = {}) {
+ 			durationMs: Date.now() - startedAt
+ 		};
+ 	}
++	const desktopAppRoot = process.env.OPENCLAW_DESKTOP_APP_ROOT?.trim();
++	if (desktopAppRoot) {
++		let desktopPkgOk = false;
++		try {
++			await fs.access(path.join(desktopAppRoot, "package.json"));
++			desktopPkgOk = true;
++		} catch {
++			desktopPkgOk = false;
++		}
++		if (desktopPkgOk) {
++			const mgr = await detectPackageManager(desktopAppRoot);
++			const argv = mgr === "pnpm" ? ["pnpm", "update", "openclaw"] : mgr === "bun" ? ["bun", "update", "openclaw"] : ["npm", "update", "openclaw"];
++			const mode = mgr === "pnpm" ? "pnpm" : mgr === "bun" ? "bun" : "npm";
++			const desktopStep = await runStep({
++				runCommand,
++				name: "desktop app root update",
++				argv,
++				cwd: desktopAppRoot,
++				timeoutMs,
++				progress,
++				stepIndex: 0,
++				totalSteps: 1
++			});
++			const afterVersion = await readPackageVersion(pkgRoot);
++			return {
++				status: desktopStep.exitCode === 0 ? "ok" : "error",
++				mode,
++				root: pkgRoot,
++				reason: desktopStep.exitCode === 0 ? void 0 : "desktop-app-root-update-failed",
++				before: { version: beforeVersion },
++				after: { version: afterVersion },
++				steps: [desktopStep],
++				durationMs: Date.now() - startedAt
++			};
++		}
++	}
+ 	return {
+ 		status: "skipped",
+ 		mode: "unknown",

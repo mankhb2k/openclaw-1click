@@ -59,6 +59,8 @@ export type CronState = {
   cronForm: CronFormState;
   cronFieldErrors: CronFieldErrors;
   cronEditingJobId: string | null;
+  /** Snapshot of `cronForm` when edit started; used to disable Save until something changes. */
+  cronEditingBaseline: CronFormState | null;
   cronRunsJobId: string | null;
   cronRunsLoadingMore: boolean;
   cronRuns: CronRunLogEntry[];
@@ -98,6 +100,26 @@ export function normalizeCronFormState(form: CronFormState): CronFormState {
     ...form,
     deliveryMode: "none",
   };
+}
+
+const NORMALIZED_DEFAULT_CRON_FORM: CronFormState = normalizeCronFormState({ ...DEFAULT_CRON_FORM });
+
+function cronFormsDeepEqual(a: CronFormState, b: CronFormState): boolean {
+  return (
+    JSON.stringify(normalizeCronFormState(a)) === JSON.stringify(normalizeCronFormState(b))
+  );
+}
+
+/** True when the form matches its baseline (default template or job snapshot at edit start). */
+export function isCronFormUnchanged(state: CronState): boolean {
+  const current = normalizeCronFormState(state.cronForm);
+  if (state.cronEditingJobId) {
+    if (!state.cronEditingBaseline) {
+      return false;
+    }
+    return cronFormsDeepEqual(current, state.cronEditingBaseline);
+  }
+  return cronFormsDeepEqual(current, NORMALIZED_DEFAULT_CRON_FORM);
 }
 
 export function validateCronForm(form: CronFormState): CronFieldErrors {
@@ -372,6 +394,7 @@ export function getVisibleCronJobs(
 
 function clearCronEditState(state: CronState) {
   state.cronEditingJobId = null;
+  state.cronEditingBaseline = null;
 }
 
 function resetCronFormToDefaults(state: CronState) {
@@ -886,6 +909,7 @@ export function startCronEdit(state: CronState, job: CronJob) {
   state.cronRunsJobId = job.id;
   state.cronForm = jobToForm(job, state.cronForm);
   state.cronFieldErrors = validateCronForm(state.cronForm);
+  state.cronEditingBaseline = { ...state.cronForm };
 }
 
 function buildCloneName(name: string, existingNames: Set<string>) {

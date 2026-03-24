@@ -202,6 +202,7 @@ export class OpenClawApp extends LitElement {
   @state() configSaving = false;
   @state() configApplying = false;
   @state() updateRunning = false;
+  @state() updateNotice: string | null = null;
   @state() applySessionKey = this.settings.lastActiveSessionKey;
   @state() configSnapshot: ConfigSnapshot | null = null;
   @state() configSchema: unknown = null;
@@ -366,6 +367,7 @@ export class OpenClawApp extends LitElement {
   @state() cronForm: CronFormState = { ...DEFAULT_CRON_FORM };
   @state() cronFieldErrors: import("./controllers/cron.js").CronFieldErrors = {};
   @state() cronEditingJobId: string | null = null;
+  @state() cronEditingBaseline: CronFormState | null = null;
   @state() cronRunsJobId: string | null = null;
   @state() cronRunsLoadingMore = false;
   @state() cronRuns: CronRunLogEntry[] = [];

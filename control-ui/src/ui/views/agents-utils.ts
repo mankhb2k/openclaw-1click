@@ -10,7 +10,7 @@ import type {
   AgentsListResult,
   ToolCatalogProfile,
   ToolsCatalogResult,
-} from "../types.ts";
+} from "../types";
 
 export type AgentToolEntry = {
   id: string;
@@ -313,7 +313,8 @@ export type AgentContext = {
   model: string;
   identityName: string;
   identityAvatar: string;
-  skillsLabel: string;
+  /** null = no per-agent allowlist (all skills); number = count in allowlist */
+  skillsFilterCount: number | null;
   isDefault: boolean;
 };
 
@@ -340,13 +341,13 @@ export function buildAgentContext(
     agent.id;
   const identityAvatar = resolveAgentAvatarUrl(agent, agentIdentity) ? "custom" : "—";
   const skillFilter = Array.isArray(config.entry?.skills) ? config.entry?.skills : null;
-  const skillCount = skillFilter?.length ?? null;
+  const skillsFilterCount = skillFilter !== null ? skillFilter.length : null;
   return {
     workspace,
     model: modelLabel,
     identityName,
     identityAvatar,
-    skillsLabel: skillFilter ? `${skillCount} selected` : "all skills",
+    skillsFilterCount,
     isDefault: Boolean(defaultId && agent.id === defaultId),
   };
 }

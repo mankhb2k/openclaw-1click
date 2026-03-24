@@ -1,16 +1,17 @@
 import { html, nothing } from "lit";
-import { renderUiSelect } from "../components/ui-select.ts";
+import { t } from "../../i18n/index";
+import { renderUiSelect } from "../components/ui-select";
 import type {
   ExecApprovalsAllowlistEntry,
   ExecApprovalsFile,
-} from "../controllers/exec-approvals.ts";
-import { clampText, formatRelativeTimestamp } from "../format.ts";
+} from "../controllers/exec-approvals";
+import { clampText, formatRelativeTimestamp } from "../format";
 import {
   resolveConfigAgents as resolveSharedConfigAgents,
   resolveNodeTargets,
   type NodeTargetOption,
-} from "./nodes-shared.ts";
-import type { NodesProps } from "./nodes.ts";
+} from "./nodes-shared";
+import type { NodesProps } from "./nodes";
 
 type ExecSecurity = "deny" | "allowlist" | "full";
 type ExecAsk = "off" | "on-miss" | "always";
@@ -56,15 +57,15 @@ type ExecApprovalsState = {
 const EXEC_APPROVALS_DEFAULT_SCOPE = "__defaults__";
 
 const SECURITY_OPTIONS: Array<{ value: ExecSecurity; label: string }> = [
-  { value: "deny", label: "Deny" },
-  { value: "allowlist", label: "Allowlist" },
-  { value: "full", label: "Full" },
+  { value: "deny", label: t("nodes.approvals.security.deny") },
+  { value: "allowlist", label: t("nodes.approvals.security.allowlist") },
+  { value: "full", label: t("nodes.approvals.security.full") },
 ];
 
 const ASK_OPTIONS: Array<{ value: ExecAsk; label: string }> = [
-  { value: "off", label: "Off" },
-  { value: "on-miss", label: "On miss" },
-  { value: "always", label: "Always" },
+  { value: "off", label: t("nodes.approvals.ask.off") },
+  { value: "on-miss", label: t("nodes.approvals.ask.onMiss") },
+  { value: "always", label: t("nodes.approvals.ask.always") },
 ];
 
 function normalizeSecurity(value?: string): ExecSecurity {
@@ -197,9 +198,9 @@ export function renderExecApprovals(state: ExecApprovalsState) {
     <section class="card">
       <div class="row" style="justify-content: space-between; align-items: center;">
         <div>
-          <div class="card-title">Exec approvals</div>
+          <div class="card-title">${t("nodes.approvals.title")}</div>
           <div class="card-sub">
-            Allowlist and approval policy for <span class="mono">exec host=gateway/node</span>.
+            ${t("nodes.approvals.subtitle")}
           </div>
         </div>
         <button
@@ -207,7 +208,7 @@ export function renderExecApprovals(state: ExecApprovalsState) {
           ?disabled=${state.disabled || !state.dirty || !targetReady}
           @click=${state.onSave}
         >
-          ${state.saving ? "Saving…" : "Save"}
+          ${state.saving ? t("nodes.common.saving") : t("nodes.common.save")}
         </button>
       </div>
 
@@ -216,9 +217,9 @@ export function renderExecApprovals(state: ExecApprovalsState) {
       ${
         !ready
           ? html`<div class="row" style="margin-top: 12px; gap: 12px;">
-            <div class="muted">Load exec approvals to edit allowlists.</div>
+            <div class="muted">${t("nodes.approvals.loadHint")}</div>
             <button class="btn" ?disabled=${state.loading || !targetReady} @click=${state.onLoad}>
-              ${state.loading ? "Loading…" : "Load approvals"}
+              ${state.loading ? t("nodes.common.loading") : t("nodes.approvals.loadButton")}
             </button>
           </div>`
           : html`
@@ -242,20 +243,20 @@ function renderExecApprovalsTarget(state: ExecApprovalsState) {
     <div class="list" style="margin-top: 12px;">
       <div class="list-item">
         <div class="list-main">
-          <div class="list-title">Target</div>
+          <div class="list-title">${t("nodes.approvals.target.title")}</div>
           <div class="list-sub">
-            Gateway edits local approvals; node edits the selected node.
+            ${t("nodes.approvals.target.subtitle")}
           </div>
         </div>
         <div class="list-meta">
           <label class="field">
-            <span>Host</span>
+            <span>${t("nodes.approvals.target.hostField")}</span>
             ${renderUiSelect({
               value: state.target,
               disabled: state.disabled,
               options: [
-                { value: "gateway", label: "Gateway" },
-                { value: "node", label: "Node" },
+                { value: "gateway", label: t("nodes.approvals.target.gateway") },
+                { value: "node", label: t("nodes.approvals.target.node") },
               ],
               onChange: (value) => {
                 if (value === "node") {
@@ -271,12 +272,12 @@ function renderExecApprovalsTarget(state: ExecApprovalsState) {
             state.target === "node"
               ? html`
                 <label class="field">
-                  <span>Node</span>
+                  <span>${t("nodes.approvals.target.nodeField")}</span>
                   ${renderUiSelect({
                     value: nodeValue,
                     disabled: state.disabled || !hasNodes,
                     options: [
-                      { value: "", label: "Select node" },
+                      { value: "", label: t("nodes.approvals.target.selectNode") },
                       ...state.targetNodes.map((node) => ({ value: node.id, label: node.label })),
                     ],
                     onChange: (next) => {
@@ -293,7 +294,7 @@ function renderExecApprovalsTarget(state: ExecApprovalsState) {
       ${
         state.target === "node" && !hasNodes
           ? html`
-              <div class="muted">No nodes advertise exec approvals yet.</div>
+              <div class="muted">${t("nodes.approvals.target.empty")}</div>
             `
           : nothing
       }
@@ -304,13 +305,13 @@ function renderExecApprovalsTarget(state: ExecApprovalsState) {
 function renderExecApprovalsTabs(state: ExecApprovalsState) {
   return html`
     <div class="row" style="margin-top: 12px; gap: 8px; flex-wrap: wrap;">
-      <span class="label">Scope</span>
+      <span class="label">${t("nodes.approvals.scope.label")}</span>
       <div class="row" style="gap: 8px; flex-wrap: wrap;">
         <button
           class="btn btn--sm ${state.selectedScope === EXEC_APPROVALS_DEFAULT_SCOPE ? "active" : ""}"
           @click=${() => state.onSelectScope(EXEC_APPROVALS_DEFAULT_SCOPE)}
         >
-          Defaults
+          ${t("nodes.approvals.scope.defaults")}
         </button>
         ${state.agents.map((agent) => {
           const label = agent.name?.trim() ? `${agent.name} (${agent.id})` : agent.id;
@@ -348,20 +349,29 @@ function renderExecApprovalsPolicy(state: ExecApprovalsState) {
     <div class="list" style="margin-top: 16px;">
       <div class="list-item">
         <div class="list-main">
-          <div class="list-title">Security</div>
+          <div class="list-title">${t("nodes.approvals.policy.securityTitle")}</div>
           <div class="list-sub">
-            ${isDefaults ? "Default security mode." : `Default: ${defaults.security}.`}
+            ${
+              isDefaults
+                ? t("nodes.approvals.policy.defaultSecurity")
+                : t("nodes.approvals.policy.defaultValue", { value: defaults.security })
+            }
           </div>
         </div>
         <div class="list-meta">
           <label class="field">
-            <span>Mode</span>
+            <span>${t("nodes.approvals.policy.modeField")}</span>
             ${renderUiSelect({
               value: securityValue,
               disabled: state.disabled,
               options: [
                 ...(!isDefaults
-                  ? [{ value: "__default__", label: `Use default (${defaults.security})` }]
+                  ? [
+                      {
+                        value: "__default__",
+                        label: t("nodes.approvals.policy.useDefault", { value: defaults.security }),
+                      },
+                    ]
                   : []),
                 ...SECURITY_OPTIONS.map((option) => ({ value: option.value, label: option.label })),
               ],
@@ -379,19 +389,30 @@ function renderExecApprovalsPolicy(state: ExecApprovalsState) {
 
       <div class="list-item">
         <div class="list-main">
-          <div class="list-title">Ask</div>
+          <div class="list-title">${t("nodes.approvals.policy.askTitle")}</div>
           <div class="list-sub">
-            ${isDefaults ? "Default prompt policy." : `Default: ${defaults.ask}.`}
+            ${
+              isDefaults
+                ? t("nodes.approvals.policy.defaultAsk")
+                : t("nodes.approvals.policy.defaultValue", { value: defaults.ask })
+            }
           </div>
         </div>
         <div class="list-meta">
           <label class="field">
-            <span>Mode</span>
+            <span>${t("nodes.approvals.policy.modeField")}</span>
             ${renderUiSelect({
               value: askValue,
               disabled: state.disabled,
               options: [
-                ...(!isDefaults ? [{ value: "__default__", label: `Use default (${defaults.ask})` }] : []),
+                ...(!isDefaults
+                  ? [
+                      {
+                        value: "__default__",
+                        label: t("nodes.approvals.policy.useDefault", { value: defaults.ask }),
+                      },
+                    ]
+                  : []),
                 ...ASK_OPTIONS.map((option) => ({ value: option.value, label: option.label })),
               ],
               onChange: (value) => {
@@ -408,24 +429,29 @@ function renderExecApprovalsPolicy(state: ExecApprovalsState) {
 
       <div class="list-item">
         <div class="list-main">
-          <div class="list-title">Ask fallback</div>
+          <div class="list-title">${t("nodes.approvals.policy.askFallbackTitle")}</div>
           <div class="list-sub">
             ${
               isDefaults
-                ? "Applied when the UI prompt is unavailable."
-                : `Default: ${defaults.askFallback}.`
+                ? t("nodes.approvals.policy.askFallbackHelp")
+                : t("nodes.approvals.policy.defaultValue", { value: defaults.askFallback })
             }
           </div>
         </div>
         <div class="list-meta">
           <label class="field">
-            <span>Fallback</span>
+            <span>${t("nodes.approvals.policy.fallbackField")}</span>
             ${renderUiSelect({
               value: askFallbackValue,
               disabled: state.disabled,
               options: [
                 ...(!isDefaults
-                  ? [{ value: "__default__", label: `Use default (${defaults.askFallback})` }]
+                  ? [
+                      {
+                        value: "__default__",
+                        label: t("nodes.approvals.policy.useDefault", { value: defaults.askFallback }),
+                      },
+                    ]
                   : []),
                 ...SECURITY_OPTIONS.map((option) => ({ value: option.value, label: option.label })),
               ],
@@ -443,20 +469,24 @@ function renderExecApprovalsPolicy(state: ExecApprovalsState) {
 
       <div class="list-item">
         <div class="list-main">
-          <div class="list-title">Auto-allow skill CLIs</div>
+          <div class="list-title">${t("nodes.approvals.policy.autoAllowTitle")}</div>
           <div class="list-sub">
             ${
               isDefaults
-                ? "Allow skill executables listed by the Gateway."
+                ? t("nodes.approvals.policy.autoAllowHelp")
                 : autoIsDefault
-                  ? `Using default (${defaults.autoAllowSkills ? "on" : "off"}).`
-                  : `Override (${autoEffective ? "on" : "off"}).`
+                  ? t("nodes.approvals.policy.usingDefault", {
+                      value: defaults.autoAllowSkills ? t("nodes.approvals.state.on") : t("nodes.approvals.state.off"),
+                    })
+                  : t("nodes.approvals.policy.override", {
+                      value: autoEffective ? t("nodes.approvals.state.on") : t("nodes.approvals.state.off"),
+                    })
             }
           </div>
         </div>
         <div class="list-meta">
           <label class="field">
-            <span>Enabled</span>
+            <span>${t("common.enabled")}</span>
             <input
               type="checkbox"
               ?disabled=${state.disabled}
@@ -474,7 +504,7 @@ function renderExecApprovalsPolicy(state: ExecApprovalsState) {
                 ?disabled=${state.disabled}
                 @click=${() => state.onRemove([...basePath, "autoAllowSkills"])}
               >
-                Use default
+                ${t("nodes.approvals.policy.useDefaultShort")}
               </button>`
               : nothing
           }
@@ -490,8 +520,8 @@ function renderExecApprovalsAllowlist(state: ExecApprovalsState) {
   return html`
     <div class="row" style="margin-top: 18px; justify-content: space-between;">
       <div>
-        <div class="card-title">Allowlist</div>
-        <div class="card-sub">Case-insensitive glob patterns.</div>
+        <div class="card-title">${t("nodes.approvals.allowlist.title")}</div>
+        <div class="card-sub">${t("nodes.approvals.allowlist.subtitle")}</div>
       </div>
       <button
         class="btn btn--sm"
@@ -501,14 +531,14 @@ function renderExecApprovalsAllowlist(state: ExecApprovalsState) {
           state.onPatch(allowlistPath, next);
         }}
       >
-        Add pattern
+        ${t("nodes.approvals.allowlist.add")}
       </button>
     </div>
     <div class="list" style="margin-top: 12px;">
       ${
         entries.length === 0
           ? html`
-              <div class="muted">No allowlist entries yet.</div>
+              <div class="muted">${t("nodes.approvals.allowlist.empty")}</div>
             `
           : entries.map((entry, index) => renderAllowlistEntry(state, entry, index))
       }
@@ -521,20 +551,22 @@ function renderAllowlistEntry(
   entry: ExecApprovalsAllowlistEntry,
   index: number,
 ) {
-  const lastUsed = entry.lastUsedAt ? formatRelativeTimestamp(entry.lastUsedAt) : "never";
+  const lastUsed = entry.lastUsedAt ? formatRelativeTimestamp(entry.lastUsedAt) : t("nodes.approvals.allowlist.never");
   const lastCommand = entry.lastUsedCommand ? clampText(entry.lastUsedCommand, 120) : null;
   const lastPath = entry.lastResolvedPath ? clampText(entry.lastResolvedPath, 120) : null;
   return html`
     <div class="list-item">
       <div class="list-main">
-        <div class="list-title">${entry.pattern?.trim() ? entry.pattern : "New pattern"}</div>
-        <div class="list-sub">Last used: ${lastUsed}</div>
+        <div class="list-title">
+          ${entry.pattern?.trim() ? entry.pattern : t("nodes.approvals.allowlist.newPattern")}
+        </div>
+        <div class="list-sub">${t("nodes.approvals.allowlist.lastUsed", { value: lastUsed })}</div>
         ${lastCommand ? html`<div class="list-sub mono">${lastCommand}</div>` : nothing}
         ${lastPath ? html`<div class="list-sub mono">${lastPath}</div>` : nothing}
       </div>
       <div class="list-meta">
         <label class="field">
-          <span>Pattern</span>
+          <span>${t("nodes.approvals.allowlist.patternField")}</span>
           <input
             type="text"
             .value=${entry.pattern ?? ""}
@@ -559,7 +591,7 @@ function renderAllowlistEntry(
             state.onRemove(["agents", state.selectedScope, "allowlist", index]);
           }}
         >
-          Remove
+          ${t("nodes.approvals.allowlist.remove")}
         </button>
       </div>
     </div>

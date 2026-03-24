@@ -926,11 +926,53 @@ export async function runGatewayUpdate(opts: UpdateRunnerOptions = {}): Promise<
     };
   }
 
+  const desktopAppRoot = process.env.OPENCLAW_DESKTOP_APP_ROOT?.trim();
+  if (desktopAppRoot) {
+    let desktopPkgOk = false;
+    try {
+      await fs.access(path.join(desktopAppRoot, 'package.json'));
+      desktopPkgOk = true;
+    } catch {
+      desktopPkgOk = false;
+    }
+    if (desktopPkgOk) {
+      const mgr = await detectPackageManager(desktopAppRoot);
+      const argv =
+        mgr === 'pnpm'
+          ? ['pnpm', 'update', 'openclaw']
+          : mgr === 'bun'
+            ? ['bun', 'update', 'openclaw']
+            : ['npm', 'update', 'openclaw'];
+      const mode: UpdateRunResult['mode'] = mgr === 'pnpm' ? 'pnpm' : mgr === 'bun' ? 'bun' : 'npm';
+      const desktopStep = await runStep({
+        runCommand,
+        name: 'desktop app root update',
+        argv,
+        cwd: desktopAppRoot,
+        timeoutMs,
+        progress,
+        stepIndex: 0,
+        totalSteps: 1,
+      });
+      const afterVersion = await readPackageVersion(pkgRoot);
+      return {
+        status: desktopStep.exitCode === 0 ? 'ok' : 'error',
+        mode,
+        root: pkgRoot,
+        reason: desktopStep.exitCode === 0 ? undefined : 'desktop-app-root-update-failed',
+        before: { version: beforeVersion },
+        after: { version: afterVersion },
+        steps: [desktopStep],
+        durationMs: Date.now() - startedAt,
+      };
+    }
+  }
+
   return {
-    status: "skipped",
-    mode: "unknown",
+    status: 'skipped',
+    mode: 'unknown',
     root: pkgRoot,
-    reason: "not-git-install",
+    reason: 'not-git-install',
     before: { version: beforeVersion },
     steps: [],
     durationMs: Date.now() - startedAt,

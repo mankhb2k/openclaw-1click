@@ -85,9 +85,10 @@
   color: var(--muted);
 }
 
-.config-search__input:focus {
-  border-color: var(--accent);
-  box-shadow: var(--focus-ring);
+.config-search__input:focus,
+.config-search__input:focus-visible {
+  border-color: var(--focus-input-border);
+  box-shadow: none;
   background: var(--bg-hover);
 }
 
@@ -989,13 +990,14 @@
   opacity: 0.6;
 }
 
-.cfg-input:hover:not(:focus) {
+.cfg-input:hover:not(:focus):not(:focus-visible) {
   border-color: var(--border-strong);
 }
 
-.cfg-input:focus {
-  border-color: var(--accent);
-  box-shadow: var(--focus-ring);
+.cfg-input:focus,
+.cfg-input:focus-visible {
+  border-color: var(--focus-input-border);
+  box-shadow: none;
   background: var(--bg-hover);
 }
 
@@ -1004,7 +1006,7 @@
   border-color: var(--border);
 }
 
-:root[data-theme-mode="light"] .cfg-input:hover:not(:focus) {
+:root[data-theme-mode="light"] .cfg-input:hover:not(:focus):not(:focus-visible) {
   border-color: var(--border-strong);
 }
 
@@ -1057,13 +1059,14 @@
     box-shadow var(--duration-fast) ease;
 }
 
-.cfg-textarea:hover:not(:focus) {
+.cfg-textarea:hover:not(:focus):not(:focus-visible) {
   border-color: var(--border-strong);
 }
 
-.cfg-textarea:focus {
-  border-color: var(--accent);
-  box-shadow: var(--focus-ring);
+.cfg-textarea:focus,
+.cfg-textarea:focus-visible {
+  border-color: var(--focus-input-border);
+  box-shadow: none;
 }
 
 :root[data-theme-mode="light"] .cfg-textarea {
@@ -1154,7 +1157,7 @@
   padding: 8px 36px 8px 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  background-color: var(--bg-accent);
+  background-color: color-mix(in srgb, var(--bg-accent) 50%, transparent);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
@@ -1167,13 +1170,14 @@
     box-shadow var(--duration-fast) ease;
 }
 
-.cfg-select:hover:not(:focus) {
+.cfg-select:hover:not(:focus):not(:focus-visible) {
   border-color: var(--border-strong);
 }
 
-.cfg-select:focus {
-  border-color: var(--accent);
-  box-shadow: var(--focus-ring);
+.cfg-select:focus,
+.cfg-select:focus-visible {
+  border-color: var(--focus-input-border);
+  box-shadow: none;
 }
 
 :root[data-theme-mode="light"] .cfg-select {

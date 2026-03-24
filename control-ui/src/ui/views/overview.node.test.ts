@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ConnectErrorDetailCodes } from "@openclaw/gateway/protocol/connect-error-details.js";
-import { resolveAuthHintKind, shouldShowPairingHint } from "./overview-hints.ts";
+import { resolveAuthHintKind, shouldShowPairingHint } from "./overview-hints";
 
 describe("shouldShowPairingHint", () => {
   it("returns true for 'pairing required' close reason", () => {

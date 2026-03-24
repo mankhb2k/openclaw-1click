@@ -1,6 +1,7 @@
 import { html, nothing } from "lit";
-import type { ChannelAccountSnapshot } from "../types.ts";
-import type { ChannelKey, ChannelsProps } from "./channels.types.ts";
+import { t } from "../../i18n/index";
+import type { ChannelAccountSnapshot } from "../types";
+import type { ChannelKey, ChannelsProps } from "./channels.types";
 
 export function channelEnabled(key: ChannelKey, props: ChannelsProps) {
   const snapshot = props.snapshot;
@@ -26,6 +27,11 @@ export function getChannelAccountCount(
   return channelAccounts?.[key]?.length ?? 0;
 }
 
+/** Localized "Probe ok ·" / "Thử kết nối thành công ·" style prefix for probe callouts. */
+export function formatProbeStatusLead(ok: boolean): string {
+  return `${t("channels.probe.lead")} ${ok ? t("channels.probe.ok") : t("channels.probe.failed")}${t("channels.probe.suffix")}`;
+}
+
 export function renderChannelAccountCount(
   key: ChannelKey,
   channelAccounts?: Record<string, ChannelAccountSnapshot[]> | null,
@@ -34,5 +40,5 @@ export function renderChannelAccountCount(
   if (count < 2) {
     return nothing;
   }
-  return html`<div class="account-count">Accounts (${count})</div>`;
+  return html`<div class="account-count">${t("channels.accounts.count", { count: String(count) })}</div>`;
 }

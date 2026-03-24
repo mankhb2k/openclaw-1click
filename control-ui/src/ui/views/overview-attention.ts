@@ -1,8 +1,8 @@
 import { html, nothing } from "lit";
-import { t } from "../../i18n/index.ts";
-import { buildExternalLinkRel, EXTERNAL_LINK_TARGET } from "../external-link.ts";
-import { icons, type IconName } from "../icons.ts";
-import type { AttentionItem } from "../types.ts";
+import { t } from "../../i18n/index";
+import { buildExternalLinkRel, EXTERNAL_LINK_TARGET } from "../external-link";
+import { icons, type IconName } from "../icons";
+import type { AttentionItem } from "../types";
 
 export type OverviewAttentionProps = {
   items: AttentionItem[];

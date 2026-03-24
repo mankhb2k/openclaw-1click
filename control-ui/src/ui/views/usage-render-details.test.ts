@@ -3,8 +3,8 @@ import {
   computeFilteredUsage,
   CHART_BAR_WIDTH_RATIO,
   CHART_MAX_BAR_WIDTH,
-} from "./usage-render-details.ts";
-import type { TimeSeriesPoint, UsageSessionEntry } from "./usageTypes.ts";
+} from "./usage-render-details";
+import type { TimeSeriesPoint, UsageSessionEntry } from "./usageTypes";
 
 function makePoint(overrides: Partial<TimeSeriesPoint> = {}): TimeSeriesPoint {
   return {

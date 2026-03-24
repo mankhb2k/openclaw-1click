@@ -6,6 +6,8 @@ productName: OpenClaw Desktop
 directories:
   output: release
 
+icon: build/icon.ico
+
 files:
   - dist/**/*
   - package.json

@@ -1,7 +1,8 @@
 import { html, nothing, type TemplateResult } from "lit";
-import { renderUiSelect } from "../components/ui-select.ts";
-import { icons as sharedIcons } from "../icons.ts";
-import type { ConfigUiHints } from "../types.ts";
+import { t } from "../../i18n/index";
+import { renderUiSelect } from "../components/ui-select";
+import { icons as sharedIcons } from "../icons";
+import type { ConfigUiHints } from "../types";
 import {
   defaultValue,
   hasSensitiveConfigData,
@@ -11,7 +12,7 @@ import {
   REDACTED_PLACEHOLDER,
   schemaType,
   type JsonSchema,
-} from "./config-form.shared.ts";
+} from "./config-form.shared";
 
 const META_KEYS = new Set(["title", "description", "default", "nullable", "tags", "x-tags"]);
 
@@ -104,6 +105,128 @@ type FieldMeta = {
   tags: string[];
 };
 
+const CONFIG_COPY_KEY_BY_TEXT: Record<string, string> = {
+  "Hide value": "config.copy.hideValue",
+  "Reveal value": "config.copy.revealValue",
+  "Disable stream mode to reveal value": "config.copy.disableStreamModeToReveal",
+  "Unsupported schema node. Use Raw mode.": "config.copy.unsupportedSchemaNode",
+  "Unsupported type: {type}. Use Raw mode.": "config.copy.unsupportedType",
+  "Reset to default": "config.copy.resetToDefault",
+  "Select...": "config.copy.selectPlaceholder",
+  "JSON value": "config.copy.jsonValue",
+  "Unsupported array schema. Use Raw mode.": "config.copy.unsupportedArraySchema",
+  item: "config.copy.item",
+  items: "config.copy.items",
+  Add: "config.copy.add",
+  'No items yet. Click "Add" to create one.': "config.copy.noItemsYet",
+  "Remove item": "config.copy.removeItem",
+  "Custom entries": "config.copy.customEntries",
+  "Add Entry": "config.copy.addEntry",
+  "No custom entries.": "config.copy.noCustomEntries",
+  Key: "config.copy.key",
+  "Remove entry": "config.copy.removeEntry",
+  random: "config.copy.random",
+  default: "config.copy.default",
+  off: "config.copy.off",
+  old: "config.copy.old",
+  new: "config.copy.new",
+  summarize: "config.copy.summarize",
+  always: "config.copy.always",
+  inbound: "config.copy.inbound",
+  tagged: "config.copy.tagged",
+  final: "config.copy.final",
+  all: "config.copy.all",
+  session: "config.copy.session",
+  targets: "config.copy.targets",
+  both: "config.copy.both",
+  raw: "config.copy.raw",
+  hash: "config.copy.hash",
+  local: "config.copy.local",
+  remote: "config.copy.remote",
+  rate_limit: "config.copy.rate_limit",
+  overloaded: "config.copy.overloaded",
+  network: "config.copy.network",
+  timeout: "config.copy.timeout",
+  server_error: "config.copy.server_error",
+  wake: "config.copy.wake",
+  agent: "config.copy.agent",
+  now: "config.copy.now",
+  "next-heartbeat": "config.copy.next_heartbeat",
+  none: "config.copy.none",
+  npm: "config.copy.npm",
+  archive: "config.copy.archive",
+  path: "config.copy.path",
+  auto: "config.copy.auto",
+  lan: "config.copy.lan",
+  loopback: "config.copy.loopback",
+  custom: "config.copy.custom",
+  tailnet: "config.copy.tailnet",
+  serve: "config.copy.serve",
+  funnel: "config.copy.funnel",
+  direct: "config.copy.direct",
+  ssh: "config.copy.ssh",
+  minimal: "config.copy.minimal",
+  full: "config.copy.full",
+  token: "config.copy.token",
+  password: "config.copy.password",
+  "trusted-proxy": "config.copy.trusted_proxy",
+  Auto: "config.copy.update.auto",
+  "Auto Update Beta Check Interval (hours)": "config.copy.update.betaCheckHours.label",
+  "How often beta-channel checks run in hours (default: 1).":
+    "config.copy.update.betaCheckHours.help",
+  performance: "config.copy.update.performance",
+  "Auto Update Enabled": "config.copy.update.enabled.label",
+  "Whether auto-update downloads packages while idle (default: true).":
+    "config.copy.update.enabled.help",
+  advanced: "config.copy.update.advanced",
+  "Auto Update Stable Delay (hours)": "config.copy.update.stableDelayHours.label",
+  "Minimum delay before stable channel auto apply starts (default: 6).":
+    "config.copy.update.stableDelayHours.help",
+  "Auto Update Stable Jitter (hours)": "config.copy.update.stableJitterHours.label",
+  "Extra stable-channel rollout spread window in hours (default: 12).":
+    "config.copy.update.stableJitterHours.help",
+  "Update Channel": "config.copy.update.channel.label",
+  'Update channel for gui + runtime install ("stable", "beta", "dev")':
+    "config.copy.update.channel.help",
+  Cli: "config.copy.cli.label",
+  CLI: "config.copy.cli.label",
+  "CLI presentation controls for local command output behavior such as banner and tagline style. Use this section to keep startup output aligned with operator preference without changing runtime behavior.":
+    "config.copy.cli.help",
+  Diagnostics: "config.copy.diagnostics.label",
+  "Diagnostics controls for targeted tracing, telemetry export, and cache inspection during debugging. Keep baseline diagnostics minimal in production and enable deeper signals only when investigating issues.":
+    "config.copy.diagnostics.help",
+  "Diagnostics Flags": "config.copy.diagnostics.flagsLabel",
+  'Enable targeted diagnostics logs by flag (e.g. ["telegram.http"]). Supports wildcards like "telegram.*" or "*".':
+    "config.copy.diagnostics.flagsHelp",
+  Acp: "config.copy.acp.label",
+  ACP: "config.copy.acp.label",
+  "ACP runtime controls for enabling dispatch, selecting backends, constraining allowed agent targets, and tuning streamed turn projection behavior.":
+    "config.copy.acp.help",
+  Mcp: "config.copy.mcp.label",
+  MCP: "config.copy.mcp.label",
+  "Global MCP server definitions managed by OpenClaw. Embedded Pi and other runtime adapters can consume these servers without storing them inside Pi-owned project settings.":
+    "config.copy.mcp.help",
+  Secrets: "config.copy.secrets.label",
+  secrets: "config.copy.secrets.label",
+  Logs: "config.copy.logs.label",
+  "Custom Redaction Patterns": "config.copy.logs.customRedactionPatterns.label",
+  "Additional custom redact regex patterns applied to log output before emission/storage. Use this to mask org-specific tokens and identifiers not covered by built-in redaction rules.":
+    "config.copy.logs.customRedactionPatterns.help",
+};
+
+function translateConfigCopy(raw: string | undefined): string | undefined {
+  if (!raw) {
+    return raw;
+  }
+  const normalized = raw.trim();
+  const key = CONFIG_COPY_KEY_BY_TEXT[normalized];
+  if (!key) {
+    return raw;
+  }
+  const localized = t(key);
+  return localized === key ? raw : localized;
+}
+
 type SensitiveRenderParams = {
   path: Array<string | number>;
   value: unknown;
@@ -155,16 +278,18 @@ function renderSensitiveToggleButton(params: {
       title=${
         state.canReveal
           ? state.isRevealed
-            ? "Hide value"
-            : "Reveal value"
-          : "Disable stream mode to reveal value"
+            ? (translateConfigCopy("Hide value") ?? "Hide value")
+            : (translateConfigCopy("Reveal value") ?? "Reveal value")
+          : (translateConfigCopy("Disable stream mode to reveal value") ??
+            "Disable stream mode to reveal value")
       }
       aria-label=${
         state.canReveal
           ? state.isRevealed
-            ? "Hide value"
-            : "Reveal value"
-          : "Disable stream mode to reveal value"
+            ? (translateConfigCopy("Hide value") ?? "Hide value")
+            : (translateConfigCopy("Reveal value") ?? "Reveal value")
+          : (translateConfigCopy("Disable stream mode to reveal value") ??
+            "Disable stream mode to reveal value")
       }
       aria-pressed=${state.isRevealed}
       ?disabled=${params.disabled || !state.canReveal}
@@ -221,18 +346,34 @@ function normalizeTags(raw: unknown): string[] {
   return tags;
 }
 
+function resolvePathTranslation(
+  path: Array<string | number>,
+  kind: "label" | "help",
+): string | undefined {
+  const pathKey = path.filter((segment): segment is string => typeof segment === "string").join(".");
+  if (!pathKey) {
+    return undefined;
+  }
+  const key = `config.fields.${pathKey}.${kind}`;
+  const localized = t(key);
+  return localized === key ? undefined : localized;
+}
+
 function resolveFieldMeta(
   path: Array<string | number>,
   schema: JsonSchema,
   hints: ConfigUiHints,
 ): FieldMeta {
   const hint = hintForPath(path, hints);
-  const label = hint?.label ?? schema.title ?? humanize(String(path.at(-1)));
-  const help = hint?.help ?? schema.description;
+  const label =
+    resolvePathTranslation(path, "label") ??
+    translateConfigCopy(hint?.label ?? schema.title ?? humanize(String(path.at(-1))));
+  const help =
+    resolvePathTranslation(path, "help") ?? translateConfigCopy(hint?.help ?? schema.description);
   const schemaTags = normalizeTags(schema["x-tags"] ?? schema.tags);
   const hintTags = normalizeTags(hint?.tags);
   return {
-    label,
+    label: label ?? humanize(String(path.at(-1))),
     help,
     tags: hintTags.length > 0 ? hintTags : schemaTags,
   };
@@ -416,7 +557,9 @@ export function renderNode(params: {
   if (unsupported.has(key)) {
     return html`<div class="cfg-field cfg-field--error">
       <div class="cfg-field__label">${label}</div>
-      <div class="cfg-field__error">Unsupported schema node. Use Raw mode.</div>
+      <div class="cfg-field__error">
+        ${translateConfigCopy("Unsupported schema node. Use Raw mode.")}
+      </div>
     </div>`;
   }
   if (
@@ -611,7 +754,10 @@ export function renderNode(params: {
   return html`
     <div class="cfg-field cfg-field--error">
       <div class="cfg-field__label">${label}</div>
-      <div class="cfg-field__error">Unsupported type: ${type}. Use Raw mode.</div>
+      <div class="cfg-field__error">
+        ${(translateConfigCopy("Unsupported type: {type}. Use Raw mode.") ??
+          "Unsupported type: {type}. Use Raw mode.").replace("{type}", String(type))}
+      </div>
     </div>
   `;
 }
@@ -704,7 +850,7 @@ function renderTextInput(params: {
           <button
             type="button"
             class="cfg-input__reset"
-            title="Reset to default"
+            title=${translateConfigCopy("Reset to default") ?? "Reset to default"}
             ?disabled=${disabled || sensitiveState.isRedacted}
             @click=${() => onPatch(path, schema.default)}
           >↺</button>
@@ -796,8 +942,11 @@ function renderSelect(params: {
         disabled,
         value: currentIndex >= 0 ? String(currentIndex) : unset,
         options: [
-          { value: unset, label: "Select..." },
-          ...options.map((opt, idx) => ({ value: String(idx), label: String(opt) })),
+          { value: unset, label: translateConfigCopy("Select...") ?? "Select..." },
+          ...options.map((opt, idx) => ({
+            value: String(idx),
+            label: translateConfigCopy(String(opt)) ?? String(opt),
+          })),
         ],
         onChange: (val) => {
           onPatch(path, val === unset ? undefined : options[Number(val)]);
@@ -840,7 +989,11 @@ function renderJsonTextarea(params: {
       <div class="cfg-input-wrap">
         <textarea
           class="cfg-textarea${sensitiveState.isRedacted ? " cfg-textarea--redacted" : ""}"
-          placeholder=${sensitiveState.isRedacted ? REDACTED_PLACEHOLDER : "JSON value"}
+          placeholder=${
+            sensitiveState.isRedacted
+              ? REDACTED_PLACEHOLDER
+              : (translateConfigCopy("JSON value") ?? "JSON value")
+          }
           rows="3"
           .value=${displayValue}
           ?disabled=${disabled}
@@ -1046,7 +1199,9 @@ function renderArray(params: {
     return html`
       <div class="cfg-field cfg-field--error">
         <div class="cfg-field__label">${label}</div>
-        <div class="cfg-field__error">Unsupported array schema. Use Raw mode.</div>
+        <div class="cfg-field__error">
+          ${translateConfigCopy("Unsupported array schema. Use Raw mode.")}
+        </div>
       </div>
     `;
   }
@@ -1060,7 +1215,14 @@ function renderArray(params: {
           ${showLabel ? html`<span class="cfg-array__label">${label}</span>` : nothing}
           ${renderTags(tags)}
         </div>
-        <span class="cfg-array__count">${arr.length} item${arr.length !== 1 ? "s" : ""}</span>
+        <span class="cfg-array__count">
+          ${arr.length}
+          ${
+            arr.length !== 1
+              ? (translateConfigCopy("items") ?? "items")
+              : (translateConfigCopy("item") ?? "item")
+          }
+        </span>
         <button
           type="button"
           class="cfg-array__add"
@@ -1071,7 +1233,7 @@ function renderArray(params: {
           }}
         >
           <span class="cfg-array__add-icon">${icons.plus}</span>
-          Add
+          ${translateConfigCopy("Add") ?? "Add"}
         </button>
       </div>
       ${help ? html`<div class="cfg-array__help">${help}</div>` : nothing}
@@ -1079,7 +1241,9 @@ function renderArray(params: {
       ${
         arr.length === 0
           ? html`
-              <div class="cfg-array__empty">No items yet. Click "Add" to create one.</div>
+              <div class="cfg-array__empty">
+                ${translateConfigCopy('No items yet. Click "Add" to create one.')}
+              </div>
             `
           : html`
         <div class="cfg-array__items">
@@ -1091,7 +1255,7 @@ function renderArray(params: {
                 <button
                   type="button"
                   class="cfg-array__item-remove"
-                  title="Remove item"
+                  title=${translateConfigCopy("Remove item") ?? "Remove item"}
                   ?disabled=${disabled}
                   @click=${() => {
                     const next = [...arr];
@@ -1174,7 +1338,7 @@ function renderMapField(params: {
   return html`
     <div class="cfg-map">
       <div class="cfg-map__header">
-        <span class="cfg-map__label">Custom entries</span>
+        <span class="cfg-map__label">${translateConfigCopy("Custom entries")}</span>
         <button
           type="button"
           class="cfg-map__add"
@@ -1192,14 +1356,14 @@ function renderMapField(params: {
           }}
         >
           <span class="cfg-map__add-icon">${icons.plus}</span>
-          Add Entry
+          ${translateConfigCopy("Add Entry") ?? "Add Entry"}
         </button>
       </div>
 
       ${
         visibleEntries.length === 0
           ? html`
-              <div class="cfg-map__empty">No custom entries.</div>
+              <div class="cfg-map__empty">${translateConfigCopy("No custom entries.")}</div>
             `
           : html`
         <div class="cfg-map__items">
@@ -1220,7 +1384,7 @@ function renderMapField(params: {
                     <input
                       type="text"
                       class="cfg-input cfg-input--sm"
-                      placeholder="Key"
+                      placeholder=${translateConfigCopy("Key") ?? "Key"}
                       .value=${key}
                       ?disabled=${disabled}
                       @change=${(e: Event) => {
@@ -1241,7 +1405,7 @@ function renderMapField(params: {
                   <button
                     type="button"
                     class="cfg-map__item-remove"
-                    title="Remove entry"
+                    title=${translateConfigCopy("Remove entry") ?? "Remove entry"}
                     ?disabled=${disabled}
                     @click=${() => {
                       const next = { ...value };
@@ -1260,7 +1424,9 @@ function renderMapField(params: {
                           <textarea
                             class="cfg-textarea cfg-textarea--sm${sensitiveState.isRedacted ? " cfg-textarea--redacted" : ""}"
                             placeholder=${
-                              sensitiveState.isRedacted ? REDACTED_PLACEHOLDER : "JSON value"
+                              sensitiveState.isRedacted
+                                ? REDACTED_PLACEHOLDER
+                                : (translateConfigCopy("JSON value") ?? "JSON value")
                             }
                             rows="2"
                             .value=${sensitiveState.isRedacted ? "" : fallback}

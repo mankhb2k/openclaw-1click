@@ -109,6 +109,7 @@ export type AppViewState = {
   configSaving: boolean;
   configApplying: boolean;
   updateRunning: boolean;
+  updateNotice: string | null;
   applySessionKey: string;
   configSnapshot: ConfigSnapshot | null;
   configSchema: unknown;
@@ -247,6 +248,7 @@ export type AppViewState = {
   | "cronForm"
   | "cronFieldErrors"
   | "cronEditingJobId"
+  | "cronEditingBaseline"
   | "cronRunsJobId"
   | "cronRunsLoadingMore"
   | "cronRuns"

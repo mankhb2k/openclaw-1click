@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { mountApp, registerAppMountHooks } from "../test-helpers/app-mount.ts";
+import { mountApp, registerAppMountHooks } from "../test-helpers/app-mount";
 
 registerAppMountHooks();
 

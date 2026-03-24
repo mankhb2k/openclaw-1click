@@ -1,8 +1,8 @@
 import { render } from "lit";
 import { describe, expect, it, vi } from "vitest";
-import { DEFAULT_CRON_FORM } from "../app-defaults.ts";
-import type { CronJob } from "../types.ts";
-import { renderCron, type CronProps } from "./cron.ts";
+import { DEFAULT_CRON_FORM } from "../app-defaults";
+import type { CronJob } from "../types";
+import { renderCron, type CronProps } from "./cron";
 
 function createJob(id: string): CronJob {
   return {

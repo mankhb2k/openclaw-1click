@@ -4,8 +4,8 @@ import {
   mergeUsageDailyLatency,
   mergeUsageLatency,
 } from "@openclaw/shared/usage-aggregates.js";
-import { t } from "../../i18n/index.ts";
-import { UsageSessionEntry, UsageTotals, UsageAggregates } from "./usageTypes.ts";
+import { t } from "../../i18n/index";
+import { UsageSessionEntry, UsageTotals, UsageAggregates } from "./usageTypes";
 
 const CHARS_PER_TOKEN = 4;
 

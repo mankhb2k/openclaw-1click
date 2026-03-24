@@ -1,7 +1,7 @@
 import { render } from "lit";
 import { describe, expect, it, vi } from "vitest";
-import type { ThemeMode, ThemeName } from "../theme.ts";
-import { renderConfig } from "./config.ts";
+import type { ThemeMode, ThemeName } from "../theme";
+import { renderConfig } from "./config";
 
 describe("config view", () => {
   const baseProps = () => ({

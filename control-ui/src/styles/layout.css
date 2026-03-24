@@ -20,7 +20,8 @@
     "nav content";
   gap: 0;
   animation: dashboard-enter 0.3s var(--ease-out);
-  transition: grid-template-columns var(--shell-focus-duration) var(--shell-focus-ease);
+  transition: grid-template-columns var(--shell-focus-duration)
+    var(--shell-focus-ease);
   overflow: hidden;
 }
 
@@ -236,7 +237,8 @@
 
 .topbar-search:focus-visible {
   outline: none;
-  box-shadow: var(--focus-ring);
+  border-color: var(--focus-input-border);
+  box-shadow: none;
 }
 
 .topbar-search__label {
@@ -622,7 +624,11 @@
 .nav-item.active,
 .nav-item--active {
   color: var(--text-strong);
-  background: color-mix(in srgb, var(--accent-subtle) 88%, var(--bg-elevated) 12%);
+  background: color-mix(
+    in srgb,
+    var(--accent-subtle) 88%,
+    var(--bg-elevated) 12%
+  );
   border-color: color-mix(in srgb, var(--accent) 18%, transparent);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, white 10%, transparent),

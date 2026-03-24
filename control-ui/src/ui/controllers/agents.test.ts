@@ -36,6 +36,7 @@ function createSaveState(): {
       configSaving: false,
       configApplying: false,
       updateRunning: false,
+      updateNotice: null,
       configSnapshot: { hash: "hash-1" },
       configFormDirty: true,
       configFormMode: "form",

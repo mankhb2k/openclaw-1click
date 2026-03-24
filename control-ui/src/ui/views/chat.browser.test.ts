@@ -1,7 +1,7 @@
 import { render } from "lit";
 import { afterEach, describe, expect, it } from "vitest";
 import "../../styles.css";
-import { renderChat, type ChatProps } from "./chat.ts";
+import { renderChat, type ChatProps } from "./chat";
 
 function createProps(overrides: Partial<ChatProps> = {}): ChatProps {
   return {

@@ -1,8 +1,8 @@
 import { html, nothing } from "lit";
 import { ref } from "lit/directives/ref.js";
-import { t } from "../../i18n/index.ts";
-import { SLASH_COMMANDS } from "../chat/slash-commands.ts";
-import { icons, type IconName } from "../icons.ts";
+import { t } from "../../i18n/index";
+import { SLASH_COMMANDS } from "../chat/slash-commands";
+import { icons, type IconName } from "../icons";
 
 type PaletteItem = {
   id: string;

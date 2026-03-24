@@ -1,15 +1,15 @@
 import { html, nothing, type TemplateResult } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import { t } from "../../i18n/index.ts";
-import { formatCost, formatTokens, formatRelativeTimestamp } from "../format.ts";
-import { formatNextRun } from "../presenter.ts";
+import { t } from "../../i18n/index";
+import { formatCost, formatTokens, formatRelativeTimestamp } from "../format";
+import { formatNextRun } from "../presenter";
 import type {
   SessionsUsageResult,
   SessionsListResult,
   SkillStatusReport,
   CronJob,
   CronStatus,
-} from "../types.ts";
+} from "../types";
 
 export type OverviewCardsProps = {
   usageResult: SessionsUsageResult | null;

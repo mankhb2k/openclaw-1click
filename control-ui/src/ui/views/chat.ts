@@ -4,36 +4,36 @@ import { repeat } from "lit/directives/repeat.js";
 import {
   CHAT_ATTACHMENT_ACCEPT,
   isSupportedChatAttachmentMimeType,
-} from "../chat/attachment-support.ts";
-import { DeletedMessages } from "../chat/deleted-messages.ts";
-import { exportChatMarkdown } from "../chat/export.ts";
+} from "../chat/attachment-support";
+import { DeletedMessages } from "../chat/deleted-messages";
+import { exportChatMarkdown } from "../chat/export";
 import {
   renderMessageGroup,
   renderReadingIndicatorGroup,
   renderStreamingGroup,
-} from "../chat/grouped-render.ts";
-import { InputHistory } from "../chat/input-history.ts";
-import { normalizeMessage, normalizeRoleForGrouping } from "../chat/message-normalizer.ts";
-import { PinnedMessages } from "../chat/pinned-messages.ts";
-import { getPinnedMessageSummary } from "../chat/pinned-summary.ts";
-import { messageMatchesSearchQuery } from "../chat/search-match.ts";
-import { getOrCreateSessionCacheValue } from "../chat/session-cache.ts";
+} from "../chat/grouped-render";
+import { InputHistory } from "../chat/input-history";
+import { normalizeMessage, normalizeRoleForGrouping } from "../chat/message-normalizer";
+import { PinnedMessages } from "../chat/pinned-messages";
+import { getPinnedMessageSummary } from "../chat/pinned-summary";
+import { messageMatchesSearchQuery } from "../chat/search-match";
+import { getOrCreateSessionCacheValue } from "../chat/session-cache";
 import {
   CATEGORY_LABELS,
   SLASH_COMMANDS,
   getSlashCommandCompletions,
   type SlashCommandCategory,
   type SlashCommandDef,
-} from "../chat/slash-commands.ts";
-import { isSttSupported, startStt, stopStt } from "../chat/speech.ts";
-import { icons } from "../icons.ts";
-import { detectTextDirection } from "../text-direction.ts";
-import type { GatewaySessionRow, SessionsListResult } from "../types.ts";
-import type { ChatItem, MessageGroup } from "../types/chat-types.ts";
-import type { ChatAttachment, ChatQueueItem } from "../ui-types.ts";
-import { agentLogoUrl, resolveAgentAvatarUrl } from "./agents-utils.ts";
-import { renderMarkdownSidebar } from "./markdown-sidebar.ts";
-import "../components/resizable-divider.ts";
+} from "../chat/slash-commands";
+import { isSttSupported, startStt, stopStt } from "../chat/speech";
+import { icons } from "../icons";
+import { detectTextDirection } from "../text-direction";
+import type { GatewaySessionRow, SessionsListResult } from "../types";
+import type { ChatItem, MessageGroup } from "../types/chat-types";
+import type { ChatAttachment, ChatQueueItem } from "../ui-types";
+import { agentLogoUrl, resolveAgentAvatarUrl } from "./agents-utils";
+import { renderMarkdownSidebar } from "./markdown-sidebar";
+import "../components/resizable-divider";
 
 export type CompactionIndicatorStatus = {
   active: boolean;

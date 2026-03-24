@@ -80,7 +80,7 @@ async function main(): Promise<void> {
   const { tokenForUrl, basePath } = ensureGatewayDesktopAuth(paths, appRoot);
   const gatewayPort = await allocateGatewayPort(18789);
   const gatewayTokenEnv = tokenForUrl.length > 0 ? tokenForUrl : undefined;
-  const baseEnv = buildOpenClawEnv(paths, gatewayTokenEnv);
+  const baseEnv = buildOpenClawEnv(paths, gatewayTokenEnv, appRoot);
 
   const execPath = process.execPath;
   const nodeEnv: NodeJS.ProcessEnv = {

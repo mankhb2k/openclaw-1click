@@ -13,17 +13,20 @@ type ScopedSessionSelection = {
   lastActiveSessionKey: string;
 };
 
-type PersistedUiSettings = Omit<UiSettings, "token" | "sessionKey" | "lastActiveSessionKey"> & {
+type PersistedUiSettings = Omit<
+  UiSettings,
+  "token" | "sessionKey" | "lastActiveSessionKey"
+> & {
   token?: never;
   sessionKey?: string;
   lastActiveSessionKey?: string;
   sessionsByGateway?: Record<string, ScopedSessionSelection>;
 };
 
-import { isSupportedLocale } from "../i18n/index.ts";
-import { getSafeLocalStorage } from "../local-storage.ts";
-import { inferBasePathFromPathname, normalizeBasePath } from "./navigation.ts";
-import { parseThemeSelection, type ThemeMode, type ThemeName } from "./theme.ts";
+import { isSupportedLocale } from "../i18n/index";
+import { getSafeLocalStorage } from "../local-storage";
+import { inferBasePathFromPathname, normalizeBasePath } from "./navigation";
+import { parseThemeSelection, type ThemeMode, type ThemeName } from "./theme";
 
 export type UiSettings = {
   gatewayUrl: string;
@@ -94,7 +97,9 @@ function normalizeGatewayTokenScope(gatewayUrl: string): string {
         : undefined;
     const parsed = base ? new URL(trimmed, base) : new URL(trimmed);
     const pathname =
-      parsed.pathname === "/" ? "" : parsed.pathname.replace(/\/+$/, "") || parsed.pathname;
+      parsed.pathname === "/"
+        ? ""
+        : parsed.pathname.replace(/\/+$/, "") || parsed.pathname;
     return `${parsed.protocol}//${parsed.host}${pathname}`;
   } catch {
     return trimmed;
@@ -130,7 +135,8 @@ function resolveScopedSessionSelection(
       ? parsed.sessionKey.trim()
       : defaults.sessionKey;
   const legacyLastActiveSessionKey =
-    typeof parsed.lastActiveSessionKey === "string" && parsed.lastActiveSessionKey.trim()
+    typeof parsed.lastActiveSessionKey === "string" &&
+    parsed.lastActiveSessionKey.trim()
       ? parsed.lastActiveSessionKey.trim()
       : legacySessionKey || defaults.lastActiveSessionKey;
 
@@ -174,7 +180,8 @@ function persistSessionToken(gatewayUrl: string, token: string) {
 }
 
 export function loadSettings(): UiSettings {
-  const { pageUrl: pageDerivedUrl, effectiveUrl: defaultUrl } = deriveDefaultGatewayUrl();
+  const { pageUrl: pageDerivedUrl, effectiveUrl: defaultUrl } =
+    deriveDefaultGatewayUrl();
   const storage = getSafeLocalStorage();
 
   const defaults: UiSettings = {
@@ -210,8 +217,13 @@ export function loadSettings(): UiSettings {
       typeof parsed.gatewayUrl === "string" && parsed.gatewayUrl.trim()
         ? parsed.gatewayUrl.trim()
         : defaults.gatewayUrl;
-    const gatewayUrl = parsedGatewayUrl === pageDerivedUrl ? defaultUrl : parsedGatewayUrl;
-    const scopedSessionSelection = resolveScopedSessionSelection(gatewayUrl, parsed, defaults);
+    const gatewayUrl =
+      parsedGatewayUrl === pageDerivedUrl ? defaultUrl : parsedGatewayUrl;
+    const scopedSessionSelection = resolveScopedSessionSelection(
+      gatewayUrl,
+      parsed,
+      defaults,
+    );
     const { theme, mode } = parseThemeSelection(
       (parsed as { theme?: unknown }).theme,
       (parsed as { themeMode?: unknown }).themeMode,
@@ -225,7 +237,9 @@ export function loadSettings(): UiSettings {
       theme,
       themeMode: mode,
       chatFocusMode:
-        typeof parsed.chatFocusMode === "boolean" ? parsed.chatFocusMode : defaults.chatFocusMode,
+        typeof parsed.chatFocusMode === "boolean"
+          ? parsed.chatFocusMode
+          : defaults.chatFocusMode,
       chatShowThinking:
         typeof parsed.chatShowThinking === "boolean"
           ? parsed.chatShowThinking
@@ -241,13 +255,18 @@ export function loadSettings(): UiSettings {
           ? parsed.splitRatio
           : defaults.splitRatio,
       navCollapsed:
-        typeof parsed.navCollapsed === "boolean" ? parsed.navCollapsed : defaults.navCollapsed,
+        typeof parsed.navCollapsed === "boolean"
+          ? parsed.navCollapsed
+          : defaults.navCollapsed,
       navWidth:
-        typeof parsed.navWidth === "number" && parsed.navWidth >= 200 && parsed.navWidth <= 400
+        typeof parsed.navWidth === "number" &&
+        parsed.navWidth >= 200 &&
+        parsed.navWidth <= 400
           ? parsed.navWidth
           : defaults.navWidth,
       navGroupsCollapsed:
-        typeof parsed.navGroupsCollapsed === "object" && parsed.navGroupsCollapsed !== null
+        typeof parsed.navGroupsCollapsed === "object" &&
+        parsed.navGroupsCollapsed !== null
           ? parsed.navGroupsCollapsed
           : defaults.navGroupsCollapsed,
       borderRadius:
@@ -256,7 +275,9 @@ export function loadSettings(): UiSettings {
         parsed.borderRadius <= 100
           ? parsed.borderRadius
           : defaults.borderRadius,
-      locale: isSupportedLocale(parsed.locale) ? parsed.locale : defaults.locale,
+      locale: isSupportedLocale(parsed.locale)
+        ? parsed.locale
+        : defaults.locale,
     };
     if ("token" in parsed) {
       persistSettings(settings);
@@ -285,7 +306,10 @@ function persistSettings(next: UiSettings) {
       storage?.getItem("openclaw.control.settings.v1");
     if (raw) {
       const parsed = JSON.parse(raw) as PersistedUiSettings;
-      if (parsed.sessionsByGateway && typeof parsed.sessionsByGateway === "object") {
+      if (
+        parsed.sessionsByGateway &&
+        typeof parsed.sessionsByGateway === "object"
+      ) {
         existingSessionsByGateway = parsed.sessionsByGateway;
       }
     }
@@ -294,7 +318,9 @@ function persistSettings(next: UiSettings) {
   }
   const sessionsByGateway = Object.fromEntries(
     [
-      ...Object.entries(existingSessionsByGateway).filter(([key]) => key !== scope),
+      ...Object.entries(existingSessionsByGateway).filter(
+        ([key]) => key !== scope,
+      ),
       [
         scope,
         {

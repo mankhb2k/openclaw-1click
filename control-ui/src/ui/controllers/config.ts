@@ -34,6 +34,8 @@ export type ConfigState = {
   configActiveSection: string | null;
   configActiveSubsection: string | null;
   lastError: string | null;
+  /** Transient success / follow-up message after `update.run` (e.g. restart desktop). */
+  updateNotice: string | null;
 };
 
 export async function loadConfig(state: ConfigState) {
@@ -150,6 +152,45 @@ export async function saveConfig(state: ConfigState) {
   }
 }
 
+type UpdateRunStep = {
+  name?: string;
+  command?: string;
+  exitCode?: number | null;
+  stderrTail?: string | null;
+};
+
+type UpdateRunResponse = {
+  ok?: boolean;
+  result?: {
+    status?: string;
+    reason?: string;
+    mode?: string;
+    steps?: UpdateRunStep[];
+  };
+};
+
+function formatUpdateRunFailure(res: UpdateRunResponse | null | undefined): string {
+  if (!res) {
+    return "Cập nhật thất bại: gateway không trả về dữ liệu.";
+  }
+  const r = res.result;
+  const status = r?.status ?? "error";
+  const reason = r?.reason?.trim() || "Không có mô tả.";
+  const parts: string[] = [`Cập nhật thất bại (${status}): ${reason}`];
+  const steps = Array.isArray(r?.steps) ? r.steps : [];
+  const bad = steps.filter(
+    (s) => s && typeof s.exitCode === "number" && s.exitCode !== 0,
+  );
+  const tailFrom = bad.length > 0 ? bad[bad.length - 1] : steps[steps.length - 1];
+  if (tailFrom?.stderrTail && String(tailFrom.stderrTail).trim()) {
+    const tail = String(tailFrom.stderrTail).trim();
+    parts.push(tail.length > 2000 ? `…${tail.slice(-2000)}` : tail);
+  } else if (tailFrom?.command) {
+    parts.push(`Lệnh: ${tailFrom.command}`);
+  }
+  return parts.join("\n\n");
+}
+
 export async function applyConfig(state: ConfigState) {
   if (!state.client || !state.connected) {
     return;
@@ -183,18 +224,37 @@ export async function runUpdate(state: ConfigState) {
   }
   state.updateRunning = true;
   state.lastError = null;
+  state.updateNotice = null;
   try {
-    const res = await state.client.request<{
-      ok?: boolean;
-      result?: { status?: string; reason?: string };
-    }>("update.run", {
+    const res = await state.client.request<UpdateRunResponse>("update.run", {
       sessionKey: state.applySessionKey,
     });
-    if (res && res.ok === false) {
-      const status = res.result?.status ?? "error";
-      const reason = res.result?.reason ?? "Update failed.";
-      state.lastError = `Update ${status}: ${reason}`;
+    const st = res?.result?.status;
+    const reason = typeof res?.result?.reason === "string" ? res.result.reason : "";
+
+    if (!res || res.ok === false || st === "error") {
+      state.lastError = formatUpdateRunFailure(res);
+      return;
     }
+
+    if (st === "skipped") {
+      if (reason === "not-git-install") {
+        state.lastError =
+          "Gateway chưa chạy nhánh cập nhật cho Desktop (thiếu bản vá sau npm install). Chạy: npm install rồi khởi động lại app, hoặc tắt app và trong thư mục dự án chạy: npm run update:openclaw";
+      } else {
+        state.lastError = `Cập nhật bị bỏ qua (${reason || "skipped"}). Thử: npm run update:openclaw tại thư mục dự án, hoặc xem log gateway.`;
+      }
+      return;
+    }
+
+    if (st !== "ok") {
+      state.lastError = `Cập nhật: trạng thái không mong đợi (${String(st)}). ${reason}`.trim();
+      return;
+    }
+
+    state.lastError = null;
+    state.updateNotice =
+      "Đã chạy cập nhật gói openclaw. Đóng hoàn toàn OpenClaw Desktop rồi mở lại để gateway nạp bản mới (Windows thường không tự restart process). Nếu banner vẫn báo có bản mới, chạy thêm: npm run update:openclaw trong thư mục dự án.";
   } catch (err) {
     state.lastError = String(err);
   } finally {

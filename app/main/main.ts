@@ -10,6 +10,7 @@ import {
   globalShortcut,
   shell,
   type Event as ElectronEvent,
+  type WebContents,
   type WebContentsConsoleMessageEventParams,
 } from 'electron';
 import * as fs from 'fs';
@@ -19,6 +20,7 @@ import treeKill from 'tree-kill';
 import { ENV_DATA_ROOT } from '../backend/config';
 import { runFirstLaunchOnboardingIfNeeded } from './onboard';
 import { ENV_DESKTOP_RESOURCES } from '../backend/config';
+import { resolveWindowIconPath } from './app-icon';
 
 /**
  * Smallest window size the user can resize to (matches Control UI layout floor).
@@ -248,6 +250,49 @@ function registerGlobalShortcuts(): void {
   }
 }
 
+function isHttpOrHttpsUrl(raw: string): boolean {
+  try {
+    const u = new URL(raw);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Liên kết web (http/https) mở bằng trình duyệt hệ thống; không tạo BrowserWindow/tab mới trong Electron.
+ */
+function wireControlUiExternalLinks(wc: WebContents, controlUiUrl: string): void {
+  wc.setWindowOpenHandler(({ url }) => {
+    if (isHttpOrHttpsUrl(url)) {
+      void shell.openExternal(url);
+    }
+    return { action: 'deny' };
+  });
+
+  let sameOrigin: string;
+  try {
+    sameOrigin = new URL(controlUiUrl).origin;
+  } catch {
+    return;
+  }
+
+  wc.on('will-navigate', (event, url) => {
+    try {
+      const target = new URL(url);
+      if (target.origin === sameOrigin) {
+        return;
+      }
+      if (isHttpOrHttpsUrl(url)) {
+        event.preventDefault();
+        void shell.openExternal(url);
+      }
+    } catch {
+      /* ignore malformed URL */
+    }
+  });
+}
+
 function killBackendTree(): void {
   if (backendLauncher?.pid) {
     try {
@@ -265,6 +310,7 @@ async function createWindow(): Promise<void> {
   const dataRoot = getDataRoot();
   const controlUiUrl = await ensureBackendAndGetUrl(dataRoot);
 
+  const windowIcon = resolveWindowIconPath();
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
@@ -272,11 +318,14 @@ async function createWindow(): Promise<void> {
     minHeight: MAIN_WINDOW_MIN_HEIGHT,
     show: false,
     backgroundColor: '#0e1015',
+    ...(windowIcon ? { icon: windowIcon } : {}),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
+
+  wireControlUiExternalLinks(mainWindow.webContents, controlUiUrl);
 
   mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL, isMainFrame) => {
     if (isMainFrame) {

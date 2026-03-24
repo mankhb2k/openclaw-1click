@@ -1,12 +1,12 @@
 import { html, nothing } from "lit";
-import { t, i18n, SUPPORTED_LOCALES, type Locale, isSupportedLocale } from "../../i18n/index.ts";
-import { renderUiSelect } from "../components/ui-select.ts";
-import type { EventLogEntry } from "../app-events.ts";
-import { buildExternalLinkRel, EXTERNAL_LINK_TARGET } from "../external-link.ts";
-import { formatRelativeTimestamp, formatDurationHuman } from "../format.ts";
-import type { GatewayHelloOk } from "../gateway.ts";
-import { icons } from "../icons.ts";
-import type { UiSettings } from "../storage.ts";
+import { t, i18n, SUPPORTED_LOCALES, type Locale, isSupportedLocale } from "../../i18n/index";
+import { renderUiSelect } from "../components/ui-select";
+import type { EventLogEntry } from "../app-events";
+import { buildExternalLinkRel, EXTERNAL_LINK_TARGET } from "../external-link";
+import { formatRelativeTimestamp, formatDurationHuman } from "../format";
+import type { GatewayHelloOk } from "../gateway";
+import { icons } from "../icons";
+import type { UiSettings } from "../storage";
 import type {
   AttentionItem,
   CronJob,
@@ -14,16 +14,16 @@ import type {
   SessionsListResult,
   SessionsUsageResult,
   SkillStatusReport,
-} from "../types.ts";
-import { renderOverviewAttention } from "./overview-attention.ts";
-import { renderOverviewCards } from "./overview-cards.ts";
-import { renderOverviewEventLog } from "./overview-event-log.ts";
+} from "../types";
+import { renderOverviewAttention } from "./overview-attention";
+import { renderOverviewCards } from "./overview-cards";
+import { renderOverviewEventLog } from "./overview-event-log";
 import {
   resolveAuthHintKind,
   shouldShowInsecureContextHint,
   shouldShowPairingHint,
-} from "./overview-hints.ts";
-import { renderOverviewLogTail } from "./overview-log-tail.ts";
+} from "./overview-hints";
+import { renderOverviewLogTail } from "./overview-log-tail";
 
 export type OverviewProps = {
   connected: boolean;

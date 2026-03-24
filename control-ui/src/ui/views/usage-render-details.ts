@@ -1,16 +1,16 @@
 import { html, svg, nothing } from "lit";
 import { formatDurationCompact } from "@openclaw/infra/format-time/format-duration.ts";
-import { t } from "../../i18n/index.ts";
-import { renderUiMultiSelect } from "../components/ui-select.ts";
-import { parseToolSummary } from "../usage-helpers.ts";
-import { charsToTokens, formatCost, formatTokens } from "./usage-metrics.ts";
-import { renderInsightList } from "./usage-render-overview.ts";
+import { t } from "../../i18n/index";
+import { renderUiMultiSelect } from "../components/ui-select";
+import { parseToolSummary } from "../usage-helpers";
+import { charsToTokens, formatCost, formatTokens } from "./usage-metrics";
+import { renderInsightList } from "./usage-render-overview";
 import {
   SessionLogEntry,
   SessionLogRole,
   TimeSeriesPoint,
   UsageSessionEntry,
-} from "./usageTypes.ts";
+} from "./usageTypes";
 
 // Chart constants
 const CHART_BAR_WIDTH_RATIO = 0.75; // Fraction of slot used for bar (rest is gap)

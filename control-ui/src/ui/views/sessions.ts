@@ -1,10 +1,10 @@
 import { html, nothing } from "lit";
-import { renderUiSelect } from "../components/ui-select.ts";
-import { formatRelativeTimestamp } from "../format.ts";
-import { icons } from "../icons.ts";
-import { pathForTab } from "../navigation.ts";
-import { formatSessionTokens } from "../presenter.ts";
-import type { GatewaySessionRow, SessionsListResult } from "../types.ts";
+import { renderUiSelect } from "../components/ui-select";
+import { formatRelativeTimestamp } from "../format";
+import { icons } from "../icons";
+import { pathForTab } from "../navigation";
+import { formatSessionTokens } from "../presenter";
+import type { GatewaySessionRow, SessionsListResult } from "../types";
 
 export type SessionsProps = {
   loading: boolean;
