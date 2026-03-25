@@ -86,10 +86,29 @@ export function resolveDesktopControlUiRoot(appRoot: string): string | null {
     return fs.existsSync(indexPath) ? path.resolve(envRoot) : null;
   }
   const resources = process.env[ENV_DESKTOP_RESOURCES]?.trim();
+  // If `appRoot` points inside `app.asar`, prefer the unpacked copy:
+  //   .../resources/app.asar.unpacked/dist/control-ui
+  const unpackedBase =
+    appRoot.toLowerCase().endsWith('.asar')
+      ? path.join(path.dirname(appRoot), 'app.asar.unpacked')
+      : null;
+
   const candidates = [
     ...(resources ? [path.join(resources, 'vendor', 'control-ui')] : []),
+    ...(resources
+      ? [
+          path.join(resources, 'app.asar.unpacked', 'vendor', 'control-ui'),
+          path.join(resources, 'app.asar.unpacked', 'dist', 'control-ui'),
+        ]
+      : []),
     path.join(appRoot, 'vendor', 'control-ui'),
     path.join(appRoot, 'dist', 'control-ui'),
+    ...(unpackedBase
+      ? [
+          path.join(unpackedBase, 'vendor', 'control-ui'),
+          path.join(unpackedBase, 'dist', 'control-ui'),
+        ]
+      : []),
   ];
   for (const dir of candidates) {
     if (fs.existsSync(path.join(dir, 'index.html'))) {
@@ -99,8 +118,28 @@ export function resolveDesktopControlUiRoot(appRoot: string): string | null {
   return null;
 }
 
+function isProbablyBadControlUiRoot(rootPath: string): boolean {
+  const s = rootPath.replace(/\//g, '\\').toLowerCase();
+  // Portable extraction / old cached paths
+  if (s.includes('\\temp\\') || s.includes('\\local\\temp\\')) {
+    return true;
+  }
+  // UI served from inside `app.asar` is prone to failures with strict file-open checks.
+  // We only accept the unpacked copy (`app.asar.unpacked/...`).
+  const asarDist = s.includes('app.asar\\dist\\control-ui');
+  const asarUnpackedDist = s.includes('app.asar.unpacked\\dist\\control-ui');
+  if (asarDist && !asarUnpackedDist) {
+    return true;
+  }
+  return false;
+}
+
 function controlUiRootManagedByDesktop(appRoot: string, root: string): boolean {
   const resolvedRoot = path.resolve(root);
+  const unpackedBase =
+    appRoot.toLowerCase().endsWith('.asar')
+      ? path.join(path.dirname(appRoot), 'app.asar.unpacked')
+      : null;
   const managed = [
     path.resolve(appRoot, 'vendor', 'control-ui'),
     path.resolve(appRoot, 'dist', 'control-ui'),
@@ -108,6 +147,12 @@ function controlUiRootManagedByDesktop(appRoot: string, root: string): boolean {
   const resources = process.env[ENV_DESKTOP_RESOURCES]?.trim();
   if (resources) {
     managed.push(path.resolve(resources, 'vendor', 'control-ui'));
+    managed.push(path.resolve(resources, 'app.asar.unpacked', 'vendor', 'control-ui'));
+    managed.push(path.resolve(resources, 'app.asar.unpacked', 'dist', 'control-ui'));
+  }
+  if (unpackedBase) {
+    managed.push(path.resolve(unpackedBase, 'vendor', 'control-ui'));
+    managed.push(path.resolve(unpackedBase, 'dist', 'control-ui'));
   }
   return managed.some((m) => resolvedRoot === m);
 }
@@ -123,11 +168,26 @@ export function ensureGatewayDesktopAuth(paths: DesktopPaths, appRoot: string): 
   const auth = asRecord(gateway.auth);
   let controlUi = asRecord(gateway.controlUi);
 
-  const basePath = normalizeControlUiBasePath(
-    typeof controlUi.basePath === 'string' ? controlUi.basePath : ''
-  );
-
   let needsWrite = false;
+
+  // Packaged app: drop dev-machine / temp absolute paths; gateway would keep them and fail to serve UI.
+  if (typeof controlUi.root === 'string' && controlUi.root.trim()) {
+    const rootAbs = path.resolve(String(controlUi.root));
+    try {
+      const indexPath = path.join(rootAbs, 'index.html');
+      if (!fs.existsSync(indexPath) || isProbablyBadControlUiRoot(rootAbs)) {
+        const next = { ...controlUi };
+        delete next.root;
+        controlUi = next;
+        needsWrite = true;
+      }
+    } catch {
+      const next = { ...controlUi };
+      delete next.root;
+      controlUi = next;
+      needsWrite = true;
+    }
+  }
 
   const customRoot = resolveDesktopControlUiRoot(appRoot);
   if (customRoot) {
@@ -147,6 +207,34 @@ export function ensureGatewayDesktopAuth(paths: DesktopPaths, appRoot: string): 
     needsWrite = true;
   }
 
+  const hasConfiguredControlUiRoot =
+    typeof controlUi.root === 'string' && controlUi.root.trim().length > 0;
+
+  let effectiveBasePath = normalizeControlUiBasePath(
+    typeof controlUi.basePath === 'string' ? controlUi.basePath : ''
+  );
+
+  /**
+   * Stock / desktop-built Control UI uses absolute "/assets/..." URLs (Vite base "/").
+   * If gateway.controlUi.basePath is non-empty, the browser still requests /assets/... at the
+   * server root; routing treats that as outside the UI mount → 404. Clear basePath when we know
+   * we are on bundled UI or a desktop-managed fork path only (not arbitrary OPENCLAW_DESKTOP_CONTROL_UI_ROOT).
+   */
+  if (effectiveBasePath !== '') {
+    const rootIsDesktopManaged =
+      customRoot != null && controlUiRootManagedByDesktop(appRoot, customRoot);
+    const useBundledControlUi = !hasConfiguredControlUiRoot;
+    if (rootIsDesktopManaged || useBundledControlUi) {
+      if (typeof controlUi.basePath === 'string') {
+        const next = { ...controlUi };
+        delete next.basePath;
+        controlUi = next;
+        needsWrite = true;
+      }
+      effectiveBasePath = '';
+    }
+  }
+
   const mode = typeof auth.mode === 'string' ? auth.mode : '';
   let token = typeof auth.token === 'string' ? auth.token : '';
 
@@ -155,7 +243,7 @@ export function ensureGatewayDesktopAuth(paths: DesktopPaths, appRoot: string): 
       cfg.gateway = { ...gateway, auth, controlUi };
       writeJsonAtomic(paths.openclawConfigFile, cfg);
     }
-    return { tokenForUrl: '', basePath };
+    return { tokenForUrl: '', basePath: effectiveBasePath };
   }
 
   if (!token) {
@@ -172,7 +260,7 @@ export function ensureGatewayDesktopAuth(paths: DesktopPaths, appRoot: string): 
     writeJsonAtomic(paths.openclawConfigFile, cfg);
   }
 
-  return { tokenForUrl: token, basePath };
+  return { tokenForUrl: token, basePath: effectiveBasePath };
 }
 
 /** HTTP origin for Control UI (no path fragment, no hash). */

@@ -254,7 +254,7 @@ export async function runUpdate(state: ConfigState) {
       }
       state.lastError = null;
       state.updateNotice =
-        "Đã chạy npm run update:openclaw (kèm postinstall vá Desktop). Đóng hoàn toàn OpenClaw Desktop rồi mở lại để gateway nạp bản mới.";
+        "Đã chạy npm run update:openclaw (kèm postinstall vá Desktop). Đóng hoàn toàn OpenClaw rồi mở lại để gateway nạp bản mới.";
     } catch (err) {
       state.lastError = String(err);
     } finally {
@@ -298,7 +298,7 @@ export async function runUpdate(state: ConfigState) {
 
     state.lastError = null;
     state.updateNotice =
-      "Đã chạy cập nhật gói openclaw. Đóng hoàn toàn OpenClaw Desktop rồi mở lại để gateway nạp bản mới (Windows thường không tự restart process). Nếu banner vẫn báo có bản mới, chạy thêm: npm run update:openclaw trong thư mục dự án.";
+      "Đã chạy cập nhật gói openclaw. Đóng hoàn toàn OpenClaw rồi mở lại để gateway nạp bản mới (Windows thường không tự restart process). Nếu banner vẫn báo có bản mới, chạy thêm: npm run update:openclaw trong thư mục dự án.";
   } catch (err) {
     state.lastError = String(err);
   } finally {

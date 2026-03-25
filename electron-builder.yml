@@ -2,7 +2,10 @@
 # Output: release/
 
 appId: dev.openclaw.desktop
-productName: OpenClaw Desktop
+# Display / PE metadata (File description, shortcuts). No spaces; icon: control-ui/public/favicon.ico.
+productName: OpenClaw
+# Stable .exe basename (rcedit + task manager / Firewall labels).
+executableName: OpenClaw
 directories:
   output: release
 
@@ -25,11 +28,19 @@ asar: true
 asarUnpack:
   - "dist/main/assets/*.ico"
   - "dist/main/assets/*.png"
+  # Control UI from dist/control-ui is set as gateway.controlUi.root → kind "resolved" + rejectHardlinks.
+  # Files inside .asar often report nlink>1; safe-open rejects them → 404 on /assets/*.js. Unpack to real disk.
+  - "dist/control-ui/**"
+  - "vendor/control-ui/**"
 
 # Avoid winCodeSign extraction (symlinks) on machines without Developer Mode / admin.
 win:
   icon: control-ui/public/favicon.ico
-  signAndEditExecutable: false
+  # Cách A: để electron-builder tự patch icon/metadata vào file exe.
+  # (Mặc định true; đang bật vì bạn thấy exe vẫn mang icon mặc định của Electron.)
+  signAndEditExecutable: true
+  # Shown where Windows expects a publisher label (full effect with code signing + matching cert subject).
+  publisherName: OpenClaw
   target:
     - target: portable
       arch:
@@ -38,9 +49,9 @@ win:
       arch:
         - x64
 
-# Tên khác bản mặc định (`OpenClaw Desktop 1.0.0.exe`) để tránh ghi đè file đang bị AV/process giữ → treo build.
+# Hyphenated artifacts avoid spaces; unique pattern reduces AV/process lock issues during rebuild.
 portable:
-  artifactName: "${productName} Portable ${version}.${ext}"
+  artifactName: "${productName}-Portable-${version}.${ext}"
 
 nsis:
   installerIcon: control-ui/public/favicon.ico
@@ -50,7 +61,7 @@ nsis:
   allowElevation: true
   createDesktopShortcut: always
   createStartMenuShortcut: true
-  shortcutName: OpenClaw Desktop
-  uninstallDisplayName: OpenClaw Desktop
-  # Output: release/OpenClaw Desktop Setup x.x.x.exe
-  artifactName: "${productName} Setup ${version}.${ext}"
+  shortcutName: OpenClaw
+  uninstallDisplayName: OpenClaw
+  # Output: release/OpenClaw-Setup-x.x.x.exe
+  artifactName: "${productName}-Mod-Setup-${version}.${ext}"

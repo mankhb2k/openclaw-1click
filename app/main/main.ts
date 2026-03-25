@@ -27,6 +27,14 @@ import { resolveElectronRunnerPath } from './electron-runner';
 const ENV_ELECTRON_RUNNER = 'OPENCLAW_ELECTRON_RUNNER';
 
 /**
+ * Empty marker file for packaged builds (see resources/DEVTOOLS.txt).
+ * Portable: electron-builder sets PORTABLE_EXECUTABLE_DIR next to the real portable .exe (not Temp).
+ */
+const PACKAGED_DEVTOOLS_FLAG = 'openclaw-desktop.devtools';
+const ENV_PORTABLE_EXE_DIR = 'PORTABLE_EXECUTABLE_DIR';
+const ENV_PORTABLE_EXE_FILE = 'PORTABLE_EXECUTABLE_FILE';
+
+/**
  * Smallest window size the user can resize to (matches Control UI layout floor).
  * Keep roughly in sync with `control-ui/src/styles/base.css` `--app-min-width` (1020px)
  * plus a little slack for window chrome / scrollbars.
@@ -68,6 +76,59 @@ function getDataRoot(): string {
     return path.resolve(getProjectRoot(), '.openclaw-desktop-data');
   }
   return app.getPath('userData');
+}
+
+function packagedDevtoolsFlagPaths(): string[] {
+  const raw: string[] = [];
+  const portableDir = process.env[ENV_PORTABLE_EXE_DIR]?.trim();
+  if (portableDir) {
+    raw.push(path.join(portableDir, PACKAGED_DEVTOOLS_FLAG));
+  }
+  const portableFile = process.env[ENV_PORTABLE_EXE_FILE]?.trim();
+  if (portableFile) {
+    raw.push(path.join(path.dirname(portableFile), PACKAGED_DEVTOOLS_FLAG));
+  }
+  try {
+    raw.push(path.join(path.dirname(app.getPath('exe')), PACKAGED_DEVTOOLS_FLAG));
+  } catch {
+    /* ignore */
+  }
+  try {
+    raw.push(path.join(app.getPath('userData'), PACKAGED_DEVTOOLS_FLAG));
+  } catch {
+    /* ignore */
+  }
+
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const p of raw) {
+    const key = path.resolve(p);
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    out.push(p);
+  }
+  return out;
+}
+
+function isPackagedDevtoolsEnabled(): boolean {
+  if (!app.isPackaged) {
+    return false;
+  }
+  if (process.env.OPENCLAW_DESKTOP_DEVTOOLS === '1') {
+    return true;
+  }
+  for (const p of packagedDevtoolsFlagPaths()) {
+    try {
+      if (fs.existsSync(p)) {
+        return true;
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  return false;
 }
 
 function resolveOpenClawCliScript(appRoot: string): string {
@@ -309,7 +370,7 @@ function registerDesktopUpdateHandler(): void {
       return {
         ok: false as const,
         error:
-          'Bản cài đặt đóng gói không chạy npm từ giao diện. Hãy tải bản OpenClaw Desktop mới, hoặc dùng bản dev (mã nguồn) và chạy npm run update:openclaw trong thư mục dự án.',
+          'Bản cài đặt đóng gói không chạy npm từ giao diện. Hãy tải bản OpenClaw mới, hoặc dùng bản dev (mã nguồn) và chạy npm run update:openclaw trong thư mục dự án.',
       };
     }
     const appRoot = getProjectRoot();
@@ -423,12 +484,15 @@ async function createWindow(): Promise<void> {
   quitAppWhenAllWindowsClosed = true;
   await mainWindow.loadURL(controlUiUrl);
 
-  if (!app.isPackaged) {
-    // Auto-opening DevTools spams the terminal with harmless Chromium noise:
-    // Autofill.enable / Autofill.setAddresses (-32601) — DevTools CDP not fully wired in Electron.
-    if (process.env.OPENCLAW_DESKTOP_DEVTOOLS === '1') {
-      mainWindow.webContents.openDevTools({ mode: 'detach' });
-    }
+  // DevTools: detached Chromium window (not the system default browser).
+  const devShortcuts = !app.isPackaged || isPackagedDevtoolsEnabled();
+  const autoOpenDevtools =
+    (!app.isPackaged && process.env.OPENCLAW_DESKTOP_DEVTOOLS === '1') || isPackagedDevtoolsEnabled();
+  if (autoOpenDevtools) {
+    // Harmless noise in terminal: Autofill.enable / Autofill.setAddresses (-32601) when DevTools is open.
+    mainWindow.webContents.openDevTools({ mode: 'detach' });
+  }
+  if (devShortcuts) {
     mainWindow.webContents.on('before-input-event', (_event, input) => {
       if (input.type !== 'keyDown') return;
       if (input.key === 'F12') {
