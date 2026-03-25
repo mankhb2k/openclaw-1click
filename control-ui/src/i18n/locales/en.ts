@@ -68,6 +68,123 @@ export const en: TranslationMap = {
     debug: "Snapshots, events, RPC.",
     logs: "Live gateway logs.",
   },
+  instances: {
+    connectedInstances: {
+      title: "Connected Instances",
+      subtitle: "Presence beacons from the gateway and clients.",
+    },
+    toggleHosts: {
+      show: "Show hosts and IPs",
+      hide: "Hide hosts and IPs",
+      ariaLabel: "Toggle host visibility",
+    },
+    loading: "Loading…",
+    empty: "No instances reported yet.",
+    unknownMode: "unknown",
+    unknownHost: "unknown host",
+    scopes: {
+      count: "{count} scopes",
+      list: "scopes: {scopes}",
+    },
+    labels: {
+      lastInput: "Last input {value}",
+      reason: "Reason {value}",
+      reasonUnknown: "Reason",
+    },
+    relativeTime: {
+      justNow: "Just now",
+      yesterday: "Yesterday",
+      value: "{count}{unit} ago",
+      units: {
+        s: "s",
+        m: "m",
+        h: "h",
+        d: "d",
+        w: "w",
+      },
+    },
+  },
+  sessions: {
+    title: "Sessions",
+    loading: "Loading…",
+    cardSub: {
+      store: "Store: {path}",
+      active: "Active session keys and per-session overrides.",
+    },
+    filters: {
+      active: "Active",
+      limit: "Limit",
+      minPlaceholder: "min",
+      global: "Global",
+      unknown: "Unknown",
+    },
+    search: {
+      placeholder: "Filter by key, label, kind…",
+    },
+    bulk: {
+      selected: "{count} selected",
+      unselect: "Unselect",
+      delete: "Delete",
+    },
+    table: {
+      selectAllOnPage: "Select all on page",
+      selectSession: "Select session",
+      headers: {
+        key: "Key",
+        label: "Label",
+        kind: "Kind",
+        updated: "Updated",
+        tokens: "Tokens",
+        thinking: "Thinking",
+        fast: "Fast",
+        verbose: "Verbose",
+        reasoning: "Reasoning",
+      },
+    },
+    empty: {
+      noSessions: "No sessions found.",
+    },
+    pagination: {
+      info: {
+        single: "{start}-{end} of {total} row",
+        plural: "{start}-{end} of {total} rows",
+      },
+      pageSizeOption: "{size} per page",
+      previous: "Previous",
+      next: "Next",
+    },
+    row: {
+      optionalPlaceholder: "(optional)",
+    },
+    relativeTime: {
+      justNow: "Just now",
+      yesterday: "Yesterday",
+      value: "{count}{unit} ago",
+      units: {
+        s: "s",
+        m: "m",
+        h: "h",
+        d: "d",
+        w: "w",
+      },
+    },
+    levels: {
+      inherit: "inherit",
+      off: "off",
+      on: "on",
+      custom: "custom",
+      offExplicit: "off (explicit)",
+      full: "full",
+      stream: "stream",
+    },
+    thinkingLevels: {
+      minimal: "minimal",
+      low: "low",
+      medium: "medium",
+      high: "high",
+      xhigh: "xhigh",
+    },
+  },
   overview: {
     access: {
       title: "Gateway Access",
@@ -831,6 +948,8 @@ export const en: TranslationMap = {
         sessions_history: "Session history",
         sessions_send: "Send to session",
         sessions_spawn: "Spawn sub-agent",
+        sessions_yield: "End turn to receive sub-agent results",
+        subagents: "Manage sub-agents",
         session_status: "Session status",
         browser: "Control web browser",
         canvas: "Control canvases",

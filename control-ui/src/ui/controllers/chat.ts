@@ -1,7 +1,7 @@
 import { resetToolStream } from "../app-tool-stream.ts";
 import { extractText } from "../chat/message-extract.ts";
 import { formatConnectError } from "../connect-error.ts";
-import type { GatewayBrowserClient } from "../gateway.ts";
+import { GatewayRequestTimeoutError, type GatewayBrowserClient } from "../gateway.ts";
 import type { ChatAttachment } from "../ui-types.ts";
 import { generateUUID } from "../uuid.ts";
 
@@ -215,15 +215,25 @@ export async function sendChatMessage(
     : undefined;
 
   try {
-    await state.client.request("chat.send", {
-      sessionKey: state.sessionKey,
-      message: msg,
-      deliver: false,
-      idempotencyKey: runId,
-      attachments: apiAttachments,
-    });
+    await state.client.request(
+      "chat.send",
+      {
+        sessionKey: state.sessionKey,
+        message: msg,
+        deliver: false,
+        idempotencyKey: runId,
+        attachments: apiAttachments,
+      },
+      { timeoutMs: 15_000 },
+    );
     return runId;
   } catch (err) {
+    if (err instanceof GatewayRequestTimeoutError) {
+      // Timeout chỉ nghĩa là không nhận được frame "res" cho request.
+      // Gateway vẫn có thể tiếp tục stream event cho `runId`, nên ta không
+      // dọn state/không bắn "Error:" vào chat để tránh báo sai.
+      return runId;
+    }
     const error = formatConnectError(err);
     state.chatRunId = null;
     state.chatStream = null;

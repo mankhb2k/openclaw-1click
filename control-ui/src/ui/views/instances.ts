@@ -2,6 +2,7 @@ import { html, nothing } from "lit";
 import { icons } from "../icons";
 import { formatPresenceAge } from "../presenter";
 import type { PresenceEntry } from "../types";
+import { t } from "../../i18n/index";
 
 export type InstancesProps = {
   loading: boolean;
@@ -13,6 +14,38 @@ export type InstancesProps = {
 
 let hostsRevealed = false;
 
+function localizeRelativeAge(value: string): string {
+  const s = value.trim();
+  if (s === "n/a") {
+    return t("common.na");
+  }
+  if (s === "Just now") {
+    return t("instances.relativeTime.justNow");
+  }
+  if (s === "Yesterday") {
+    return t("instances.relativeTime.yesterday");
+  }
+  const match = /^(\d+)([smhdw]) ago$/.exec(s);
+  if (!match) {
+    return value;
+  }
+  const count = match[1];
+  const unitCode = match[2];
+  const unit =
+    unitCode === "s"
+      ? t("instances.relativeTime.units.s")
+      : unitCode === "m"
+        ? t("instances.relativeTime.units.m")
+        : unitCode === "h"
+          ? t("instances.relativeTime.units.h")
+          : unitCode === "d"
+            ? t("instances.relativeTime.units.d")
+            : unitCode === "w"
+              ? t("instances.relativeTime.units.w")
+              : unitCode;
+  return t("instances.relativeTime.value", { count, unit });
+}
+
 export function renderInstances(props: InstancesProps) {
   const masked = !hostsRevealed;
 
@@ -20,8 +53,8 @@ export function renderInstances(props: InstancesProps) {
     <section class="card">
       <div class="row" style="justify-content: space-between;">
         <div>
-          <div class="card-title">Connected Instances</div>
-          <div class="card-sub">Presence beacons from the gateway and clients.</div>
+          <div class="card-title">${t("instances.connectedInstances.title")}</div>
+          <div class="card-sub">${t("instances.connectedInstances.subtitle")}</div>
         </div>
         <div class="row" style="gap: 8px;">
           <button
@@ -30,15 +63,15 @@ export function renderInstances(props: InstancesProps) {
               hostsRevealed = !hostsRevealed;
               props.onRefresh();
             }}
-            title=${masked ? "Show hosts and IPs" : "Hide hosts and IPs"}
-            aria-label="Toggle host visibility"
+            title=${masked ? t("instances.toggleHosts.show") : t("instances.toggleHosts.hide")}
+            aria-label=${t("instances.toggleHosts.ariaLabel")}
             aria-pressed=${!masked}
             style="width: 36px; height: 36px;"
           >
             ${masked ? icons.eyeOff : icons.eye}
           </button>
           <button class="btn" ?disabled=${props.loading} @click=${props.onRefresh}>
-            ${props.loading ? "Loading…" : "Refresh"}
+            ${props.loading ? t("instances.loading") : t("common.refresh")}
           </button>
         </div>
       </div>
@@ -60,7 +93,7 @@ export function renderInstances(props: InstancesProps) {
         ${
           props.entries.length === 0
             ? html`
-                <div class="muted">No instances reported yet.</div>
+                <div class="muted">${t("instances.empty")}</div>
               `
             : props.entries.map((entry) => renderEntry(entry, masked))
         }
@@ -70,17 +103,20 @@ export function renderInstances(props: InstancesProps) {
 }
 
 function renderEntry(entry: PresenceEntry, masked: boolean) {
-  const lastInput = entry.lastInputSeconds != null ? `${entry.lastInputSeconds}s ago` : "n/a";
-  const mode = entry.mode ?? "unknown";
-  const host = entry.host ?? "unknown host";
+  const lastInput =
+    entry.lastInputSeconds != null
+      ? localizeRelativeAge(`${entry.lastInputSeconds}s ago`)
+      : t("common.na");
+  const mode = entry.mode ?? t("instances.unknownMode");
+  const host = entry.host ?? t("instances.unknownHost");
   const ip = entry.ip ?? null;
   const roles = Array.isArray(entry.roles) ? entry.roles.filter(Boolean) : [];
   const scopes = Array.isArray(entry.scopes) ? entry.scopes.filter(Boolean) : [];
   const scopesLabel =
     scopes.length > 0
       ? scopes.length > 3
-        ? `${scopes.length} scopes`
-        : `scopes: ${scopes.join(", ")}`
+        ? t("instances.scopes.count", { count: String(scopes.length) })
+        : t("instances.scopes.list", { scopes: scopes.join(", ") })
       : null;
   return html`
     <div class="list-item">
@@ -106,9 +142,13 @@ function renderEntry(entry: PresenceEntry, masked: boolean) {
         </div>
       </div>
       <div class="list-meta">
-        <div>${formatPresenceAge(entry)}</div>
-        <div class="muted">Last input ${lastInput}</div>
-        <div class="muted">Reason ${entry.reason ?? ""}</div>
+        <div>${localizeRelativeAge(formatPresenceAge(entry))}</div>
+        <div class="muted">${t("instances.labels.lastInput", { value: lastInput })}</div>
+        <div class="muted">
+          ${entry.reason?.trim()
+            ? t("instances.labels.reason", { value: entry.reason.trim() })
+            : t("instances.labels.reasonUnknown")}
+        </div>
       </div>
     </div>
   `;
