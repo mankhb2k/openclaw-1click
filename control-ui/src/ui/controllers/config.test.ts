@@ -388,7 +388,7 @@ describe("runUpdate", () => {
 
       expect(runUpdateOpenclaw).toHaveBeenCalledOnce();
       expect(request).not.toHaveBeenCalled();
-      expect(state.updateNotice).toContain("npm run update:openclaw");
+      expect(state.updateNotice).toContain("Đã gửi lệnh cập nhật");
       expect(state.lastError).toBeNull();
     } finally {
       vi.unstubAllGlobals();

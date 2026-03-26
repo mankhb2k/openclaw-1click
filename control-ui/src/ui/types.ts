@@ -1,4 +1,21 @@
 export type UpdateAvailable = import("@openclaw/infra/update-startup.js").UpdateAvailable;
+export type DesktopUpdatePhase =
+  | "idle"
+  | "checking"
+  | "available"
+  | "downloading"
+  | "downloaded"
+  | "error"
+  | "unsupported";
+export type DesktopUpdateState = {
+  enabled: boolean;
+  phase: DesktopUpdatePhase;
+  currentVersion: string;
+  availableVersion: string | null;
+  announcementTitle: string | null;
+  progressPercent: number | null;
+  message: string | null;
+};
 import type { CronJobBase } from "@openclaw/cron/types-shared.js";
 import type { ConfigUiHints } from "@openclaw/shared/config-ui-hints-types.js";
 import type {

@@ -14,10 +14,12 @@ import {
   type WebContents,
   type WebContentsConsoleMessageEventParams,
 } from 'electron';
+import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
 import { spawn, ChildProcess } from 'child_process';
 import treeKill from 'tree-kill';
+import { autoUpdater, type ProgressInfo } from 'electron-updater';
 import { ENV_DATA_ROOT } from '../backend/config';
 import { runFirstLaunchOnboardingIfNeeded } from './onboard';
 import { ENV_DESKTOP_RESOURCES } from '../backend/config';
@@ -43,6 +45,227 @@ const MAIN_WINDOW_MIN_WIDTH = 1180;
 const MAIN_WINDOW_MIN_HEIGHT = 700;
 
 let mainWindow: BrowserWindow | null = null;
+const DESKTOP_UPDATE_EVENT = 'desktop:update-state';
+const UPDATE_NOTICE_URL =
+  'https://raw.githubusercontent.com/mankhb2k/openclaw-1click/main/update/update-notice.json';
+
+type DesktopUpdatePhase =
+  | 'idle'
+  | 'checking'
+  | 'available'
+  | 'downloading'
+  | 'downloaded'
+  | 'error'
+  | 'unsupported';
+type DesktopUpdateState = {
+  enabled: boolean;
+  phase: DesktopUpdatePhase;
+  currentVersion: string;
+  availableVersion: string | null;
+  announcementTitle: string | null;
+  progressPercent: number | null;
+  message: string | null;
+};
+
+let desktopUpdateState: DesktopUpdateState = {
+  enabled: false,
+  phase: 'idle',
+  currentVersion: app.getVersion(),
+  availableVersion: null,
+  announcementTitle: null,
+  progressPercent: null,
+  message: null,
+};
+
+function publishDesktopUpdateState(): void {
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    return;
+  }
+  mainWindow.webContents.send(DESKTOP_UPDATE_EVENT, desktopUpdateState);
+}
+
+function setDesktopUpdateState(next: Partial<DesktopUpdateState>): void {
+  desktopUpdateState = {
+    ...desktopUpdateState,
+    ...next,
+    currentVersion: app.getVersion(),
+  };
+  publishDesktopUpdateState();
+}
+
+function normalizeLocale(locale: string): string[] {
+  const raw = (locale || '').trim().toLowerCase();
+  if (!raw) {
+    return ['en'];
+  }
+  const base = raw.split(/[-_]/)[0] ?? '';
+  const candidates = [raw];
+  if (base && base !== raw) {
+    candidates.push(base);
+  }
+  candidates.push('en');
+  return [...new Set(candidates)];
+}
+
+function resolveUpdateTitleFromJson(payload: unknown, locale: string): string | null {
+  if (!payload || typeof payload !== 'object') {
+    return null;
+  }
+  const candidates = normalizeLocale(locale);
+  const root = payload as Record<string, unknown>;
+  const messages =
+    root.messages && typeof root.messages === 'object'
+      ? (root.messages as Record<string, unknown>)
+      : root;
+
+  for (const key of candidates) {
+    const entry = messages[key];
+    if (!entry || typeof entry !== 'object') {
+      continue;
+    }
+    const title = (entry as { title?: unknown }).title;
+    if (typeof title === 'string' && title.trim()) {
+      return title.trim();
+    }
+  }
+  return null;
+}
+
+async function fetchLocalizedUpdateTitle(): Promise<string | null> {
+  try {
+    const locale = app.getLocale();
+    const response = await axios.get(UPDATE_NOTICE_URL, {
+      timeout: 5000,
+      responseType: 'json',
+    });
+    return resolveUpdateTitleFromJson(response.data, locale);
+  } catch {
+    return null;
+  }
+}
+
+function isPortableRuntime(): boolean {
+  return Boolean(process.env[ENV_PORTABLE_EXE_FILE] || process.env[ENV_PORTABLE_EXE_DIR]);
+}
+
+function isElectronUpdaterEnabled(): boolean {
+  return app.isPackaged && process.platform === 'win32' && !isPortableRuntime();
+}
+
+async function checkDesktopUpdates(): Promise<void> {
+  if (!isElectronUpdaterEnabled()) {
+    return;
+  }
+  setDesktopUpdateState({
+    enabled: true,
+    phase: 'checking',
+    availableVersion: null,
+    announcementTitle: null,
+    progressPercent: null,
+    message: null,
+  });
+  try {
+    await autoUpdater.checkForUpdates();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    setDesktopUpdateState({ phase: 'error', message });
+  }
+}
+
+async function downloadDesktopUpdate(): Promise<void> {
+  if (!isElectronUpdaterEnabled()) {
+    return;
+  }
+  if (desktopUpdateState.phase !== 'available') {
+    return;
+  }
+  setDesktopUpdateState({
+    phase: 'downloading',
+    progressPercent: 0,
+    message: null,
+  });
+  try {
+    await autoUpdater.downloadUpdate();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    setDesktopUpdateState({ phase: 'error', message, progressPercent: null });
+    throw error;
+  }
+}
+
+function installDesktopUpdate(): void {
+  if (!isElectronUpdaterEnabled() || desktopUpdateState.phase !== 'downloaded') {
+    return;
+  }
+  autoUpdater.quitAndInstall(false, true);
+}
+
+function initDesktopUpdater(): void {
+  if (!app.isPackaged) {
+    return;
+  }
+  if (!isElectronUpdaterEnabled()) {
+    setDesktopUpdateState({
+      enabled: false,
+      phase: 'unsupported',
+      availableVersion: null,
+      announcementTitle: null,
+      progressPercent: null,
+      message: 'Auto-update chỉ hỗ trợ bản cài NSIS, không hỗ trợ bản portable.',
+    });
+    return;
+  }
+
+  setDesktopUpdateState({ enabled: true, phase: 'idle', message: null });
+  autoUpdater.autoDownload = false;
+  autoUpdater.autoInstallOnAppQuit = false;
+
+  autoUpdater.on('checking-for-update', () => {
+    setDesktopUpdateState({
+      phase: 'checking',
+      availableVersion: null,
+      announcementTitle: null,
+      progressPercent: null,
+      message: null,
+    });
+  });
+  autoUpdater.on('update-not-available', () => {
+    setDesktopUpdateState({
+      phase: 'idle',
+      availableVersion: null,
+      announcementTitle: null,
+      progressPercent: null,
+      message: null,
+    });
+  });
+  autoUpdater.on('update-available', async (info) => {
+    const localizedTitle = await fetchLocalizedUpdateTitle();
+    setDesktopUpdateState({
+      phase: 'available',
+      availableVersion: info.version ?? null,
+      announcementTitle: localizedTitle ?? 'A new update is available.',
+      progressPercent: null,
+      message: null,
+    });
+  });
+  autoUpdater.on('download-progress', (progress: ProgressInfo) => {
+    setDesktopUpdateState({
+      phase: 'downloading',
+      progressPercent: Number.isFinite(progress.percent) ? progress.percent : null,
+    });
+  });
+  autoUpdater.on('update-downloaded', () => {
+    setDesktopUpdateState({
+      phase: 'downloaded',
+      progressPercent: 100,
+      message: 'Bản cập nhật đã tải xong. Nhấn Update lần nữa để cài đặt và khởi động lại.',
+    });
+  });
+  autoUpdater.on('error', (error) => {
+    const message = error instanceof Error ? error.message : String(error);
+    setDesktopUpdateState({ phase: 'error', message, progressPercent: null });
+  });
+}
 
 /**
  * On Windows/Linux, `window-all-closed` quits the app. During first launch the
@@ -365,12 +588,42 @@ function wireControlUiExternalLinks(wc: WebContents, controlUiUrl: string): void
 
 function registerDesktopUpdateHandler(): void {
   ipcMain.removeHandler('desktop:run-update-openclaw');
+  ipcMain.removeHandler('desktop:update:get-state');
+  ipcMain.removeHandler('desktop:update:check');
+  ipcMain.removeHandler('desktop:update:download');
+  ipcMain.removeHandler('desktop:update:install');
+  ipcMain.handle('desktop:update:get-state', async () => desktopUpdateState);
+  ipcMain.handle('desktop:update:check', async () => {
+    await checkDesktopUpdates();
+    return desktopUpdateState;
+  });
+  ipcMain.handle('desktop:update:download', async () => {
+    await downloadDesktopUpdate();
+    return desktopUpdateState;
+  });
+  ipcMain.handle('desktop:update:install', async () => {
+    installDesktopUpdate();
+    return { ok: true as const };
+  });
   ipcMain.handle('desktop:run-update-openclaw', async () => {
     if (app.isPackaged) {
+      if (!isElectronUpdaterEnabled()) {
+        return {
+          ok: false as const,
+          error: 'Auto-update chỉ hỗ trợ bản cài NSIS. Bản portable vui lòng tải bản mới từ GitHub Releases.',
+        };
+      }
+      if (desktopUpdateState.phase === 'downloaded') {
+        installDesktopUpdate();
+        return { ok: true as const, message: 'Đang cài đặt bản mới và khởi động lại ứng dụng.' };
+      }
+      await downloadDesktopUpdate();
       return {
-        ok: false as const,
-        error:
-          'Bản cài đặt đóng gói không chạy npm từ giao diện. Hãy tải bản OpenClaw mới, hoặc dùng bản dev (mã nguồn) và chạy npm run update:openclaw trong thư mục dự án.',
+        ok: true as const,
+        message:
+          desktopUpdateState.phase === 'downloading'
+            ? 'Đang tải bản cập nhật...'
+            : 'Chưa có bản cập nhật sẵn sàng.',
       };
     }
     const appRoot = getProjectRoot();
@@ -382,7 +635,9 @@ function registerDesktopUpdateHandler(): void {
       };
     }
 
-    return await new Promise<{ ok: true } | { ok: false; error?: string; stderrTail?: string }>(
+    return await new Promise<
+      { ok: true; message?: string } | { ok: false; error?: string; stderrTail?: string }
+    >(
       (resolve) => {
         const child = spawn('npm', ['run', 'update:openclaw'], {
           cwd: appRoot,
@@ -483,6 +738,7 @@ async function createWindow(): Promise<void> {
   mainWindow.once('ready-to-show', () => mainWindow?.show());
   quitAppWhenAllWindowsClosed = true;
   await mainWindow.loadURL(controlUiUrl);
+  publishDesktopUpdateState();
 
   // DevTools: detached Chromium window (not the system default browser).
   const devShortcuts = !app.isPackaged || isPackagedDevtoolsEnabled();
@@ -524,6 +780,8 @@ if (!gotLock) {
 
   app.whenReady().then(() => {
     registerDesktopUpdateHandler();
+    initDesktopUpdater();
+    void checkDesktopUpdates();
     buildApplicationMenu();
     registerGlobalShortcuts();
     const dataRoot = getDataRoot();

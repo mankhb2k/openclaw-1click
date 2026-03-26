@@ -298,6 +298,7 @@ export type AppViewState = {
     logsMaxBytes: number;
     logsAtBottom: boolean;
     updateAvailable: import("./types.js").UpdateAvailable | null;
+    desktopUpdateState: import("./types.js").DesktopUpdateState | null;
     attentionItems: AttentionItem[];
     paletteOpen: boolean;
     paletteQuery: string;

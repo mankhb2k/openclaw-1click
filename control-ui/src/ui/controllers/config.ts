@@ -1,5 +1,10 @@
 import type { GatewayBrowserClient } from "../gateway.ts";
-import type { ConfigSchemaResponse, ConfigSnapshot, ConfigUiHints } from "../types.ts";
+import type {
+  ConfigSchemaResponse,
+  ConfigSnapshot,
+  ConfigUiHints,
+  DesktopUpdateState,
+} from "../types.ts";
 import type { JsonSchema } from "../views/config-form.shared.ts";
 import { coerceFormValues } from "./config/form-coerce.ts";
 import {
@@ -40,8 +45,9 @@ export type ConfigState = {
 
 type DesktopUpdateBridge = {
   runUpdateOpenclaw: () => Promise<
-    { ok: true } | { ok: false; error?: string; stderrTail?: string }
+    { ok: true; message?: string } | { ok: false; error?: string; stderrTail?: string }
   >;
+  getUpdateState?: () => Promise<DesktopUpdateState>;
 };
 
 function getDesktopUpdateBridge(): DesktopUpdateBridge | undefined {
@@ -246,6 +252,18 @@ export async function runUpdate(state: ConfigState) {
     state.lastError = null;
     state.updateNotice = null;
     try {
+      const updateState = desktopBridge.getUpdateState ? await desktopBridge.getUpdateState() : null;
+      if (updateState?.enabled && updateState.phase === "downloaded") {
+        const res = await desktopBridge.runUpdateOpenclaw();
+        if (!res.ok) {
+          const extra = res.stderrTail?.trim() ? `\n\n${res.stderrTail.trim()}` : "";
+          state.lastError = (res.error ?? "Cập nhật thất bại.") + extra;
+          return;
+        }
+        state.lastError = null;
+        state.updateNotice = res.message ?? "Đang cài đặt bản cập nhật và khởi động lại ứng dụng.";
+        return;
+      }
       const res = await desktopBridge.runUpdateOpenclaw();
       if (!res.ok) {
         const extra = res.stderrTail?.trim() ? `\n\n${res.stderrTail.trim()}` : "";
@@ -253,8 +271,7 @@ export async function runUpdate(state: ConfigState) {
         return;
       }
       state.lastError = null;
-      state.updateNotice =
-        "Đã chạy npm run update:openclaw (kèm postinstall vá Desktop). Đóng hoàn toàn OpenClaw rồi mở lại để gateway nạp bản mới.";
+      state.updateNotice = res.message ?? "Đã gửi lệnh cập nhật.";
     } catch (err) {
       state.lastError = String(err);
     } finally {

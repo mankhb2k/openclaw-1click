@@ -9,6 +9,11 @@ executableName: OpenClaw
 directories:
   output: release
 
+publish:
+  provider: github
+  owner: Mankhb2k
+  repo: openclaw-1click
+
 # NSIS yêu cầu .ico có ít nhất 256×256 (control-ui/public/favicon.ico đã có).
 icon: control-ui/public/favicon.ico
 

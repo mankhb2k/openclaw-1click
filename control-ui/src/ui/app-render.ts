@@ -659,10 +659,41 @@ export function renderApp(state: AppViewState) {
         </aside>
       </div>
       <main class="content ${isChat ? "content--chat" : ""}">
-        ${state.updateAvailable &&
-        state.updateAvailable.latestVersion !==
-          state.updateAvailable.currentVersion &&
-        !isUpdateBannerDismissed(state.updateAvailable)
+        ${state.desktopUpdateState?.enabled &&
+        state.desktopUpdateState.availableVersion &&
+        state.desktopUpdateState.availableVersion !== state.desktopUpdateState.currentVersion
+          ? html`<div class="update-banner callout danger" role="alert">
+              <strong>${t("desktopUpdate.availableTitle")}</strong>
+              v${state.desktopUpdateState.availableVersion}
+              (${t("desktopUpdate.runningVersion", { version: state.desktopUpdateState.currentVersion })}).
+              ${state.desktopUpdateState.announcementTitle
+                ? html`<div style="margin-top: 6px; white-space: pre-wrap;">
+                    ${state.desktopUpdateState.announcementTitle}
+                  </div>`
+                : nothing}
+              ${state.desktopUpdateState.phase === "downloading"
+                ? html`<div style="margin-top: 6px;">
+                    ${t("desktopUpdate.downloading")}
+                    ${state.desktopUpdateState.progressPercent != null
+                      ? `${Math.round(state.desktopUpdateState.progressPercent)}%`
+                      : ""}
+                  </div>`
+                : nothing}
+              <button
+                class="btn btn--sm update-banner__btn"
+                ?disabled=${state.updateRunning}
+                @click=${() => runUpdate(state)}
+              >
+                ${state.desktopUpdateState.phase === "downloaded"
+                  ? t("desktopUpdate.installButton")
+                  : state.updateRunning
+                    ? t("desktopUpdate.updatingButton")
+                    : t("desktopUpdate.updateButton")}
+              </button>
+            </div>`
+          : state.updateAvailable &&
+              state.updateAvailable.latestVersion !== state.updateAvailable.currentVersion &&
+              !isUpdateBannerDismissed(state.updateAvailable)
           ? html`<div class="update-banner callout danger" role="alert">
               <strong>Update available:</strong> v${state.updateAvailable
                 .latestVersion}
