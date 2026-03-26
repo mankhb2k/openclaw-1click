@@ -185,6 +185,62 @@ export const en: TranslationMap = {
       xhigh: "xhigh",
     },
   },
+  debugPage: {
+    snapshots: {
+      title: "Snapshots",
+      subtitle: "Status, health, and heartbeat data.",
+    },
+    refresh: "Refresh",
+    refreshing: "Refreshing…",
+    status: "Status",
+    health: "Health",
+    lastHeartbeat: "Last heartbeat",
+    security: {
+      critical: "{count} critical",
+      warnings: "{count} warnings",
+      none: "No critical issues",
+      infoSuffix: " · {count} info",
+      auditPrefix: "Security audit:",
+      runPrefix: "Run ",
+      runSuffix: " for details.",
+    },
+    manualRpc: {
+      title: "Manual RPC",
+      subtitle: "Send a raw gateway method with JSON params.",
+    },
+    method: "Method",
+    selectMethod: "Select a method…",
+    paramsJson: "Params (JSON)",
+    call: "Call",
+    models: {
+      title: "Models",
+      subtitle: "Catalog from models.list.",
+    },
+    eventLog: {
+      title: "Event Log",
+      subtitle: "Latest gateway events.",
+      empty: "No events yet.",
+    },
+  },
+  logsPage: {
+    title: "Logs",
+    subtitle: "Gateway file logs (JSONL).",
+    loading: "Loading…",
+    refresh: "Refresh",
+    autoFollow: "Auto-follow",
+    file: "File",
+    truncated: "Log output truncated; showing latest chunk.",
+    empty: "No log entries.",
+    filter: {
+      label: "Filter",
+      placeholder: "Search logs",
+    },
+    export: {
+      label: "Export",
+      filtered: "filtered",
+      visible: "visible",
+    },
+  },
   overview: {
     access: {
       title: "Gateway Access",
@@ -1323,6 +1379,60 @@ export const en: TranslationMap = {
           help: "Additional custom redact regex patterns applied to log output before emission/storage.",
         },
       },
+      infrastructure: {
+        gateway: {
+          http: {
+            help: "Gateway HTTP API configuration grouping endpoint toggles and transport-facing API exposure controls. Keep only required endpoints enabled to reduce attack surface.",
+          },
+          push: {
+            help: "Push-delivery settings used by the gateway when it needs to wake or notify paired devices. Configure relay-backed APNs here for official iOS builds; direct APNs auth remains env-based for local/manual builds.",
+          },
+          reload: {
+            help: "Live config-reload policy for how edits are applied and when full restarts are triggered. Keep hybrid behavior for safest operational updates unless debugging reload internals.",
+          },
+          remote: {
+            help: "Remote gateway connection settings for direct or SSH transport when this instance proxies to another runtime host. Use remote mode only when split-host operation is intentionally configured.",
+          },
+          tailscale: {
+            help: "Tailscale integration settings for Serve/Funnel exposure and lifecycle handling on gateway start/exit. Keep off unless your deployment intentionally relies on Tailscale ingress.",
+          },
+          tls: {
+            help: "TLS certificate and key settings for terminating HTTPS directly in the gateway process. Use explicit certificates in production and avoid plaintext exposure on untrusted networks.",
+          },
+        },
+        nodeHost: {
+          browserProxy: {
+            help: "Groups browser-proxy settings for exposing local browser control through node routing. Enable only when remote node workflows need your local browser profiles.",
+          },
+        },
+        web: {
+          reconnect: {
+            help: "Reconnect backoff policy for web channel reconnect attempts after transport failure. Keep bounded retries and jitter tuned to avoid thundering-herd reconnect behavior.",
+          },
+        },
+        browser: {
+          profiles: {
+            help: "Named browser profile connection map used for explicit routing to CDP ports or URLs with optional metadata. Keep profile names consistent and avoid overlapping endpoint definitions.",
+          },
+          extensionRelayBind: {
+            help: "Bind IP address for the Chrome extension relay listener. Leave unset for loopback-only access, or set an explicit non-loopback IP such as 0.0.0.0 only when the relay must be reachable across network namespaces (for example WSL2) and the surrounding network is already trusted.",
+          },
+          snapshotDefaults: {
+            help: "Default snapshot capture configuration used when callers do not provide explicit snapshot options. Tune this for consistent capture behavior across channels and automation paths.",
+          },
+          ssrfPolicy: {
+            help: "Server-side request forgery guardrail settings for browser/network fetch paths that could reach internal hosts. Keep restrictive defaults in production and open only explicitly approved targets.",
+          },
+        },
+        discovery: {
+          mdns: {
+            help: "mDNS discovery configuration group for local network advertisement and discovery behavior tuning. Keep minimal mode for routine LAN discovery unless extra metadata is required.",
+          },
+          wideArea: {
+            help: "Wide-area discovery configuration group for exposing discovery signals beyond local-link scopes. Enable only in deployments that intentionally aggregate gateway presence across sites.",
+          },
+        },
+      },
     },
     sections: {
       env: { label: "Environment Variables", description: "Environment variables passed to the gateway process" },
@@ -1494,7 +1604,54 @@ export const en: TranslationMap = {
       agents: {
         label: "Agent",
         help: "Agent runtime configuration root with shared defaults and explicit agent entries.",
-        defaults: { label: "Agent Defaults", help: "Shared baseline settings inherited by agents unless overridden." },
+        defaults: {
+          label: "Agent Defaults",
+          help: "Shared baseline settings inherited by agents unless overridden.",
+          workspace: {
+            label: "Workspace",
+            help: "Default workspace path exposed to agent runtime tools for filesystem context and repo-aware behavior. Set this explicitly when running from wrappers so path resolution stays deterministic.",
+          },
+          repoRoot: {
+            label: "Repo Root",
+            help: "Optional repository root shown in the system prompt runtime line (overrides auto-detect).",
+          },
+          bootstrapMaxChars: {
+            label: "Bootstrap Max Chars",
+            help: "Max characters of each workspace bootstrap file injected into the system prompt before truncation (default: 20000).",
+          },
+          bootstrapTotalMaxChars: {
+            label: "Bootstrap Total Max Chars",
+            help: "Max total characters across all injected workspace bootstrap files (default: 150000).",
+          },
+          bootstrapPromptTruncationWarning: {
+            label: "Bootstrap Prompt Truncation Warning",
+            help: 'Inject agent-visible warning text when bootstrap files are truncated: "off", "once" (default), or "always".',
+          },
+          envelopeTimezone: {
+            label: "Envelope Timezone",
+            help: 'Timezone for message envelopes ("utc", "local", "user", or an IANA timezone string).',
+          },
+          envelopeTimestamp: {
+            label: "Envelope Timestamp",
+            help: 'Include absolute timestamps in message envelopes ("on" or "off").',
+          },
+          envelopeElapsed: {
+            label: "Envelope Elapsed",
+            help: 'Include elapsed time in message envelopes ("on" or "off").',
+          },
+          imageMaxDimensionPx: {
+            label: "Image Max Dimension (px)",
+            help: "Max image side length in pixels when sanitizing transcript/tool-result image payloads (default: 1200).",
+          },
+          pdfMaxBytesMb: {
+            label: "PDF Max Size (MB)",
+            help: "Maximum PDF file size in megabytes for the PDF tool (default: 10).",
+          },
+          pdfMaxPages: {
+            label: "PDF Max Pages",
+            help: "Maximum number of PDF pages to process for the PDF tool (default: 20).",
+          },
+        },
         list: { label: "Agent List", help: "Configured agent entries and per-agent overrides." },
       },
       memory: {
@@ -1585,7 +1742,26 @@ export const en: TranslationMap = {
         resetTriggers: { label: "Session Reset Triggers", help: "Triggers controlling session reset behavior." },
         idleMinutes: { label: "Session Idle Minutes", help: "Idle timeout threshold in minutes." },
         reset: { label: "Session Reset Policy", help: "Reset policy settings for session lifecycle behavior." },
-        resetByType: { label: "Session Reset by Chat Type", help: "Chat-type-specific reset policy overrides." },
+        resetByType: {
+          label: "Session Reset by Chat Type",
+          help: "Overrides reset behavior by chat type (direct, group, thread) when defaults are not sufficient. Use this when group/thread traffic needs different reset cadence than direct messages.",
+          direct: {
+            label: "Session Reset (Direct)",
+            help: "Defines reset policy for direct chats and supersedes the base session.reset configuration for that type. Use this as the canonical direct-message override instead of the legacy dm alias.",
+          },
+          dm: {
+            label: "Session Reset (DM Deprecated Alias)",
+            help: "Deprecated alias for direct reset behavior kept for backward compatibility with older configs. Use session.resetByType.direct instead so future tooling and validation remain consistent.",
+          },
+          group: {
+            label: "Session Reset (Group)",
+            help: "Defines reset policy for group chat sessions where continuity and noise patterns differ from DMs. Use shorter idle windows for busy groups if context drift becomes a problem.",
+          },
+          thread: {
+            label: "Session Reset (Thread)",
+            help: "Defines reset policy for thread-scoped sessions, including focused channel thread workflows. Use this when thread sessions should expire faster or slower than other chat types.",
+          },
+        },
         resetByChannel: { label: "Session Reset by Channel", help: "Channel-specific reset policy overrides." },
         store: { label: "Session Store Path", help: "Path to session store data." },
         typingIntervalSeconds: { label: "Session Typing Interval (seconds)", help: "Typing indicator interval for session output." },

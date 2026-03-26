@@ -1,4 +1,5 @@
 import { html, nothing } from "lit";
+import { t } from "../../i18n/index";
 import { renderUiSelect } from "../components/ui-select";
 import type { EventLogEntry } from "../app-events";
 import { formatEventPayload } from "../presenter";
@@ -31,62 +32,72 @@ export function renderDebug(props: DebugProps) {
   const warn = securitySummary?.warn ?? 0;
   const info = securitySummary?.info ?? 0;
   const securityTone = critical > 0 ? "danger" : warn > 0 ? "warn" : "success";
-  const securityLabel =
-    critical > 0 ? `${critical} critical` : warn > 0 ? `${warn} warnings` : "No critical issues";
+  const securityLabelText =
+    critical > 0
+      ? t("debugPage.security.critical", { count: String(critical) })
+      : warn > 0
+        ? t("debugPage.security.warnings", { count: String(warn) })
+        : t("debugPage.security.none");
+  const securityInfoSuffix =
+    info > 0 ? t("debugPage.security.infoSuffix", { count: String(info) }) : "";
 
   return html`
     <section class="grid">
       <div class="card">
         <div class="row" style="justify-content: space-between;">
           <div>
-            <div class="card-title">Snapshots</div>
-            <div class="card-sub">Status, health, and heartbeat data.</div>
+            <div class="card-title">${t("debugPage.snapshots.title")}</div>
+            <div class="card-sub">${t("debugPage.snapshots.subtitle")}</div>
           </div>
           <button class="btn" ?disabled=${props.loading} @click=${props.onRefresh}>
-            ${props.loading ? "Refreshing…" : "Refresh"}
+            ${props.loading ? t("debugPage.refreshing") : t("debugPage.refresh")}
           </button>
         </div>
         <div class="stack" style="margin-top: 12px;">
           <div>
-            <div class="muted">Status</div>
+            <div class="muted">${t("debugPage.status")}</div>
             ${
               securitySummary
                 ? html`<div class="callout ${securityTone}" style="margin-top: 8px;">
-                  Security audit: ${securityLabel}${info > 0 ? ` · ${info} info` : ""}. Run
-                  <span class="mono">openclaw security audit --deep</span> for details.
+                  ${t("debugPage.security.auditPrefix")} ${securityLabelText}${securityInfoSuffix}.
+                  ${t("debugPage.security.runPrefix")}
+                  <span class="mono">openclaw security audit --deep</span>
+                  ${t("debugPage.security.runSuffix")}
                 </div>`
                 : nothing
             }
             <pre class="code-block">${JSON.stringify(props.status ?? {}, null, 2)}</pre>
           </div>
           <div>
-            <div class="muted">Health</div>
+            <div class="muted">${t("debugPage.health")}</div>
             <pre class="code-block">${JSON.stringify(props.health ?? {}, null, 2)}</pre>
           </div>
           <div>
-            <div class="muted">Last heartbeat</div>
+            <div class="muted">${t("debugPage.lastHeartbeat")}</div>
             <pre class="code-block">${JSON.stringify(props.heartbeat ?? {}, null, 2)}</pre>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title">Manual RPC</div>
-        <div class="card-sub">Send a raw gateway method with JSON params.</div>
+        <div class="card-title">${t("debugPage.manualRpc.title")}</div>
+        <div class="card-sub">${t("debugPage.manualRpc.subtitle")}</div>
         <div class="stack" style="margin-top: 16px;">
           <label class="field">
-            <span>Method</span>
+            <span>${t("debugPage.method")}</span>
             ${renderUiSelect({
               value: props.callMethod,
               options: [
-                ...(!props.callMethod ? [{ value: "", label: "Select a method…", disabled: true }] : []),
+                ...(!props.callMethod
+                  ? [{ value: "", label: t("debugPage.selectMethod"), disabled: true }]
+                  : []),
                 ...props.methods.map((m) => ({ value: m, label: m })),
               ],
               onChange: (next) => props.onCallMethodChange(next),
             })}
           </label>
           <label class="field">
-            <span>Params (JSON)</span>
+            <span>${t("debugPage.paramsJson")}</span>
             <textarea
               .value=${props.callParams}
               @input=${(e: Event) =>
@@ -96,7 +107,7 @@ export function renderDebug(props: DebugProps) {
           </label>
         </div>
         <div class="row" style="margin-top: 12px;">
-          <button class="btn primary" @click=${props.onCall}>Call</button>
+          <button class="btn primary" @click=${props.onCall}>${t("debugPage.call")}</button>
         </div>
         ${
           props.callError
@@ -114,8 +125,8 @@ export function renderDebug(props: DebugProps) {
     </section>
 
     <section class="card" style="margin-top: 18px;">
-      <div class="card-title">Models</div>
-      <div class="card-sub">Catalog from models.list.</div>
+      <div class="card-title">${t("debugPage.models.title")}</div>
+      <div class="card-sub">${t("debugPage.models.subtitle")}</div>
       <pre class="code-block" style="margin-top: 12px;">${JSON.stringify(
         props.models ?? [],
         null,
@@ -124,12 +135,12 @@ export function renderDebug(props: DebugProps) {
     </section>
 
     <section class="card" style="margin-top: 18px;">
-      <div class="card-title">Event Log</div>
-      <div class="card-sub">Latest gateway events.</div>
+      <div class="card-title">${t("debugPage.eventLog.title")}</div>
+      <div class="card-sub">${t("debugPage.eventLog.subtitle")}</div>
       ${
         props.eventLog.length === 0
           ? html`
-              <div class="muted" style="margin-top: 12px">No events yet.</div>
+              <div class="muted" style="margin-top: 12px">${t("debugPage.eventLog.empty")}</div>
             `
           : html`
             <div class="list debug-event-log" style="margin-top: 12px;">

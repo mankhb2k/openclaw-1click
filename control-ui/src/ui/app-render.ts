@@ -2050,7 +2050,7 @@ export function renderApp(state: AppViewState) {
               gatewayUrl: state.settings.gatewayUrl,
               assistantName: state.assistantName,
               configPath: state.configSnapshot?.path ?? null,
-              navRootLabel: "Infrastructure",
+              navRootLabel: t("config.categories.infrastructure"),
               includeSections: [...INFRASTRUCTURE_SECTION_KEYS],
               includeVirtualSections: false,
             })

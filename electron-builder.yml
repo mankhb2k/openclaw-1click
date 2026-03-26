@@ -64,4 +64,4 @@ nsis:
   shortcutName: OpenClaw
   uninstallDisplayName: OpenClaw
   # Output: release/OpenClaw-Setup-x.x.x.exe
-  artifactName: "${productName}-Mod-Setup-${version}.${ext}"
+  artifactName: "${productName}-1Click-Setup-${version}.${ext}"

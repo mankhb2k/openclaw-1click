@@ -63,9 +63,9 @@ export const vi: TranslationMap = {
     communications: "Kênh, tin nhắn và âm thanh.",
     appearance: "Chủ đề, UI và trình hướng dẫn.",
     automation: "Lệnh, hook, cron và plugin.",
-    infrastructure: "Gateway, web, trình duyệt và media.",
+    infrastructure: "Thiết lập gateway, web, trình duyệt và phương tiện.",
     aiAgents: "Agent, model, kỹ năng, công cụ, bộ nhớ, phiên.",
-    debug: "Snapshot, sự kiện, RPC.",
+    debug: "Ảnh chụp trạng thái, sự kiện, RPC.",
     logs: "Nhật ký gateway trực tiếp.",
   },
   instances: {
@@ -183,6 +183,62 @@ export const vi: TranslationMap = {
       medium: "trung bình",
       high: "cao",
       xhigh: "rất cao",
+    },
+  },
+  debugPage: {
+    snapshots: {
+      title: "Ảnh chụp trạng thái",
+      subtitle: "Trạng thái, sức khỏe và dữ liệu heartbeat.",
+    },
+    refresh: "Làm mới",
+    refreshing: "Đang làm mới…",
+    status: "Trạng thái",
+    health: "Sức khỏe",
+    lastHeartbeat: "Heartbeat gần nhất",
+    security: {
+      critical: "{count} mức nghiêm trọng",
+      warnings: "{count} cảnh báo",
+      none: "Không có vấn đề nghiêm trọng",
+      infoSuffix: " · {count} thông tin",
+      auditPrefix: "Kiểm tra bảo mật:",
+      runPrefix: "Chạy ",
+      runSuffix: " để xem chi tiết.",
+    },
+    manualRpc: {
+      title: "RPC thủ công",
+      subtitle: "Gửi một phương thức gateway thô kèm tham số JSON.",
+    },
+    method: "Phương thức",
+    selectMethod: "Chọn phương thức…",
+    paramsJson: "Tham số (JSON)",
+    call: "Gọi",
+    models: {
+      title: "Mô hình",
+      subtitle: "Danh mục từ models.list.",
+    },
+    eventLog: {
+      title: "Nhật ký sự kiện",
+      subtitle: "Các sự kiện gateway mới nhất.",
+      empty: "Chưa có sự kiện.",
+    },
+  },
+  logsPage: {
+    title: "Nhật ký",
+    subtitle: "Nhật ký tệp gateway (JSONL).",
+    loading: "Đang tải…",
+    refresh: "Làm mới",
+    autoFollow: "Tự bám theo",
+    file: "Tệp",
+    truncated: "Đầu ra log đã bị cắt; đang hiển thị phần mới nhất.",
+    empty: "Không có bản ghi log.",
+    filter: {
+      label: "Bộ lọc",
+      placeholder: "Tìm trong nhật ký",
+    },
+    export: {
+      label: "Xuất",
+      filtered: "đã lọc",
+      visible: "đang hiển thị",
     },
   },
   overview: {
@@ -1286,6 +1342,160 @@ export const vi: TranslationMap = {
       token: "token",
       password: "mật khẩu",
       trusted_proxy: "proxy tin cậy",
+      aiAgents: {
+        bootstrapMaxChars: {
+          help: "Số ký tự tối đa của mỗi tệp bootstrap workspace được chèn vào system prompt trước khi cắt (mặc định: 20000).",
+        },
+        bootstrapPromptTruncationWarning: {
+          help: 'Chèn cảnh báo hiển thị cho agent khi tệp bootstrap bị cắt: "off", "once" (mặc định), hoặc "always".',
+        },
+        bootstrapTotalMaxChars: {
+          help: "Tổng số ký tự tối đa trên tất cả tệp bootstrap workspace được chèn (mặc định: 150000).",
+        },
+        envelopeElapsed: { help: 'Bao gồm thời gian đã trôi trong message envelope ("on" hoặc "off").' },
+        envelopeTimestamp: { help: 'Bao gồm mốc thời gian tuyệt đối trong message envelope ("on" hoặc "off").' },
+        envelopeTimezone: { help: 'Múi giờ cho message envelope ("utc", "local", "user", hoặc chuỗi múi giờ IANA).' },
+        imageMaxDimensionPx: {
+          help: "Độ dài cạnh ảnh tối đa (pixel) khi sanitize payload ảnh từ transcript/tool-result (mặc định: 1200).",
+        },
+        pdfMaxBytesMb: { help: "Kích thước tệp PDF tối đa theo MB cho công cụ PDF (mặc định: 10)." },
+        pdfMaxPages: { help: "Số trang PDF tối đa được xử lý bởi công cụ PDF (mặc định: 20)." },
+        repoRoot: {
+          help: "Repo root tùy chọn hiển thị ở dòng runtime trong system prompt (ghi đè auto-detect).",
+        },
+        workspace: {
+          help: "Đường dẫn workspace mặc định được phơi bày cho công cụ runtime của agent để có ngữ cảnh hệ tệp và hành vi nhận biết repo. Hãy đặt rõ khi chạy qua wrapper để resolution đường dẫn luôn ổn định.",
+        },
+        tools: {
+          agentToAgentAllow: {
+            help: "Danh sách cho phép ID agent đích được phép gọi bởi agent_to_agent khi orchestration bật. Dùng allowlist tường minh để tránh đồ thị gọi chéo agent mất kiểm soát.",
+          },
+          agentToAgentEnabled: {
+            help: "Bật bề mặt công cụ agent_to_agent để một agent có thể gọi agent khác trong runtime. Giữ tắt ở triển khai đơn giản và chỉ bật khi giá trị orchestration lớn hơn độ phức tạp.",
+          },
+          elevatedEnabled: {
+            help: "Bật đường chạy công cụ nâng quyền khi người gửi và policy đều hợp lệ. Giữ tắt ở kênh public/shared và chỉ bật cho ngữ cảnh vận hành bởi owner tin cậy.",
+          },
+          execAsk: {
+            help: "Chiến lược phê duyệt khi lệnh exec cần xác nhận của người dùng trước khi chạy. Dùng chế độ chặt hơn ở kênh dùng chung và chế độ ít ma sát hơn ở ngữ cảnh riêng tư.",
+          },
+          execHost: {
+            help: "Chọn chiến lược host thực thi cho lệnh shell, thường quyết định chạy local hay ủy quyền. Hãy chọn chế độ an toàn nhất nhưng vẫn đáp ứng nhu cầu tự động hóa.",
+          },
+          execNode: {
+            help: "Cấu hình gắn node cho công cụ exec khi thực thi lệnh được ủy quyền qua node đang kết nối. Chỉ định rõ node khi thật sự cần định tuyến đa node.",
+          },
+          execNotifyOnExit: {
+            help: 'Khi là true (mặc định), phiên exec chạy nền khi thoát và sự kiện vòng đời exec trên node sẽ enqueue system event và yêu cầu heartbeat.',
+          },
+          execNotifyOnExitEmptySuccess: {
+            help: "Khi là true, các lần thoát exec chạy nền thành công nhưng không có output vẫn enqueue system event hoàn tất (mặc định: false).",
+          },
+          execPathPrepend: { help: "Danh sách thư mục prepend vào PATH cho exec runs (gateway/sandbox)." },
+          execSafeBins: { help: "Cho phép safe binary chỉ-stdin chạy mà không cần mục allowlist tường minh." },
+          execSafeBinTrustedDirs: {
+            help: "Các thư mục tin cậy bổ sung cho kiểm tra đường dẫn safe-bin (mục PATH không bao giờ tự động được tin cậy).",
+          },
+          execSecurity: {
+            help: "Bộ chọn tư thế bảo mật thực thi, điều khiển kỳ vọng sandbox/phê duyệt cho lệnh chạy. Giữ chế độ nghiêm ngặt cho prompt không tin cậy và chỉ nới lỏng cho workflow vận hành tin cậy.",
+          },
+          fsWorkspaceOnly: {
+            help: "Giới hạn công cụ hệ tệp (read/write/edit/apply_patch) trong thư mục workspace (mặc định: false).",
+          },
+          linksEnabled: {
+            help: "Bật tiền xử lý hiểu liên kết tự động để URL có thể được tóm tắt trước khi agent suy luận. Giữ bật để có ngữ cảnh giàu hơn, và tắt khi cần xử lý tối giản nghiêm ngặt.",
+          },
+          linksMaxLinks: {
+            help: "Số liên kết tối đa được mở rộng mỗi lượt trong link understanding. Giảm để kiểm soát độ trễ/chi phí ở luồng chat dày đặc, tăng khi ngữ cảnh nhiều liên kết là quan trọng.",
+          },
+          linksModels: {
+            help: "Danh sách mô hình ưu tiên cho tác vụ link understanding, được thử theo thứ tự fallback nếu hỗ trợ. Ưu tiên mô hình nhẹ cho tóm tắt thường quy và chỉ dùng mô hình nặng khi cần.",
+          },
+          linksTimeoutSeconds: {
+            help: "Ngân sách timeout theo giây cho mỗi liên kết trước khi bỏ qua liên kết chưa resolve. Giữ giới hạn này để tránh treo lâu khi trang ngoài chậm hoặc không truy cập được.",
+          },
+          loopCriticalThreshold: { help: "Ngưỡng nghiêm trọng cho mẫu lặp khi detector bật (mặc định: 20)." },
+          loopEnabled: { help: "Bật phát hiện vòng lặp tool-call lặp lại và kiểm tra an toàn backoff (mặc định: false)." },
+          loopGlobalCircuitBreakerThreshold: { help: "Ngưỡng ngắt mạch toàn cục khi không tiến triển (mặc định: 30)." },
+          loopHistorySize: { help: "Kích thước cửa sổ lịch sử tool cho phát hiện vòng lặp (mặc định: 30)." },
+          loopWarningThreshold: { help: "Ngưỡng cảnh báo cho mẫu lặp khi detector bật (mặc định: 10)." },
+          mediaConcurrency: {
+            help: "Số tác vụ media understanding đồng thời tối đa mỗi lượt trên ảnh, âm thanh và video. Giảm ở môi trường hạn chế tài nguyên để tránh bão hòa CPU/mạng.",
+          },
+          mediaModels: {
+            help: "Danh sách mô hình fallback dùng chung cho media understanding khi danh sách theo modality chưa được đặt. Căn chỉnh với provider đa phương thức sẵn có để tránh fallback churn.",
+          },
+          crossContextAllowAcrossProviders: { help: "Ghi đè legacy: cho phép gửi cross-context qua mọi provider." },
+          sessionsVisibility: {
+            help: 'Điều khiển phiên nào có thể được nhắm bởi sessions_list/sessions_history/sessions_send. ("tree" mặc định = phiên hiện tại + phiên subagent spawn; "self" = chỉ phiên hiện tại; "agent" = mọi phiên trong agent id hiện tại; "all" = mọi phiên; cross-agent vẫn cần tools.agentToAgent).',
+          },
+        },
+        models: {
+          bedrockDiscovery: {
+            help: "Thiết lập khám phá tự động mô hình AWS Bedrock dùng để tổng hợp model entries của provider theo mức hiển thị của tài khoản. Giữ phạm vi khám phá hẹp và chu kỳ refresh thận trọng để giảm API churn.",
+          },
+        },
+        sessionAgentToAgentMaxPingPongTurns: {
+          help: "Số lượt phản hồi qua lại tối đa giữa requester và target agent trong trao đổi agent-to-agent (0-5). Dùng giá trị thấp để giới hạn vòng trao đổi và giữ thời gian hoàn tất dễ dự đoán.",
+        },
+        sessionMaintenanceHighWaterBytes: {
+          help: "Dung lượng mục tiêu sau khi dọn theo ngân sách đĩa (mốc high-water). Mặc định là 80% của maxDiskBytes; đặt tường minh khi cần thu hồi chặt hơn trên đĩa hạn chế.",
+        },
+        sessionMaintenanceMaxDiskBytes: {
+          help: "Ngân sách đĩa tùy chọn cho thư mục phiên theo từng agent (ví dụ `500mb`). Dùng để giới hạn lưu trữ phiên mỗi agent; khi vượt ngưỡng, chế độ warn chỉ báo áp lực và chế độ enforce dọn bản ghi cũ trước.",
+        },
+        sessionMaintenanceMaxEntries: {
+          help: "Giới hạn tổng số mục phiên được giữ trong store để tránh tăng không giới hạn theo thời gian. Dùng giới hạn thấp cho môi trường hạn chế, hoặc cao hơn khi cần lịch sử dài.",
+        },
+        sessionMaintenanceMode: {
+          help: 'Xác định chính sách bảo trì chỉ được báo cáo ("warn") hay được áp dụng thực tế ("enforce"). Giữ "warn" trong giai đoạn rollout và chuyển sang "enforce" sau khi xác nhận ngưỡng an toàn.',
+        },
+        sessionMaintenancePruneAfter: {
+          help: "Xóa mục cũ hơn khoảng thời gian này (ví dụ `30d` hoặc `12h`) trong các lượt bảo trì. Dùng đây như điều khiển lưu giữ theo tuổi chính và đồng bộ với chính sách lưu trữ dữ liệu.",
+        },
+        sessionMaintenancePruneDays: {
+          help: "Trường lưu giữ theo tuổi đã deprecated, giữ lại để tương thích cấu hình cũ dùng số ngày. Nên dùng session.maintenance.pruneAfter để cú pháp thời lượng và hành vi nhất quán.",
+        },
+        sessionMaintenanceRotateBytes: {
+          help: "Xoay tệp lưu phiên khi kích thước vượt ngưỡng như `10mb` hoặc `1gb`. Dùng để giới hạn tăng trưởng tệp đơn và giữ thao tác backup/restore dễ quản lý.",
+        },
+        sessionResetAtHour: {
+          help: "Đặt mốc giờ cục bộ (0-23) cho chế độ reset hằng ngày để phiên rollover đúng thời điểm dự đoán được. Dùng cùng mode=daily và căn theo kỳ vọng múi giờ vận hành.",
+        },
+        sessionResetIdleMinutes: {
+          help: "Đặt cửa sổ không hoạt động trước khi reset cho chế độ idle, và cũng có thể làm hàng rào phụ cho chế độ daily. Giá trị lớn giúp giữ liên tục ngữ cảnh, nhỏ hơn cho luồng ngắn gọn mới hơn.",
+        },
+        sessionResetMode: {
+          help: 'Chọn chiến lược reset: "daily" reset theo giờ đã cấu hình và "idle" reset sau khoảng không hoạt động. Giữ một chế độ rõ ràng cho mỗi chính sách để tránh thay đổi ngữ cảnh bất ngờ.',
+        },
+        sessionSendPolicyDefault: {
+          help: 'Đặt hành động dự phòng khi không rule sendPolicy nào khớp: "allow" hoặc "deny". Giữ "allow" cho cấu hình đơn giản, hoặc chọn "deny" khi bạn cần rule cho phép tường minh cho mọi đích gửi.',
+        },
+        sessionSendPolicyRules: {
+          help: 'Các rule allow/deny có thứ tự được đánh giá trước hành động mặc định, ví dụ `{ action: "deny", match: { channel: "discord" } }`. Đặt rule cụ thể nhất lên trước để rule rộng không che mất ngoại lệ.',
+        },
+        sessionThreadBindingsEnabled: {
+          help: "Công tắc tổng toàn cục cho tính năng định tuyến phiên theo thread và hành vi gửi tập trung theo thread. Giữ bật cho workflow thread hiện đại trừ khi bạn cần tắt thread binding toàn cục.",
+        },
+        sessionThreadBindingsIdleHours: {
+          help: "Cửa sổ không hoạt động mặc định theo giờ cho phiên gắn thread trên các provider/kênh (0 sẽ tắt auto-unfocus do idle). Mặc định: 24.",
+        },
+        sessionThreadBindingsMaxAgeHours: {
+          help: "Giới hạn tuổi tối đa tùy chọn theo giờ cho phiên gắn thread trên các provider/kênh (0 sẽ tắt hard cap). Mặc định: 0.",
+        },
+        heartbeatDirectPolicy: {
+          help: 'Kiểm soát việc heartbeat có được phép gửi tới chat trực tiếp/DM hay không: "allow" (mặc định) cho phép gửi DM và "block" chặn gửi tới đích trực tiếp.',
+        },
+        heartbeatSuppressToolErrorWarnings: {
+          help: "Ẩn payload cảnh báo lỗi công cụ trong các lần chạy heartbeat.",
+        },
+        heartbeatTarget: {
+          help: 'Đích gửi ("last", "none", hoặc id kênh).',
+        },
+        heartbeatTargetKnownChannels: {
+          help: 'Đích gửi ("last", "none", hoặc id kênh). Các kênh đã biết: telegram, whatsapp, discord, irc, googlechat, slack, signal, imessage, line.',
+        },
+      },
       update: {
         auto: "Tự động",
         performance: "hiệu năng",
@@ -1338,6 +1548,60 @@ export const vi: TranslationMap = {
         customRedactionPatterns: {
           label: "Mẫu che dữ liệu tùy chỉnh",
           help: "Các mẫu regex che dữ liệu bổ sung áp dụng cho log trước khi xuất/lưu.",
+        },
+      },
+      infrastructure: {
+        gateway: {
+          http: {
+            help: "Nhóm cấu hình Gateway HTTP API cho bật/tắt endpoint và mức phơi bày API ở tầng vận chuyển. Chỉ bật những endpoint thật sự cần để giảm bề mặt tấn công.",
+          },
+          push: {
+            help: "Thiết lập push-delivery dùng bởi gateway khi cần đánh thức hoặc thông báo cho thiết bị đã ghép nối. Cấu hình relay-backed APNs tại đây cho bản iOS chính thức; xác thực APNs trực tiếp vẫn dựa trên biến môi trường cho bản local/manual.",
+          },
+          reload: {
+            help: "Chính sách nạp lại cấu hình trực tiếp quy định cách áp dụng chỉnh sửa và khi nào cần restart toàn bộ. Giữ hành vi hybrid để an toàn vận hành trừ khi đang debug chi tiết cơ chế reload.",
+          },
+          remote: {
+            help: "Thiết lập kết nối gateway từ xa cho transport trực tiếp hoặc SSH khi instance này proxy sang máy runtime khác. Chỉ dùng chế độ remote khi chủ đích triển khai mô hình tách host.",
+          },
+          tailscale: {
+            help: "Thiết lập tích hợp Tailscale cho phơi bày Serve/Funnel và xử lý vòng đời khi gateway khởi động/thoát. Giữ tắt nếu triển khai của bạn không chủ đích dùng ingress qua Tailscale.",
+          },
+          tls: {
+            help: "Thiết lập chứng chỉ và khóa TLS để kết thúc HTTPS trực tiếp trong tiến trình gateway. Dùng chứng chỉ rõ ràng ở môi trường production và tránh phơi bày plaintext trên mạng không tin cậy.",
+          },
+        },
+        nodeHost: {
+          browserProxy: {
+            help: "Nhóm thiết lập browser-proxy để phơi bày điều khiển trình duyệt local qua định tuyến node. Chỉ bật khi workflow node từ xa thực sự cần dùng profile trình duyệt local của bạn.",
+          },
+        },
+        web: {
+          reconnect: {
+            help: "Chính sách backoff reconnect cho kênh web sau lỗi transport. Giữ số lần thử lại có giới hạn và chỉnh jitter phù hợp để tránh hiện tượng reconnect đồng loạt.",
+          },
+        },
+        browser: {
+          profiles: {
+            help: "Ánh xạ profile trình duyệt có tên để định tuyến rõ ràng tới cổng hoặc URL CDP cùng metadata tùy chọn. Giữ tên profile nhất quán và tránh định nghĩa endpoint chồng chéo.",
+          },
+          extensionRelayBind: {
+            help: "Địa chỉ IP bind cho listener relay của tiện ích mở rộng Chrome. Để trống để chỉ truy cập loopback; hoặc đặt IP non-loopback rõ ràng như 0.0.0.0 chỉ khi relay cần truy cập xuyên namespace mạng (ví dụ WSL2) và vùng mạng xung quanh đã được tin cậy.",
+          },
+          snapshotDefaults: {
+            help: "Cấu hình mặc định cho chụp snapshot khi caller không truyền tùy chọn snapshot cụ thể. Tinh chỉnh mục này để hành vi chụp ổn định giữa các kênh và luồng tự động hóa.",
+          },
+          ssrfPolicy: {
+            help: "Thiết lập guardrail chống SSRF cho các luồng browser/network fetch có thể chạm tới host nội bộ. Giữ mặc định nghiêm ngặt ở production và chỉ mở cho các mục tiêu được phê duyệt rõ ràng.",
+          },
+        },
+        discovery: {
+          mdns: {
+            help: "Nhóm cấu hình mDNS discovery cho quảng bá mạng local và tinh chỉnh hành vi khám phá. Giữ chế độ minimal cho LAN thông thường trừ khi cần thêm metadata.",
+          },
+          wideArea: {
+            help: "Nhóm cấu hình wide-area discovery để phơi bày tín hiệu khám phá vượt ngoài phạm vi link-local. Chỉ bật khi triển khai của bạn chủ đích tổng hợp hiện diện gateway đa site.",
+          },
         },
       },
     },
@@ -1842,6 +2106,50 @@ export const vi: TranslationMap = {
         defaults: {
           label: "Mặc định agent",
           help: "Thiết lập mặc định dùng chung cho agent nếu không ghi đè theo từng agent.",
+          workspace: {
+            label: "Workspace",
+            help: "Đường dẫn workspace mặc định được phơi bày cho công cụ runtime của agent để có ngữ cảnh hệ tệp và hành vi nhận biết repo. Hãy đặt rõ khi chạy qua wrapper để resolution đường dẫn luôn ổn định.",
+          },
+          repoRoot: {
+            label: "Gốc repo",
+            help: "Repo root tùy chọn hiển thị ở dòng runtime trong system prompt (ghi đè auto-detect).",
+          },
+          bootstrapMaxChars: {
+            label: "Số ký tự tối đa mỗi tệp bootstrap",
+            help: "Số ký tự tối đa của mỗi tệp bootstrap workspace được chèn vào system prompt trước khi cắt (mặc định: 20000).",
+          },
+          bootstrapTotalMaxChars: {
+            label: "Tổng số ký tự bootstrap tối đa",
+            help: "Tổng số ký tự tối đa trên tất cả tệp bootstrap workspace được chèn (mặc định: 150000).",
+          },
+          bootstrapPromptTruncationWarning: {
+            label: "Cảnh báo khi cắt prompt bootstrap",
+            help: 'Chèn cảnh báo hiển thị cho agent khi tệp bootstrap bị cắt: "off", "once" (mặc định), hoặc "always".',
+          },
+          envelopeTimezone: {
+            label: "Múi giờ envelope",
+            help: 'Múi giờ cho message envelope ("utc", "local", "user", hoặc chuỗi múi giờ IANA).',
+          },
+          envelopeTimestamp: {
+            label: "Dấu thời gian envelope",
+            help: 'Bao gồm mốc thời gian tuyệt đối trong message envelope ("on" hoặc "off").',
+          },
+          envelopeElapsed: {
+            label: "Thời gian đã trôi trong envelope",
+            help: 'Bao gồm thời gian đã trôi trong message envelope ("on" hoặc "off").',
+          },
+          imageMaxDimensionPx: {
+            label: "Cạnh ảnh tối đa (px)",
+            help: "Độ dài cạnh ảnh tối đa (pixel) khi sanitize payload ảnh từ transcript/tool-result (mặc định: 1200).",
+          },
+          pdfMaxBytesMb: {
+            label: "Dung lượng PDF tối đa (MB)",
+            help: "Kích thước tệp PDF tối đa theo MB cho công cụ PDF (mặc định: 10).",
+          },
+          pdfMaxPages: {
+            label: "Số trang PDF tối đa",
+            help: "Số trang PDF tối đa được xử lý bởi công cụ PDF (mặc định: 20).",
+          },
         },
         list: {
           label: "Danh sách agent",
@@ -2094,7 +2402,23 @@ export const vi: TranslationMap = {
         },
         resetByType: {
           label: "Reset theo loại chat",
-          help: "Ghi đè reset theo loại hội thoại.",
+          help: "Ghi đè hành vi reset theo loại chat (trực tiếp, nhóm, thread) khi mặc định chưa đủ. Dùng khi lưu lượng nhóm/thread cần nhịp reset khác tin nhắn trực tiếp.",
+          direct: {
+            label: "Reset phiên (trò chuyện trực tiếp)",
+            help: "Định nghĩa chính sách reset cho chat trực tiếp và thay thế cấu hình session.reset cơ sở cho loại đó. Dùng đây như ghi đè tin nhắn trực tiếp chuẩn thay cho bí danh dm cũ.",
+          },
+          dm: {
+            label: "Reset phiên (bí danh DM đã ngừng dùng)",
+            help: "Bí danh đã ngừng dùng cho hành vi reset trực tiếp, giữ để tương thích cấu hình cũ. Hãy dùng session.resetByType.direct để tooling và validation sau này nhất quán.",
+          },
+          group: {
+            label: "Reset phiên (nhóm)",
+            help: "Định nghĩa chính sách reset cho phiên chat nhóm khi tính liên tục và mẫu nhiễu khác DM. Dùng cửa sổ rảnh ngắn hơn cho nhóm đông nếu trôi ngữ cảnh trở thành vấn đề.",
+          },
+          thread: {
+            label: "Reset phiên (thread)",
+            help: "Định nghĩa chính sách reset cho phiên phạm vi thread, gồm luồng thread kênh tập trung. Dùng khi phiên thread cần hết hạn nhanh hoặc chậm hơn các loại chat khác.",
+          },
         },
         resetByChannel: {
           label: "Reset theo kênh",

@@ -212,6 +212,150 @@ const CONFIG_COPY_KEY_BY_TEXT: Record<string, string> = {
   "Custom Redaction Patterns": "config.copy.logs.customRedactionPatterns.label",
   "Additional custom redact regex patterns applied to log output before emission/storage. Use this to mask org-specific tokens and identifiers not covered by built-in redaction rules.":
     "config.copy.logs.customRedactionPatterns.help",
+  "Gateway HTTP API configuration grouping endpoint toggles and transport-facing API exposure controls. Keep only required endpoints enabled to reduce attack surface.":
+    "config.copy.infrastructure.gateway.http.help",
+  "Push-delivery settings used by the gateway when it needs to wake or notify paired devices. Configure relay-backed APNs here for official iOS builds; direct APNs auth remains env-based for local/manual builds.":
+    "config.copy.infrastructure.gateway.push.help",
+  "Live config-reload policy for how edits are applied and when full restarts are triggered. Keep hybrid behavior for safest operational updates unless debugging reload internals.":
+    "config.copy.infrastructure.gateway.reload.help",
+  "Remote gateway connection settings for direct or SSH transport when this instance proxies to another runtime host. Use remote mode only when split-host operation is intentionally configured.":
+    "config.copy.infrastructure.gateway.remote.help",
+  "Tailscale integration settings for Serve/Funnel exposure and lifecycle handling on gateway start/exit. Keep off unless your deployment intentionally relies on Tailscale ingress.":
+    "config.copy.infrastructure.gateway.tailscale.help",
+  "TLS certificate and key settings for terminating HTTPS directly in the gateway process. Use explicit certificates in production and avoid plaintext exposure on untrusted networks.":
+    "config.copy.infrastructure.gateway.tls.help",
+  "Groups browser-proxy settings for exposing local browser control through node routing. Enable only when remote node workflows need your local browser profiles.":
+    "config.copy.infrastructure.nodeHost.browserProxy.help",
+  "Reconnect backoff policy for web channel reconnect attempts after transport failure. Keep bounded retries and jitter tuned to avoid thundering-herd reconnect behavior.":
+    "config.copy.infrastructure.web.reconnect.help",
+  "Named browser profile connection map used for explicit routing to CDP ports or URLs with optional metadata. Keep profile names consistent and avoid overlapping endpoint definitions.":
+    "config.copy.infrastructure.browser.profiles.help",
+  "Bind IP address for the Chrome extension relay listener. Leave unset for loopback-only access, or set an explicit non-loopback IP such as 0.0.0.0 only when the relay must be reachable across network namespaces (for example WSL2) and the surrounding network is already trusted.":
+    "config.copy.infrastructure.browser.extensionRelayBind.help",
+  "Default snapshot capture configuration used when callers do not provide explicit snapshot options. Tune this for consistent capture behavior across channels and automation paths.":
+    "config.copy.infrastructure.browser.snapshotDefaults.help",
+  "Server-side request forgery guardrail settings for browser/network fetch paths that could reach internal hosts. Keep restrictive defaults in production and open only explicitly approved targets.":
+    "config.copy.infrastructure.browser.ssrfPolicy.help",
+  "mDNS discovery configuration group for local network advertisement and discovery behavior tuning. Keep minimal mode for routine LAN discovery unless extra metadata is required.":
+    "config.copy.infrastructure.discovery.mdns.help",
+  "Wide-area discovery configuration group for exposing discovery signals beyond local-link scopes. Enable only in deployments that intentionally aggregate gateway presence across sites.":
+    "config.copy.infrastructure.discovery.wideArea.help",
+  "Max characters of each workspace bootstrap file injected into the system prompt before truncation (default: 20000).":
+    "config.copy.aiAgents.bootstrapMaxChars.help",
+  'Inject agent-visible warning text when bootstrap files are truncated: "off", "once" (default), or "always".':
+    "config.copy.aiAgents.bootstrapPromptTruncationWarning.help",
+  "Max total characters across all injected workspace bootstrap files (default: 150000).":
+    "config.copy.aiAgents.bootstrapTotalMaxChars.help",
+  'Include elapsed time in message envelopes ("on" or "off").':
+    "config.copy.aiAgents.envelopeElapsed.help",
+  'Include absolute timestamps in message envelopes ("on" or "off").':
+    "config.copy.aiAgents.envelopeTimestamp.help",
+  'Timezone for message envelopes ("utc", "local", "user", or an IANA timezone string).':
+    "config.copy.aiAgents.envelopeTimezone.help",
+  "Max image side length in pixels when sanitizing transcript/tool-result image payloads (default: 1200).":
+    "config.copy.aiAgents.imageMaxDimensionPx.help",
+  "Maximum PDF file size in megabytes for the PDF tool (default: 10).":
+    "config.copy.aiAgents.pdfMaxBytesMb.help",
+  "Maximum number of PDF pages to process for the PDF tool (default: 20).":
+    "config.copy.aiAgents.pdfMaxPages.help",
+  "Optional repository root shown in the system prompt runtime line (overrides auto-detect).":
+    "config.copy.aiAgents.repoRoot.help",
+  "Default workspace path exposed to agent runtime tools for filesystem context and repo-aware behavior. Set this explicitly when running from wrappers so path resolution stays deterministic.":
+    "config.copy.aiAgents.workspace.help",
+  "Allowlist of target agent IDs permitted for agent_to_agent calls when orchestration is enabled. Use explicit allowlists to avoid uncontrolled cross-agent call graphs.":
+    "config.copy.aiAgents.tools.agentToAgentAllow.help",
+  "Enables the agent_to_agent tool surface so one agent can invoke another agent at runtime. Keep off in simple deployments and enable only when orchestration value outweighs complexity.":
+    "config.copy.aiAgents.tools.agentToAgentEnabled.help",
+  "Enables elevated tool execution path when sender and policy checks pass. Keep disabled in public/shared channels and enable only for trusted owner-operated contexts.":
+    "config.copy.aiAgents.tools.elevatedEnabled.help",
+  "Approval strategy for when exec commands require human confirmation before running. Use stricter ask behavior in shared channels and lower-friction settings in private operator contexts.":
+    "config.copy.aiAgents.tools.execAsk.help",
+  "Selects execution host strategy for shell commands, typically controlling local vs delegated execution environment. Use the safest host mode that still satisfies your automation requirements.":
+    "config.copy.aiAgents.tools.execHost.help",
+  "Node binding configuration for exec tooling when command execution is delegated through connected nodes. Use explicit node binding only when multi-node routing is required.":
+    "config.copy.aiAgents.tools.execNode.help",
+  "When true (default), backgrounded exec sessions on exit and node exec lifecycle events enqueue a system event and request a heartbeat.":
+    "config.copy.aiAgents.tools.execNotifyOnExit.help",
+  "When true, successful backgrounded exec exits with empty output still enqueue a completion system event (default: false).":
+    "config.copy.aiAgents.tools.execNotifyOnExitEmptySuccess.help",
+  "Directories to prepend to PATH for exec runs (gateway/sandbox).":
+    "config.copy.aiAgents.tools.execPathPrepend.help",
+  "Allow stdin-only safe binaries to run without explicit allowlist entries.":
+    "config.copy.aiAgents.tools.execSafeBins.help",
+  "Additional explicit directories trusted for safe-bin path checks (PATH entries are never auto-trusted).":
+    "config.copy.aiAgents.tools.execSafeBinTrustedDirs.help",
+  "Execution security posture selector controlling sandbox/approval expectations for command execution. Keep strict security mode for untrusted prompts and relax only for trusted operator workflows.":
+    "config.copy.aiAgents.tools.execSecurity.help",
+  "Restrict filesystem tools (read/write/edit/apply_patch) to the workspace directory (default: false).":
+    "config.copy.aiAgents.tools.fsWorkspaceOnly.help",
+  "Enable automatic link understanding pre-processing so URLs can be summarized before agent reasoning. Keep enabled for richer context, and disable when strict minimal processing is required.":
+    "config.copy.aiAgents.tools.linksEnabled.help",
+  "Maximum number of links expanded per turn during link understanding. Use lower values to control latency/cost in chatty threads and higher values when multi-link context is critical.":
+    "config.copy.aiAgents.tools.linksMaxLinks.help",
+  "Preferred model list for link understanding tasks, evaluated in order as fallbacks when supported. Use lightweight models first for routine summarization and heavier models only when needed.":
+    "config.copy.aiAgents.tools.linksModels.help",
+  "Per-link understanding timeout budget in seconds before unresolved links are skipped. Keep this bounded to avoid long stalls when external sites are slow or unreachable.":
+    "config.copy.aiAgents.tools.linksTimeoutSeconds.help",
+  "Critical threshold for repetitive patterns when detector is enabled (default: 20).":
+    "config.copy.aiAgents.tools.loopCriticalThreshold.help",
+  "Enable repetitive tool-call loop detection and backoff safety checks (default: false).":
+    "config.copy.aiAgents.tools.loopEnabled.help",
+  "Global no-progress breaker threshold (default: 30).":
+    "config.copy.aiAgents.tools.loopGlobalCircuitBreakerThreshold.help",
+  "Tool history window size for loop detection (default: 30).":
+    "config.copy.aiAgents.tools.loopHistorySize.help",
+  "Warning threshold for repetitive patterns when detector is enabled (default: 10).":
+    "config.copy.aiAgents.tools.loopWarningThreshold.help",
+  "Maximum number of concurrent media understanding operations per turn across image, audio, and video tasks. Lower this in resource-constrained deployments to prevent CPU/network saturation.":
+    "config.copy.aiAgents.tools.mediaConcurrency.help",
+  "Shared fallback model list used by media understanding tools when modality-specific model lists are not set. Keep this aligned with available multimodal providers to avoid runtime fallback churn.":
+    "config.copy.aiAgents.tools.mediaModels.help",
+  "Legacy override: allow cross-context sends across all providers.":
+    "config.copy.aiAgents.tools.crossContextAllowAcrossProviders.help",
+  'Controls which sessions can be targeted by sessions_list/sessions_history/sessions_send. ("tree" default = current session + spawned subagent sessions; "self" = only current; "agent" = any session in the current agent id; "all" = any session; cross-agent still requires tools.agentToAgent).':
+    "config.copy.aiAgents.tools.sessionsVisibility.help",
+  "Automatic AWS Bedrock model discovery settings used to synthesize provider model entries from account visibility. Keep discovery scoped and refresh intervals conservative to reduce API churn.":
+    "config.copy.aiAgents.models.bedrockDiscovery.help",
+  "Max reply-back turns between requester and target agents during agent-to-agent exchanges (0-5). Use lower values to hard-limit chatter loops and preserve predictable run completion.":
+    "config.copy.aiAgents.sessionAgentToAgentMaxPingPongTurns.help",
+  "Target size after disk-budget cleanup (high-water mark). Defaults to 80% of maxDiskBytes; set explicitly for tighter reclaim behavior on constrained disks.":
+    "config.copy.aiAgents.sessionMaintenanceHighWaterBytes.help",
+  "Optional per-agent sessions-directory disk budget (for example `500mb`). Use this to cap session storage per agent; when exceeded, warn mode reports pressure and enforce mode performs oldest-first cleanup.":
+    "config.copy.aiAgents.sessionMaintenanceMaxDiskBytes.help",
+  "Caps total session entry count retained in the store to prevent unbounded growth over time. Use lower limits for constrained environments, or higher limits when longer history is required.":
+    "config.copy.aiAgents.sessionMaintenanceMaxEntries.help",
+  'Determines whether maintenance policies are only reported ("warn") or actively applied ("enforce"). Keep "warn" during rollout and switch to "enforce" after validating safe thresholds.':
+    "config.copy.aiAgents.sessionMaintenanceMode.help",
+  "Removes entries older than this duration (for example `30d` or `12h`) during maintenance passes. Use this as the primary age-retention control and align it with data retention policy.":
+    "config.copy.aiAgents.sessionMaintenancePruneAfter.help",
+  "Deprecated age-retention field kept for compatibility with legacy configs using day counts. Use session.maintenance.pruneAfter instead so duration syntax and behavior are consistent.":
+    "config.copy.aiAgents.sessionMaintenancePruneDays.help",
+  "Rotates the session store when file size exceeds a threshold such as `10mb` or `1gb`. Use this to bound single-file growth and keep backup/restore operations manageable.":
+    "config.copy.aiAgents.sessionMaintenanceRotateBytes.help",
+  "Sets local-hour boundary (0-23) for daily reset mode so sessions roll over at predictable times. Use with mode=daily and align to operator timezone expectations for human-readable behavior.":
+    "config.copy.aiAgents.sessionResetAtHour.help",
+  "Sets inactivity window before reset for idle mode and can also act as secondary guard with daily mode. Use larger values to preserve continuity or smaller values for fresher short-lived threads.":
+    "config.copy.aiAgents.sessionResetIdleMinutes.help",
+  'Selects reset strategy: "daily" resets at a configured hour and "idle" resets after inactivity windows. Keep one clear mode per policy to avoid surprising context turnover patterns.':
+    "config.copy.aiAgents.sessionResetMode.help",
+  'Sets fallback action when no sendPolicy rule matches: "allow" or "deny". Keep "allow" for simpler setups, or choose "deny" when you require explicit allow rules for every destination.':
+    "config.copy.aiAgents.sessionSendPolicyDefault.help",
+  'Ordered allow/deny rules evaluated before the default action, for example `{ action: "deny", match: { channel: "discord" } }`. Put most specific rules first so broad rules do not shadow exceptions.':
+    "config.copy.aiAgents.sessionSendPolicyRules.help",
+  "Global master switch for thread-bound session routing features and focused thread delivery behavior. Keep enabled for modern thread workflows unless you need to disable thread binding globally.":
+    "config.copy.aiAgents.sessionThreadBindingsEnabled.help",
+  "Default inactivity window in hours for thread-bound sessions across providers/channels (0 disables idle auto-unfocus). Default: 24.":
+    "config.copy.aiAgents.sessionThreadBindingsIdleHours.help",
+  "Optional hard max age in hours for thread-bound sessions across providers/channels (0 disables hard cap). Default: 0.":
+    "config.copy.aiAgents.sessionThreadBindingsMaxAgeHours.help",
+  'Controls whether heartbeat delivery may target direct/DM chats: "allow" (default) permits DM delivery and "block" suppresses direct-target sends.':
+    "config.copy.aiAgents.heartbeatDirectPolicy.help",
+  "Suppress tool error warning payloads during heartbeat runs.":
+    "config.copy.aiAgents.heartbeatSuppressToolErrorWarnings.help",
+  'Delivery target ("last", "none", or a channel id).':
+    "config.copy.aiAgents.heartbeatTarget.help",
+  'Delivery target ("last", "none", or a channel id). Known channels: telegram, whatsapp, discord, irc, googlechat, slack, signal, imessage, line.':
+    "config.copy.aiAgents.heartbeatTargetKnownChannels.help",
 };
 
 function translateConfigCopy(raw: string | undefined): string | undefined {
