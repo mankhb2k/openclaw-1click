@@ -68,7 +68,6 @@
 /* Chat thread - scrollable middle section, transparent */
 .chat-thread {
   flex: 1 1 0;
-  /* Grow, shrink, and use 0 base for proper scrolling */
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 6px 6px;
@@ -171,7 +170,8 @@
   padding: 7px 14px;
   margin: 0 auto 8px;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--ctx-color, #d97706) 35%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--ctx-color, #d97706) 35%, transparent);
   background: var(--ctx-bg, rgba(217, 119, 6, 0.12));
   color: var(--ctx-color, #d97706);
   font-size: 13px;
@@ -335,12 +335,10 @@
   align-items: stretch;
 }
 
-/* Hide the "Message" label - keep textarea only */
 .chat-compose__field > span {
   display: none;
 }
 
-/* Override .field textarea min-height (180px) from components.css */
 .chat-compose .chat-compose__field textarea {
   width: 100%;
   height: 40px;
@@ -397,7 +395,8 @@
 
 .agent-chat__input:focus-within {
   border-color: var(--border-strong);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--border-strong) 24%, transparent);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--border-strong) 24%, transparent);
 }
 
 @supports (backdrop-filter: blur(1px)) {
@@ -514,8 +513,8 @@
   height: 30px;
   border-radius: var(--radius-md);
   border: none;
-  background: var(--muted-strong);
-  color: var(--text-strong);
+  background: color-mix(in srgb, var(--danger) 80%, var(--bg) 40%);
+  color: #fff;
   cursor: pointer;
   flex-shrink: 0;
   transition:
@@ -535,12 +534,13 @@
 }
 
 .chat-send-btn:hover:not(:disabled) {
-  background: var(--muted);
+  background: color-mix(in srgb, var(--danger) 85%, var(--bg) 15%);
   box-shadow: none;
 }
 
 .chat-send-btn:disabled {
-  opacity: 0.3;
+  /* Vẫn giữ cảm giác "đỏ" khi bị disable (ví dụ: chưa connected / đang gửi) */
+  opacity: 0.6;
   cursor: not-allowed;
 }
 

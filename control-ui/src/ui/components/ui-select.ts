@@ -75,7 +75,16 @@ export function renderUiSelect(params: UiSelectParams): TemplateResult {
               class="ui-select__option ${opt.value === params.value ? "ui-select__option--active" : ""}"
               ?disabled=${Boolean(params.disabled || opt.disabled)}
               aria-selected=${opt.value === params.value ? "true" : "false"}
-              @click=${() => params.onChange(opt.value)}
+              @click=${(event: MouseEvent) => {
+                // Single-select: đóng dropdown ngay sau khi chọn.
+                // Người dùng muốn chọn lại thì cần bấm mở dropdown lần nữa.
+                const btn = event.currentTarget as HTMLElement;
+                const details = btn.closest("details") as HTMLDetailsElement | null;
+                if (details) {
+                  details.open = false;
+                }
+                params.onChange(opt.value);
+              }}
             >
               ${opt.label}
             </button>

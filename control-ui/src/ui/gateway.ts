@@ -48,6 +48,20 @@ export class GatewayRequestError extends Error {
   }
 }
 
+export class GatewayRequestTimeoutError extends Error {
+  readonly timeoutMs: number;
+  readonly method: string;
+
+  constructor(params: { method: string; timeoutMs: number }) {
+    super(`gateway request timed out (${params.timeoutMs}ms) for ${params.method}`);
+    this.name = "GatewayRequestTimeoutError";
+    this.timeoutMs = params.timeoutMs;
+    this.method = params.method;
+  }
+}
+
+const DEFAULT_GATEWAY_REQUEST_TIMEOUT_MS = 30_000;
+
 export function resolveGatewayErrorDetailCode(
   error: { details?: unknown } | null | undefined,
 ): string | null {
@@ -117,6 +131,7 @@ export type GatewayHelloOk = {
 type Pending = {
   resolve: (value: unknown) => void;
   reject: (err: unknown) => void;
+  timeoutId?: number;
 };
 
 type SelectedConnectAuth = {
@@ -222,6 +237,9 @@ export class GatewayBrowserClient {
 
   private flushPending(err: Error) {
     for (const [, p] of this.pending) {
+      if (p.timeoutId != null) {
+        window.clearTimeout(p.timeoutId);
+      }
       p.reject(err);
     }
     this.pending.clear();
@@ -424,6 +442,9 @@ export class GatewayBrowserClient {
       if (!pending) {
         return;
       }
+      if (pending.timeoutId != null) {
+        window.clearTimeout(pending.timeoutId);
+      }
       this.pending.delete(res.id);
       if (res.ok) {
         pending.resolve(res.payload);
@@ -466,14 +487,34 @@ export class GatewayBrowserClient {
     };
   }
 
-  request<T = unknown>(method: string, params?: unknown): Promise<T> {
+  request<T = unknown>(
+    method: string,
+    params?: unknown,
+    opts?: {
+      timeoutMs?: number;
+    },
+  ): Promise<T> {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       return Promise.reject(new Error("gateway not connected"));
     }
     const id = generateUUID();
     const frame = { type: "req", id, method, params };
+    const timeoutMs = opts?.timeoutMs ?? DEFAULT_GATEWAY_REQUEST_TIMEOUT_MS;
     const p = new Promise<T>((resolve, reject) => {
-      this.pending.set(id, { resolve: (v) => resolve(v as T), reject });
+      const timeoutId = window.setTimeout(() => {
+        // If we already received a response, pending entry will be gone and this will no-op.
+        const current = this.pending.get(id);
+        if (!current) {
+          return;
+        }
+        this.pending.delete(id);
+        reject(new GatewayRequestTimeoutError({ method, timeoutMs }));
+      }, timeoutMs);
+      this.pending.set(id, {
+        resolve: (v) => resolve(v as T),
+        reject,
+        timeoutId,
+      });
     });
     this.ws.send(JSON.stringify(frame));
     return p;

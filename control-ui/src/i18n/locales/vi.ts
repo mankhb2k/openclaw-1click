@@ -68,6 +68,123 @@ export const vi: TranslationMap = {
     debug: "Snapshot, sự kiện, RPC.",
     logs: "Nhật ký gateway trực tiếp.",
   },
+  instances: {
+    connectedInstances: {
+      title: "Các phiên đang kết nối",
+      subtitle: "Tín hiệu hiện diện từ gateway và các client.",
+    },
+    toggleHosts: {
+      show: "Hiện hosts và IP",
+      hide: "Ẩn hosts và IP",
+      ariaLabel: "Bật/tắt hiển thị host và IP",
+    },
+    loading: "Đang tải…",
+    empty: "Chưa có phiên nào được báo cáo.",
+    unknownMode: "không rõ",
+    unknownHost: "host không rõ",
+    scopes: {
+      count: "{count} phạm vi",
+      list: "Phạm vi: {scopes}",
+    },
+    labels: {
+      lastInput: "Lần nhập cuối {value}",
+      reason: "Lý do {value}",
+      reasonUnknown: "Lý do",
+    },
+    relativeTime: {
+      justNow: "Vừa xong",
+      yesterday: "Hôm qua",
+      value: "{count} {unit} trước",
+      units: {
+        s: "giây",
+        m: "phút",
+        h: "giờ",
+        d: "ngày",
+        w: "tuần",
+      },
+    },
+  },
+  sessions: {
+    title: "Phiên làm việc",
+    loading: "Đang tải…",
+    cardSub: {
+      store: "Kho: {path}",
+      active: "Các khóa phiên đang hoạt động và ghi đè theo phiên.",
+    },
+    filters: {
+      active: "Hoạt động",
+      limit: "Giới hạn",
+      minPlaceholder: "min",
+      global: "Toàn cục",
+      unknown: "Không rõ",
+    },
+    search: {
+      placeholder: "Lọc theo key, label, kind…",
+    },
+    bulk: {
+      selected: "{count} đã chọn",
+      unselect: "Bỏ chọn",
+      delete: "Xóa",
+    },
+    table: {
+      selectAllOnPage: "Chọn tất cả trên trang",
+      selectSession: "Chọn phiên",
+      headers: {
+        key: "Key",
+        label: "Nhãn",
+        kind: "Loại",
+        updated: "Cập nhật",
+        tokens: "Token",
+        thinking: "Suy nghĩ",
+        fast: "Nhanh",
+        verbose: "Chi tiết",
+        reasoning: "Lập luận",
+      },
+    },
+    empty: {
+      noSessions: "Không có phiên nào.",
+    },
+    pagination: {
+      info: {
+        single: "{start}-{end} trên {total} phiên",
+        plural: "{start}-{end} trên {total} phiên",
+      },
+      pageSizeOption: "{size} mỗi trang",
+      previous: "Trước",
+      next: "Tiếp theo",
+    },
+    row: {
+      optionalPlaceholder: "(tùy chọn)",
+    },
+    relativeTime: {
+      justNow: "Vừa xong",
+      yesterday: "Hôm qua",
+      value: "{count} {unit} trước",
+      units: {
+        s: "giây",
+        m: "phút",
+        h: "giờ",
+        d: "ngày",
+        w: "tuần",
+      },
+    },
+    levels: {
+      inherit: "Kế thừa",
+      off: "tắt",
+      on: "bật",
+      custom: "tùy chọn",
+      offExplicit: "tắt (tường minh)",
+      full: "đầy đủ",
+      stream: "stream",
+    },
+    thinkingLevels: {
+      minimal: "tối giản",
+      low: "thấp",
+      medium: "trung bình",
+      high: "cao",
+      xhigh: "rất cao",
+    },
+  },
   overview: {
     access: {
       title: "Truy cập Gateway",
@@ -844,6 +961,8 @@ export const vi: TranslationMap = {
         sessions_history: "Lịch sử phiên",
         sessions_send: "Gửi tới phiên",
         sessions_spawn: "Tạo agent con",
+        sessions_yield: "Kết thúc lượt để nhận kết quả từ agent con",
+        subagents: "Quản lý agent con",
         session_status: "Trạng thái phiên",
         browser: "Điều khiển trình duyệt web",
         canvas: "Điều khiển canvas",
@@ -1313,6 +1432,22 @@ export const vi: TranslationMap = {
       media: { label: "Phương tiện", description: "Thiết lập xử lý media" },
     },
     fields: {
+      update: {
+        checkOnStart: {
+          label: "Kiểm tra cập nhật khi khởi động",
+          help: "Kiểm tra cập nhật npm khi gateway khởi động (mặc định: true).",
+        },
+        auto: {
+          enabled: {
+            label: "Bật tự động cập nhật",
+            help: "Bật cập nhật nền khi cài đặt gói npm (mặc định: false).",
+          },
+          stableDelayHours: {
+            label: "Độ trễ tự động cập nhật kênh stable (giờ)",
+            help: "Độ trễ tối thiểu trước khi bắt đầu tự áp dụng kênh stable (mặc định: 6).",
+          },
+        },
+      },
       messages: {
         label: "Tin nhắn",
         help: "Thiết lập hành vi tiền tố, chat nhóm, hàng đợi và phản hồi trạng thái cho tin nhắn.",
@@ -1704,116 +1839,314 @@ export const vi: TranslationMap = {
       agents: {
         label: "Agent",
         help: "Cấu hình runtime agent gồm mặc định và danh sách agent cụ thể.",
-        defaults: { label: "Mặc định agent", help: "Thiết lập mặc định dùng chung cho agent nếu không ghi đè theo từng agent." },
-        list: { label: "Danh sách agent", help: "Danh sách agent và các ghi đè riêng theo từng agent." },
+        defaults: {
+          label: "Mặc định agent",
+          help: "Thiết lập mặc định dùng chung cho agent nếu không ghi đè theo từng agent.",
+        },
+        list: {
+          label: "Danh sách agent",
+          help: "Danh sách agent và các ghi đè riêng theo từng agent.",
+        },
       },
       memory: {
         label: "Bộ nhớ",
         help: "Thiết lập hệ thống bộ nhớ, backend và lập chỉ mục QMD.",
-        backend: { label: "Backend bộ nhớ", help: "Backend bộ nhớ chính dùng cho truy xuất/ngữ cảnh." },
-        citations: { label: "Chế độ trích dẫn bộ nhớ", help: "Cách hiển thị trích dẫn khi dùng dữ liệu bộ nhớ." },
+        backend: {
+          label: "Backend bộ nhớ",
+          help: "Backend bộ nhớ chính dùng cho truy xuất/ngữ cảnh.",
+        },
+        citations: {
+          label: "Chế độ trích dẫn bộ nhớ",
+          help: "Cách hiển thị trích dẫn khi dùng dữ liệu bộ nhớ.",
+        },
         qmd: {
           label: "QMD",
           command: { label: "Lệnh QMD", help: "Đường dẫn binary/lệnh QMD." },
-          searchMode: { label: "Chế độ tìm kiếm QMD", help: "Chế độ tìm kiếm dùng trong QMD." },
-          includeDefaultMemory: { label: "Bao gồm bộ nhớ mặc định", help: "Bao gồm nguồn bộ nhớ mặc định khi truy vấn QMD." },
-          paths: { label: "Đường dẫn QMD bổ sung", help: "Danh sách đường dẫn bổ sung để QMD quét dữ liệu." },
+          searchMode: {
+            label: "Chế độ tìm kiếm QMD",
+            help: "Chế độ tìm kiếm dùng trong QMD.",
+          },
+          includeDefaultMemory: {
+            label: "Bao gồm bộ nhớ mặc định",
+            help: "Bao gồm nguồn bộ nhớ mặc định khi truy vấn QMD.",
+          },
+          paths: {
+            label: "Đường dẫn QMD bổ sung",
+            help: "Danh sách đường dẫn bổ sung để QMD quét dữ liệu.",
+          },
           sessions: {
             label: "Lập chỉ mục phiên QMD",
-            enabled: { label: "Bật lập chỉ mục phiên", help: "Bật lập chỉ mục dữ liệu phiên cho QMD." },
-            exportDir: { label: "Thư mục xuất phiên", help: "Thư mục xuất dữ liệu phiên để QMD xử lý." },
-            retentionDays: { label: "Lưu giữ phiên (ngày)", help: "Số ngày giữ dữ liệu phiên QMD." },
+            enabled: {
+              label: "Bật lập chỉ mục phiên",
+              help: "Bật lập chỉ mục dữ liệu phiên cho QMD.",
+            },
+            exportDir: {
+              label: "Thư mục xuất phiên",
+              help: "Thư mục xuất dữ liệu phiên để QMD xử lý.",
+            },
+            retentionDays: {
+              label: "Lưu giữ phiên (ngày)",
+              help: "Số ngày giữ dữ liệu phiên QMD.",
+            },
           },
           update: {
             label: "Cập nhật QMD",
-            interval: { label: "Chu kỳ cập nhật", help: "Chu kỳ chạy cập nhật chỉ mục QMD." },
-            debounceMs: { label: "Debounce cập nhật (ms)", help: "Khoảng debounce trước khi chạy cập nhật QMD." },
-            onBoot: { label: "Cập nhật khi khởi động", help: "Tự chạy cập nhật QMD lúc khởi động." },
-            waitForBootSync: { label: "Chờ đồng bộ khi khởi động", help: "Đợi đồng bộ QMD hoàn tất trước khi tiếp tục luồng boot." },
-            embedInterval: { label: "Chu kỳ nhúng", help: "Chu kỳ chạy tác vụ embed dữ liệu QMD." },
-            commandTimeoutMs: { label: "Timeout lệnh (ms)", help: "Timeout cho lệnh QMD." },
-            updateTimeoutMs: { label: "Timeout cập nhật (ms)", help: "Timeout cho tác vụ cập nhật QMD." },
-            embedTimeoutMs: { label: "Timeout embed (ms)", help: "Timeout cho tác vụ embed QMD." },
+            interval: {
+              label: "Chu kỳ cập nhật",
+              help: "Chu kỳ chạy cập nhật chỉ mục QMD.",
+            },
+            debounceMs: {
+              label: "Debounce cập nhật (ms)",
+              help: "Khoảng debounce trước khi chạy cập nhật QMD.",
+            },
+            onBoot: {
+              label: "Cập nhật khi khởi động",
+              help: "Tự chạy cập nhật QMD lúc khởi động.",
+            },
+            waitForBootSync: {
+              label: "Chờ đồng bộ khi khởi động",
+              help: "Đợi đồng bộ QMD hoàn tất trước khi tiếp tục luồng boot.",
+            },
+            embedInterval: {
+              label: "Chu kỳ nhúng",
+              help: "Chu kỳ chạy tác vụ embed dữ liệu QMD.",
+            },
+            commandTimeoutMs: {
+              label: "Timeout lệnh (ms)",
+              help: "Timeout cho lệnh QMD.",
+            },
+            updateTimeoutMs: {
+              label: "Timeout cập nhật (ms)",
+              help: "Timeout cho tác vụ cập nhật QMD.",
+            },
+            embedTimeoutMs: {
+              label: "Timeout embed (ms)",
+              help: "Timeout cho tác vụ embed QMD.",
+            },
           },
           limits: {
             label: "Giới hạn QMD",
-            maxResults: { label: "Kết quả tối đa", help: "Số kết quả QMD tối đa." },
-            maxSnippetChars: { label: "Ký tự snippet tối đa", help: "Giới hạn ký tự snippet trả về." },
-            maxInjectedChars: { label: "Ký tự inject tối đa", help: "Giới hạn ký tự được inject vào ngữ cảnh." },
-            timeoutMs: { label: "Timeout tìm kiếm (ms)", help: "Timeout truy vấn tìm kiếm QMD." },
+            maxResults: {
+              label: "Kết quả tối đa",
+              help: "Số kết quả QMD tối đa.",
+            },
+            maxSnippetChars: {
+              label: "Ký tự snippet tối đa",
+              help: "Giới hạn ký tự snippet trả về.",
+            },
+            maxInjectedChars: {
+              label: "Ký tự inject tối đa",
+              help: "Giới hạn ký tự được inject vào ngữ cảnh.",
+            },
+            timeoutMs: {
+              label: "Timeout tìm kiếm (ms)",
+              help: "Timeout truy vấn tìm kiếm QMD.",
+            },
           },
           scope: { label: "Phạm vi QMD", help: "Phạm vi bề mặt áp dụng QMD." },
           mcporter: {
             label: "MCPorter",
-            enabled: { label: "Bật MCPorter", help: "Bật tích hợp MCPorter cho QMD." },
-            serverName: { label: "Tên máy chủ MCPorter", help: "Tên server MCPorter dùng cho QMD." },
-            startDaemon: { label: "Khởi chạy daemon MCPorter", help: "Tự khởi chạy daemon MCPorter khi cần." },
+            enabled: {
+              label: "Bật MCPorter",
+              help: "Bật tích hợp MCPorter cho QMD.",
+            },
+            serverName: {
+              label: "Tên máy chủ MCPorter",
+              help: "Tên server MCPorter dùng cho QMD.",
+            },
+            startDaemon: {
+              label: "Khởi chạy daemon MCPorter",
+              help: "Tự khởi chạy daemon MCPorter khi cần.",
+            },
           },
         },
       },
       tools: {
         label: "Công cụ",
         help: "Chính sách truy cập công cụ toàn cục cho web, exec, media, liên kết và quyền nâng cao.",
-        allow: { label: "Danh sách cho phép công cụ", help: "Danh sách công cụ được phép toàn cục." },
-        deny: { label: "Danh sách chặn công cụ", help: "Danh sách công cụ bị chặn toàn cục." },
-        web: { label: "Công cụ Web", help: "Thiết lập công cụ tìm kiếm và web fetch." },
-        exec: { label: "Công cụ Exec", help: "Thiết lập thực thi lệnh shell, bảo mật và phê duyệt." },
-        media: { label: "Công cụ Media", help: "Thiết lập hiểu ảnh/audio/video." },
-        links: { label: "Công cụ liên kết", help: "Thiết lập hiểu liên kết tự động." },
-        profile: { label: "Hồ sơ công cụ", help: "Hồ sơ chính sách công cụ mặc định." },
-        alsoAllow: { label: "Bổ sung danh sách cho phép", help: "Danh sách công cụ cho phép cộng thêm." },
-        byProvider: { label: "Chính sách theo provider", help: "Ghi đè cho phép/chặn công cụ theo provider." },
-        elevated: { label: "Quyền công cụ nâng cao", help: "Thiết lập quyền dùng công cụ đặc quyền." },
-        subagents: { label: "Chính sách công cụ subagent", help: "Chính sách công cụ riêng cho subagent." },
-        sandbox: { label: "Chính sách công cụ sandbox", help: "Chính sách công cụ khi chạy trong sandbox." },
-        loopDetection: { label: "Phát hiện vòng lặp công cụ", help: "Thiết lập phát hiện lặp tool-call và ngắt an toàn." },
-        agentToAgent: { label: "Công cụ agent-to-agent", help: "Chính sách cho phép agent gọi agent khác." },
-        sessions: { label: "Hiển thị công cụ phiên", help: "Thiết lập hiển thị các công cụ liên quan tới phiên." },
-        fs: { label: "Công cụ hệ tệp", help: "Thiết lập giới hạn công cụ hệ tệp theo workspace." },
+        allow: {
+          label: "Danh sách cho phép công cụ",
+          help: "Danh sách công cụ được phép toàn cục.",
+        },
+        deny: {
+          label: "Danh sách chặn công cụ",
+          help: "Danh sách công cụ bị chặn toàn cục.",
+        },
+        web: {
+          label: "Công cụ Web",
+          help: "Thiết lập công cụ tìm kiếm và web fetch.",
+        },
+        exec: {
+          label: "Công cụ Exec",
+          help: "Thiết lập thực thi lệnh shell, bảo mật và phê duyệt.",
+        },
+        media: {
+          label: "Công cụ Media",
+          help: "Thiết lập hiểu ảnh/audio/video.",
+        },
+        links: {
+          label: "Công cụ liên kết",
+          help: "Thiết lập hiểu liên kết tự động.",
+        },
+        profile: {
+          label: "Hồ sơ công cụ",
+          help: "Hồ sơ chính sách công cụ mặc định.",
+        },
+        alsoAllow: {
+          label: "Bổ sung danh sách cho phép",
+          help: "Danh sách công cụ cho phép cộng thêm.",
+        },
+        byProvider: {
+          label: "Chính sách theo provider",
+          help: "Ghi đè cho phép/chặn công cụ theo provider.",
+        },
+        elevated: {
+          label: "Quyền công cụ nâng cao",
+          help: "Thiết lập quyền dùng công cụ đặc quyền.",
+        },
+        subagents: {
+          label: "Chính sách công cụ subagent",
+          help: "Chính sách công cụ riêng cho subagent.",
+        },
+        sandbox: {
+          label: "Chính sách công cụ sandbox",
+          help: "Chính sách công cụ khi chạy trong sandbox.",
+        },
+        loopDetection: {
+          label: "Phát hiện vòng lặp công cụ",
+          help: "Thiết lập phát hiện lặp tool-call và ngắt an toàn.",
+        },
+        agentToAgent: {
+          label: "Công cụ agent-to-agent",
+          help: "Chính sách cho phép agent gọi agent khác.",
+        },
+        sessions: {
+          label: "Hiển thị công cụ phiên",
+          help: "Thiết lập hiển thị các công cụ liên quan tới phiên.",
+        },
+        fs: {
+          label: "Công cụ hệ tệp",
+          help: "Thiết lập giới hạn công cụ hệ tệp theo workspace.",
+        },
       },
       models: {
         label: "Mô hình",
         help: "Thiết lập danh mục mô hình và nhà cung cấp mô hình.",
-        mode: { label: "Chế độ danh mục mô hình", help: "Chế độ quản lý danh mục mô hình." },
-        providers: { label: "Nhà cung cấp mô hình", help: "Danh sách provider mô hình và cấu hình kết nối." },
+        mode: {
+          label: "Chế độ danh mục mô hình",
+          help: "Chế độ quản lý danh mục mô hình.",
+        },
+        providers: {
+          label: "Nhà cung cấp mô hình",
+          help: "Danh sách provider mô hình và cấu hình kết nối.",
+        },
         bedrockDiscovery: {
           label: "Khám phá Bedrock",
-          enabled: { label: "Bật khám phá Bedrock", help: "Bật cơ chế tự khám phá mô hình Bedrock." },
-          region: { label: "Vùng Bedrock", help: "Region dùng cho khám phá Bedrock." },
-          providerFilter: { label: "Bộ lọc provider Bedrock", help: "Bộ lọc provider khi quét Bedrock." },
-          refreshInterval: { label: "Chu kỳ làm mới (giây)", help: "Chu kỳ làm mới danh sách mô hình Bedrock." },
-          defaultContextWindow: { label: "Cửa sổ ngữ cảnh mặc định", help: "Context window mặc định cho mô hình Bedrock mới." },
-          defaultMaxTokens: { label: "Max tokens mặc định", help: "Giới hạn max tokens mặc định khi khám phá Bedrock." },
+          enabled: {
+            label: "Bật khám phá Bedrock",
+            help: "Bật cơ chế tự khám phá mô hình Bedrock.",
+          },
+          region: {
+            label: "Vùng Bedrock",
+            help: "Region dùng cho khám phá Bedrock.",
+          },
+          providerFilter: {
+            label: "Bộ lọc provider Bedrock",
+            help: "Bộ lọc provider khi quét Bedrock.",
+          },
+          refreshInterval: {
+            label: "Chu kỳ làm mới (giây)",
+            help: "Chu kỳ làm mới danh sách mô hình Bedrock.",
+          },
+          defaultContextWindow: {
+            label: "Cửa sổ ngữ cảnh mặc định",
+            help: "Context window mặc định cho mô hình Bedrock mới.",
+          },
+          defaultMaxTokens: {
+            label: "Max tokens mặc định",
+            help: "Giới hạn max tokens mặc định khi khám phá Bedrock.",
+          },
         },
       },
       session: {
         label: "Phiên",
         help: "Thiết lập phạm vi phiên, reset, ràng buộc luồng và bảo trì dữ liệu phiên.",
         scope: { label: "Phạm vi phiên", help: "Phạm vi định danh phiên." },
-        dmScope: { label: "Phạm vi DM", help: "Phạm vi phiên cho hội thoại DM." },
-        identityLinks: { label: "Liên kết danh tính", help: "Liên kết danh tính giữa các bề mặt hội thoại." },
-        resetTriggers: { label: "Điều kiện reset", help: "Các điều kiện kích hoạt reset phiên." },
-        idleMinutes: { label: "Số phút rảnh", help: "Ngưỡng phút không hoạt động của phiên." },
-        reset: { label: "Chính sách reset", help: "Chính sách reset phiên theo thời gian/chế độ." },
-        resetByType: { label: "Reset theo loại chat", help: "Ghi đè reset theo loại hội thoại." },
-        resetByChannel: { label: "Reset theo kênh", help: "Ghi đè reset theo từng kênh." },
-        store: { label: "Đường dẫn lưu phiên", help: "Đường dẫn tệp/thư mục lưu dữ liệu phiên." },
-        typingIntervalSeconds: { label: "Chu kỳ typing (giây)", help: "Chu kỳ gửi trạng thái typing." },
+        dmScope: {
+          label: "Phạm vi DM",
+          help: "Phạm vi phiên cho hội thoại DM.",
+        },
+        identityLinks: {
+          label: "Liên kết danh tính",
+          help: "Liên kết danh tính giữa các bề mặt hội thoại.",
+        },
+        resetTriggers: {
+          label: "Điều kiện reset",
+          help: "Các điều kiện kích hoạt reset phiên.",
+        },
+        idleMinutes: {
+          label: "Số phút rảnh",
+          help: "Ngưỡng phút không hoạt động của phiên.",
+        },
+        reset: {
+          label: "Chính sách reset",
+          help: "Chính sách reset phiên theo thời gian/chế độ.",
+        },
+        resetByType: {
+          label: "Reset theo loại chat",
+          help: "Ghi đè reset theo loại hội thoại.",
+        },
+        resetByChannel: {
+          label: "Reset theo kênh",
+          help: "Ghi đè reset theo từng kênh.",
+        },
+        store: {
+          label: "Đường dẫn lưu phiên",
+          help: "Đường dẫn tệp/thư mục lưu dữ liệu phiên.",
+        },
+        typingIntervalSeconds: {
+          label: "Chu kỳ typing (giây)",
+          help: "Chu kỳ gửi trạng thái typing.",
+        },
         typingMode: { label: "Chế độ typing", help: "Chế độ hiển thị typing." },
-        parentForkMaxTokens: { label: "Max token khi tách nhánh", help: "Giới hạn token khi tách phiên từ parent." },
-        mainKey: { label: "Khóa phiên chính", help: "Khóa chính dùng định tuyến phiên." },
-        sendPolicy: { label: "Chính sách gửi", help: "Chính sách gửi phản hồi theo rule." },
-        agentToAgent: { label: "Agent-to-agent", help: "Thiết lập phiên cho luồng agent gọi agent." },
-        threadBindings: { label: "Ràng buộc luồng", help: "Thiết lập ràng buộc phiên với thread/topic." },
-        maintenance: { label: "Bảo trì phiên", help: "Thiết lập dọn dẹp, xoay vòng và ngân sách lưu trữ phiên." },
+        parentForkMaxTokens: {
+          label: "Max token khi tách nhánh",
+          help: "Giới hạn token khi tách phiên từ parent.",
+        },
+        mainKey: {
+          label: "Khóa phiên chính",
+          help: "Khóa chính dùng định tuyến phiên.",
+        },
+        sendPolicy: {
+          label: "Chính sách gửi",
+          help: "Chính sách gửi phản hồi theo rule.",
+        },
+        agentToAgent: {
+          label: "Agent-to-agent",
+          help: "Thiết lập phiên cho luồng agent gọi agent.",
+        },
+        threadBindings: {
+          label: "Ràng buộc luồng",
+          help: "Thiết lập ràng buộc phiên với thread/topic.",
+        },
+        maintenance: {
+          label: "Bảo trì phiên",
+          help: "Thiết lập dọn dẹp, xoay vòng và ngân sách lưu trữ phiên.",
+        },
       },
       skills: {
         label: "Kỹ năng",
         help: "Thiết lập nạp kỹ năng và theo dõi thay đổi kỹ năng.",
         load: {
           label: "Nạp kỹ năng",
-          watch: { label: "Theo dõi kỹ năng", help: "Theo dõi thay đổi tệp kỹ năng để tự nạp lại." },
-          watchDebounceMs: { label: "Debounce theo dõi (ms)", help: "Debounce khi phát hiện thay đổi kỹ năng." },
+          watch: {
+            label: "Theo dõi kỹ năng",
+            help: "Theo dõi thay đổi tệp kỹ năng để tự nạp lại.",
+          },
+          watchDebounceMs: {
+            label: "Debounce theo dõi (ms)",
+            help: "Debounce khi phát hiện thay đổi kỹ năng.",
+          },
         },
       },
       approvals: {
@@ -2318,16 +2651,37 @@ export const vi: TranslationMap = {
         label: "Gateway",
         help: "Thiết lập runtime gateway: cổng, bind, auth, TLS, UI điều khiển và chính sách phơi bày endpoint.",
         port: { label: "Cổng Gateway", help: "Cổng TCP mà gateway lắng nghe." },
-        mode: { label: "Chế độ Gateway", help: "Chế độ vận hành gateway (`local` hoặc `remote`)." },
-        bind: { label: "Chế độ bind Gateway", help: "Kiểu bind mạng (`auto`, `lan`, `loopback`, `custom`, `tailnet`)." },
-        customBindHost: { label: "Host bind tùy chỉnh", help: "Host/IP bind khi `gateway.bind=custom`." },
+        mode: {
+          label: "Chế độ Gateway",
+          help: "Chế độ vận hành gateway (`local` hoặc `remote`).",
+        },
+        bind: {
+          label: "Chế độ bind Gateway",
+          help: "Kiểu bind mạng (`auto`, `lan`, `loopback`, `custom`, `tailnet`).",
+        },
+        customBindHost: {
+          label: "Host bind tùy chỉnh",
+          help: "Host/IP bind khi `gateway.bind=custom`.",
+        },
         controlUi: {
           label: "UI điều khiển",
           help: "Thiết lập phục vụ Control UI từ tiến trình gateway.",
-          enabled: { label: "Bật UI điều khiển", help: "Bật/tắt phục vụ Control UI." },
-          basePath: { label: "Đường dẫn gốc UI", help: "Base path để mount Control UI." },
-          root: { label: "Thư mục tài sản UI", help: "Thư mục chứa tài sản tĩnh của Control UI." },
-          allowedOrigins: { label: "Origin cho phép", help: "Danh sách origin được phép truy cập Control UI." },
+          enabled: {
+            label: "Bật UI điều khiển",
+            help: "Bật/tắt phục vụ Control UI.",
+          },
+          basePath: {
+            label: "Đường dẫn gốc UI",
+            help: "Base path để mount Control UI.",
+          },
+          root: {
+            label: "Thư mục tài sản UI",
+            help: "Thư mục chứa tài sản tĩnh của Control UI.",
+          },
+          allowedOrigins: {
+            label: "Origin cho phép",
+            help: "Danh sách origin được phép truy cập Control UI.",
+          },
           dangerouslyAllowHostHeaderOriginFallback: {
             label: "Cho phép fallback origin theo Host header (nguy hiểm)",
             help: "Cho phép fallback xác định origin từ Host header khi thiếu origin hợp lệ.",
@@ -2344,77 +2698,202 @@ export const vi: TranslationMap = {
         auth: {
           label: "Xác thực Gateway",
           help: "Chính sách xác thực HTTP/WebSocket của gateway.",
-          mode: { label: "Chế độ xác thực", help: "Chế độ auth (`none`, `token`, `password`, `trusted-proxy`)." },
-          allowTailscale: { label: "Cho phép danh tính Tailscale", help: "Cho phép identity Tailscale thỏa điều kiện auth." },
-          rateLimit: { label: "Giới hạn tần suất auth", help: "Giới hạn số lần thử đăng nhập/xác thực." },
-          trustedProxy: { label: "Trusted proxy auth", help: "Ánh xạ header auth từ proxy tin cậy." },
+          mode: {
+            label: "Chế độ xác thực",
+            help: "Chế độ auth (`none`, `token`, `password`, `trusted-proxy`).",
+          },
+          allowTailscale: {
+            label: "Cho phép danh tính Tailscale",
+            help: "Cho phép identity Tailscale thỏa điều kiện auth.",
+          },
+          rateLimit: {
+            label: "Giới hạn tần suất auth",
+            help: "Giới hạn số lần thử đăng nhập/xác thực.",
+          },
+          trustedProxy: {
+            label: "Trusted proxy auth",
+            help: "Ánh xạ header auth từ proxy tin cậy.",
+          },
           token: { label: "Token Gateway", help: "Token xác thực gateway." },
-          password: { label: "Mật khẩu Gateway", help: "Mật khẩu xác thực gateway." },
+          password: {
+            label: "Mật khẩu Gateway",
+            help: "Mật khẩu xác thực gateway.",
+          },
         },
-        trustedProxies: { label: "CIDR proxy tin cậy", help: "Danh sách CIDR/IP proxy được tin cậy để chuyển tiếp IP client." },
-        allowRealIpFallback: { label: "Cho phép fallback x-real-ip", help: "Cho phép fallback `x-real-ip` khi thiếu `x-forwarded-for`." },
+        trustedProxies: {
+          label: "CIDR proxy tin cậy",
+          help: "Danh sách CIDR/IP proxy được tin cậy để chuyển tiếp IP client.",
+        },
+        allowRealIpFallback: {
+          label: "Cho phép fallback x-real-ip",
+          help: "Cho phép fallback `x-real-ip` khi thiếu `x-forwarded-for`.",
+        },
         tools: {
           label: "Chính sách công cụ Gateway",
           help: "Allow/deny tool ở cấp gateway.",
-          allow: { label: "Danh sách cho phép tool", help: "Danh sách tool được phép ở cấp gateway." },
-          deny: { label: "Danh sách chặn tool", help: "Danh sách tool bị chặn ở cấp gateway." },
+          allow: {
+            label: "Danh sách cho phép tool",
+            help: "Danh sách tool được phép ở cấp gateway.",
+          },
+          deny: {
+            label: "Danh sách chặn tool",
+            help: "Danh sách tool bị chặn ở cấp gateway.",
+          },
         },
-        channelHealthCheckMinutes: { label: "Chu kỳ kiểm tra sức khỏe kênh (phút)", help: "Khoảng thời gian probe sức khỏe kênh." },
-        channelStaleEventThresholdMinutes: { label: "Ngưỡng stale event kênh (phút)", help: "Ngưỡng phút không nhận sự kiện trước khi coi kênh stale." },
-        channelMaxRestartsPerHour: { label: "Số lần restart kênh tối đa/giờ", help: "Giới hạn restart kênh do health monitor trong 1 giờ." },
+        channelHealthCheckMinutes: {
+          label: "Chu kỳ kiểm tra sức khỏe kênh (phút)",
+          help: "Khoảng thời gian probe sức khỏe kênh.",
+        },
+        channelStaleEventThresholdMinutes: {
+          label: "Ngưỡng stale event kênh (phút)",
+          help: "Ngưỡng phút không nhận sự kiện trước khi coi kênh stale.",
+        },
+        channelMaxRestartsPerHour: {
+          label: "Số lần restart kênh tối đa/giờ",
+          help: "Giới hạn restart kênh do health monitor trong 1 giờ.",
+        },
         tailscale: {
           label: "Tailscale Gateway",
-          mode: { label: "Chế độ Tailscale", help: "Chế độ publish Tailscale (`off`, `serve`, `funnel`)." },
-          resetOnExit: { label: "Reset Tailscale khi thoát", help: "Reset trạng thái Serve/Funnel khi gateway dừng." },
+          help: "Tích hợp Tailscale cho Serve/Funnel và vòng đời khi gateway khởi động/thoát. Giữ tắt trừ khi triển khai cố ý dựa vào ingress qua Tailscale.",
+          mode: {
+            label: "Chế độ Tailscale",
+            help: "Chế độ publish Tailscale (`off`, `serve`, `funnel`).",
+          },
+          resetOnExit: {
+            label: "Reset Tailscale khi thoát",
+            help: "Reset trạng thái Serve/Funnel khi gateway dừng.",
+          },
         },
         remote: {
           label: "Gateway từ xa",
-          transport: { label: "Transport từ xa", help: "Transport kết nối remote gateway (`direct` hoặc `ssh`)." },
-          url: { label: "URL Gateway từ xa", help: "WebSocket URL của remote gateway (`ws://` hoặc `wss://`)." },
-          sshTarget: { label: "Đích SSH", help: "Đích SSH dạng `user@host` hoặc `user@host:port`." },
-          sshIdentity: { label: "Tệp identity SSH", help: "Đường dẫn tệp SSH identity tùy chọn (`ssh -i`)." },
-          token: { label: "Token Gateway từ xa", help: "Token dùng xác thực tới remote gateway." },
-          password: { label: "Mật khẩu Gateway từ xa", help: "Mật khẩu dùng xác thực tới remote gateway." },
-          tlsFingerprint: { label: "Vân tay TLS Gateway từ xa", help: "TLS fingerprint sha256 mong đợi của remote gateway." },
+          help: "Thiết lập kết nối gateway từ xa qua transport trực tiếp hoặc SSH khi instance này proxy tới host runtime khác. Chỉ dùng chế độ remote khi đã cố ý cấu hình tách host.",
+          transport: {
+            label: "Transport từ xa",
+            help: "Transport kết nối remote gateway (`direct` hoặc `ssh`).",
+          },
+          url: {
+            label: "URL Gateway từ xa",
+            help: "WebSocket URL của remote gateway (`ws://` hoặc `wss://`).",
+          },
+          sshTarget: {
+            label: "Đích SSH",
+            help: "Đích SSH dạng `user@host` hoặc `user@host:port`.",
+          },
+          sshIdentity: {
+            label: "Tệp identity SSH",
+            help: "Đường dẫn tệp SSH identity tùy chọn (`ssh -i`).",
+          },
+          token: {
+            label: "Token Gateway từ xa",
+            help: "Token dùng xác thực tới remote gateway.",
+          },
+          password: {
+            label: "Mật khẩu Gateway từ xa",
+            help: "Mật khẩu dùng xác thực tới remote gateway.",
+          },
+          tlsFingerprint: {
+            label: "Vân tay TLS Gateway từ xa",
+            help: "TLS fingerprint sha256 mong đợi của remote gateway.",
+          },
         },
         reload: {
           label: "Nạp lại cấu hình",
-          mode: { label: "Chế độ nạp lại", help: "Chế độ áp dụng thay đổi cấu hình runtime." },
-          debounceMs: { label: "Debounce nạp lại (ms)", help: "Cửa sổ debounce trước khi áp dụng thay đổi config." },
-          deferralTimeoutMs: { label: "Timeout trì hoãn restart (ms)", help: "Timeout tối đa cho cơ chế trì hoãn restart." },
+          help: "Chính sách nạp lại cấu hình trực tiếp: cách áp dụng chỉnh sửa và khi nào kích hoạt khởi động lại hoàn toàn. Giữ hành vi hybrid để cập nhật vận hành an toàn nhất, trừ khi đang gỡ lỗi nội bộ cơ chế reload.",
+          mode: {
+            label: "Chế độ nạp lại",
+            help: "Chế độ áp dụng thay đổi cấu hình runtime.",
+          },
+          debounceMs: {
+            label: "Debounce nạp lại (ms)",
+            help: "Cửa sổ debounce trước khi áp dụng thay đổi config.",
+          },
+          deferralTimeoutMs: {
+            label: "Timeout trì hoãn restart (ms)",
+            help: "Timeout tối đa cho cơ chế trì hoãn restart.",
+          },
         },
         tls: {
           label: "TLS Gateway",
-          enabled: { label: "Bật TLS", help: "Bật kết nối HTTPS/WSS trực tiếp trên gateway." },
-          autoGenerate: { label: "Tự tạo chứng chỉ TLS", help: "Tự tạo cặp chứng chỉ/khóa TLS khi chưa cấu hình tệp." },
-          certPath: { label: "Đường dẫn chứng chỉ TLS", help: "Đường dẫn tệp chứng chỉ TLS." },
-          keyPath: { label: "Đường dẫn khóa TLS", help: "Đường dẫn tệp khóa riêng TLS." },
-          caPath: { label: "Đường dẫn CA TLS", help: "Đường dẫn tệp CA bundle tùy chọn." },
+          help: "Chứng chỉ và khóa TLS để kết thúc HTTPS trực tiếp trong tiến trình gateway. Production dùng chứng chỉ rõ ràng; tránh lưu thông tin dạng plaintext trên mạng không tin cậy.",
+          enabled: {
+            label: "Bật TLS",
+            help: "Bật kết nối HTTPS/WSS trực tiếp trên gateway.",
+          },
+          autoGenerate: {
+            label: "Tự tạo chứng chỉ TLS",
+            help: "Tự tạo cặp chứng chỉ/khóa TLS khi chưa cấu hình tệp.",
+          },
+          certPath: {
+            label: "Đường dẫn chứng chỉ TLS",
+            help: "Đường dẫn tệp chứng chỉ TLS.",
+          },
+          keyPath: {
+            label: "Đường dẫn khóa TLS",
+            help: "Đường dẫn tệp khóa riêng TLS.",
+          },
+          caPath: {
+            label: "Đường dẫn CA TLS",
+            help: "Đường dẫn tệp CA bundle tùy chọn.",
+          },
         },
         http: {
           label: "HTTP API Gateway",
+          help: "Cấu hình HTTP API của gateway: nhóm bật/tắt endpoint và kiểm soát phơi bày API phía transport. Chỉ bật endpoint thực sự cần để giảm diện tấn công.",
           endpoints: {
             label: "Endpoint HTTP",
             chatCompletions: {
               label: "Endpoint Chat Completions",
-              enabled: { label: "Bật Chat Completions", help: "Bật endpoint `POST /v1/chat/completions` tương thích OpenAI." },
-              maxBodyBytes: { label: "Body tối đa (bytes)", help: "Kích thước body tối đa cho endpoint Chat Completions." },
-              maxImageParts: { label: "Số image part tối đa", help: "Số phần ảnh tối đa trong một request Chat Completions." },
-              maxTotalImageBytes: { label: "Tổng dung lượng ảnh tối đa", help: "Tổng bytes ảnh tối đa trong một request." },
+              enabled: {
+                label: "Bật Chat Completions",
+                help: "Bật endpoint `POST /v1/chat/completions` tương thích OpenAI.",
+              },
+              maxBodyBytes: {
+                label: "Body tối đa (bytes)",
+                help: "Kích thước body tối đa cho endpoint Chat Completions.",
+              },
+              maxImageParts: {
+                label: "Số image part tối đa",
+                help: "Số phần ảnh tối đa trong một request Chat Completions.",
+              },
+              maxTotalImageBytes: {
+                label: "Tổng dung lượng ảnh tối đa",
+                help: "Tổng bytes ảnh tối đa trong một request.",
+              },
               images: {
                 label: "Giới hạn ảnh",
-                allowUrl: { label: "Cho phép URL ảnh", help: "Cho phép ảnh từ `image_url`." },
-                urlAllowlist: { label: "Danh sách URL ảnh cho phép", help: "Danh sách allow URL nguồn ảnh." },
-                allowedMimes: { label: "MIME ảnh cho phép", help: "Danh sách MIME ảnh được chấp nhận." },
-                maxBytes: { label: "Kích thước ảnh tối đa (bytes)", help: "Giới hạn bytes cho từng ảnh." },
-                maxRedirects: { label: "Số redirect ảnh tối đa", help: "Số lần redirect tối đa khi fetch ảnh URL." },
-                timeoutMs: { label: "Timeout fetch ảnh (ms)", help: "Timeout fetch ảnh URL cho Chat Completions." },
+                allowUrl: {
+                  label: "Cho phép URL ảnh",
+                  help: "Cho phép ảnh từ `image_url`.",
+                },
+                urlAllowlist: {
+                  label: "Danh sách URL ảnh cho phép",
+                  help: "Danh sách allow URL nguồn ảnh.",
+                },
+                allowedMimes: {
+                  label: "MIME ảnh cho phép",
+                  help: "Danh sách MIME ảnh được chấp nhận.",
+                },
+                maxBytes: {
+                  label: "Kích thước ảnh tối đa (bytes)",
+                  help: "Giới hạn bytes cho từng ảnh.",
+                },
+                maxRedirects: {
+                  label: "Số redirect ảnh tối đa",
+                  help: "Số lần redirect tối đa khi fetch ảnh URL.",
+                },
+                timeoutMs: {
+                  label: "Timeout fetch ảnh (ms)",
+                  help: "Timeout fetch ảnh URL cho Chat Completions.",
+                },
               },
             },
           },
           securityHeaders: {
             label: "Header bảo mật HTTP",
-            strictTransportSecurity: { label: "Strict-Transport-Security", help: "Giá trị header HSTS (hoặc `false` để tắt)." },
+            strictTransportSecurity: {
+              label: "Strict-Transport-Security",
+              help: "Giá trị header HSTS (hoặc `false` để tắt).",
+            },
           },
         },
         push: {
@@ -2423,8 +2902,14 @@ export const vi: TranslationMap = {
             label: "Phân phối APNs",
             relay: {
               label: "Relay APNs",
-              baseUrl: { label: "URL gốc relay APNs", help: "Base URL relay APNs." },
-              timeoutMs: { label: "Timeout relay APNs (ms)", help: "Timeout gọi relay APNs." },
+              baseUrl: {
+                label: "URL gốc relay APNs",
+                help: "Base URL relay APNs.",
+              },
+              timeoutMs: {
+                label: "Timeout relay APNs (ms)",
+                help: "Timeout gọi relay APNs.",
+              },
             },
           },
         },
@@ -2432,11 +2917,23 @@ export const vi: TranslationMap = {
           label: "Định tuyến node",
           browser: {
             label: "Trình duyệt theo node",
-            mode: { label: "Chế độ trình duyệt node", help: "Chế độ định tuyến browser qua node." },
-            node: { label: "Node ghim trình duyệt", help: "Ghim định tuyến browser vào node cụ thể." },
+            mode: {
+              label: "Chế độ trình duyệt node",
+              help: "Chế độ định tuyến browser qua node.",
+            },
+            node: {
+              label: "Node ghim trình duyệt",
+              help: "Ghim định tuyến browser vào node cụ thể.",
+            },
           },
-          allowCommands: { label: "Danh sách lệnh node cho phép", help: "Lệnh bổ sung cho phép ở node." },
-          denyCommands: { label: "Danh sách lệnh node chặn", help: "Lệnh bị chặn ở node." },
+          allowCommands: {
+            label: "Danh sách lệnh node cho phép",
+            help: "Lệnh bổ sung cho phép ở node.",
+          },
+          denyCommands: {
+            label: "Danh sách lệnh node chặn",
+            help: "Lệnh bị chặn ở node.",
+          },
         },
       },
       nodeHost: {
@@ -2444,88 +2941,212 @@ export const vi: TranslationMap = {
         help: "Thiết lập tính năng node host phơi bày cho node/client khác.",
         browserProxy: {
           label: "Proxy trình duyệt Node",
-          enabled: { label: "Bật proxy trình duyệt Node", help: "Cho phép định tuyến browser local qua node proxy." },
-          allowProfiles: { label: "Profile cho phép", help: "Danh sách profile browser được phép expose qua proxy node." },
+          help: "Nhóm thiết lập proxy trình duyệt để phơi bày điều khiển browser local qua định tuyến node. Chỉ bật khi workflow node từ xa cần profile browser trên máy bạn.",
+          enabled: {
+            label: "Bật proxy trình duyệt Node",
+            help: "Cho phép định tuyến browser local qua node proxy.",
+          },
+          allowProfiles: {
+            label: "Profile cho phép",
+            help: "Danh sách profile browser được phép expose qua proxy node.",
+          },
         },
       },
       canvasHost: {
         label: "Máy chủ Canvas",
         help: "Thiết lập host canvas để phục vụ tài sản canvas và live reload.",
-        enabled: { label: "Bật máy chủ Canvas", help: "Bật/tắt server canvas host." },
-        root: { label: "Thư mục gốc Canvas", help: "Thư mục gốc phục vụ file canvas." },
-        port: { label: "Cổng Canvas host", help: "Cổng TCP của server canvas host." },
-        liveReload: { label: "Live reload Canvas", help: "Bật tự động tải lại khi file canvas thay đổi." },
+        enabled: {
+          label: "Bật máy chủ Canvas",
+          help: "Bật/tắt server canvas host.",
+        },
+        root: {
+          label: "Thư mục gốc Canvas",
+          help: "Thư mục gốc phục vụ file canvas.",
+        },
+        port: {
+          label: "Cổng Canvas host",
+          help: "Cổng TCP của server canvas host.",
+        },
+        liveReload: {
+          label: "Live reload Canvas",
+          help: "Bật tự động tải lại khi file canvas thay đổi.",
+        },
       },
       media: {
         label: "Phương tiện",
         help: "Thiết lập xử lý media dùng chung cho provider/công cụ nhận tệp đầu vào.",
-        preserveFilenames: { label: "Giữ nguyên tên tệp", help: "Giữ nguyên tên tệp media gốc thay vì đổi tên an toàn tạm." },
-        ttlHours: { label: "TTL lưu media (giờ)", help: "Thời gian lưu media đầu vào trước khi dọn dẹp tự động." },
+        preserveFilenames: {
+          label: "Giữ nguyên tên tệp",
+          help: "Giữ nguyên tên tệp media gốc thay vì đổi tên an toàn tạm.",
+        },
+        ttlHours: {
+          label: "TTL lưu media (giờ)",
+          help: "Thời gian lưu media đầu vào trước khi dọn dẹp tự động.",
+        },
       },
       web: {
         label: "Web",
         help: "Thiết lập kênh Web: heartbeat và chính sách kết nối lại.",
         enabled: { label: "Bật kênh Web", help: "Bật/tắt runtime kênh Web." },
-        heartbeatSeconds: { label: "Heartbeat kênh Web (giây)", help: "Chu kỳ heartbeat duy trì kết nối kênh Web." },
+        heartbeatSeconds: {
+          label: "Heartbeat kênh Web (giây)",
+          help: "Chu kỳ heartbeat duy trì kết nối kênh Web.",
+        },
         reconnect: {
           label: "Chính sách kết nối lại",
-          initialMs: { label: "Độ trễ đầu tiên (ms)", help: "Độ trễ reconnect đầu tiên sau khi mất kết nối." },
-          maxMs: { label: "Độ trễ tối đa (ms)", help: "Giới hạn trần độ trễ reconnect." },
-          factor: { label: "Hệ số backoff", help: "Hệ số tăng backoff theo cấp số nhân." },
-          jitter: { label: "Độ nhiễu reconnect", help: "Hệ số ngẫu nhiên (0-1) cho độ trễ reconnect." },
-          maxAttempts: { label: "Số lần reconnect tối đa", help: "Số lần reconnect tối đa (0 là không thử lại)." },
+          help: "Chính sách backoff khi kênh Web thử kết nối lại sau lỗi transport. Giữ retry có giới hạn và jitter hợp lý để tránh hiện tượng reconnect đồng loạt (thundering herd).",
+          initialMs: {
+            label: "Độ trễ đầu tiên (ms)",
+            help: "Độ trễ reconnect đầu tiên sau khi mất kết nối.",
+          },
+          maxMs: {
+            label: "Độ trễ tối đa (ms)",
+            help: "Giới hạn trần độ trễ reconnect.",
+          },
+          factor: {
+            label: "Hệ số backoff",
+            help: "Hệ số tăng backoff theo cấp số nhân.",
+          },
+          jitter: {
+            label: "Độ nhiễu reconnect",
+            help: "Hệ số ngẫu nhiên (0-1) cho độ trễ reconnect.",
+          },
+          maxAttempts: {
+            label: "Số lần reconnect tối đa",
+            help: "Số lần reconnect tối đa (0 là không thử lại).",
+          },
         },
       },
       browser: {
         label: "Trình duyệt",
         help: "Thiết lập runtime trình duyệt cho kết nối CDP local/remote, profile và chính sách snapshot.",
-        enabled: { label: "Bật trình duyệt", help: "Bật/tắt wiring khả năng trình duyệt trong gateway." },
-        cdpUrl: { label: "URL CDP", help: "WebSocket URL CDP để attach tới trình duyệt quản lý bên ngoài." },
-        color: { label: "Màu nhấn trình duyệt", help: "Màu nhận diện mặc định cho profile/trạng thái trình duyệt." },
-        executablePath: { label: "Đường dẫn file thực thi", help: "Đường dẫn trình duyệt khi auto-discovery không phù hợp." },
-        headless: { label: "Chế độ headless", help: "Ép chạy trình duyệt ở chế độ headless khi launcher local khởi chạy." },
-        noSandbox: { label: "Chế độ no-sandbox", help: "Tắt sandbox Chromium (giảm cách ly tiến trình)." },
-        attachOnly: { label: "Chế độ chỉ attach", help: "Chỉ attach CDP, không tự khởi chạy trình duyệt local." },
-        cdpPortRangeStart: { label: "Cổng CDP bắt đầu", help: "Cổng CDP local bắt đầu cho cấp phát profile tự động." },
-        defaultProfile: { label: "Profile mặc định", help: "Tên profile mặc định khi caller không chỉ định profile." },
+        enabled: {
+          label: "Bật trình duyệt",
+          help: "Bật/tắt wiring khả năng trình duyệt trong gateway.",
+        },
+        cdpUrl: {
+          label: "URL CDP",
+          help: "WebSocket URL CDP để attach tới trình duyệt quản lý bên ngoài.",
+        },
+        color: {
+          label: "Màu nhấn trình duyệt",
+          help: "Màu nhận diện mặc định cho profile/trạng thái trình duyệt.",
+        },
+        executablePath: {
+          label: "Đường dẫn file thực thi",
+          help: "Đường dẫn trình duyệt khi auto-discovery không phù hợp.",
+        },
+        headless: {
+          label: "Chế độ headless",
+          help: "Ép chạy trình duyệt ở chế độ headless khi launcher local khởi chạy.",
+        },
+        noSandbox: {
+          label: "Chế độ no-sandbox",
+          help: "Tắt sandbox Chromium (giảm cách ly tiến trình).",
+        },
+        attachOnly: {
+          label: "Chế độ chỉ attach",
+          help: "Chỉ attach CDP, không tự khởi chạy trình duyệt local.",
+        },
+        cdpPortRangeStart: {
+          label: "Cổng CDP bắt đầu",
+          help: "Cổng CDP local bắt đầu cho cấp phát profile tự động.",
+        },
+        defaultProfile: {
+          label: "Profile mặc định",
+          help: "Tên profile mặc định khi caller không chỉ định profile.",
+        },
         profiles: {
           label: "Profile trình duyệt",
-          cdpPort: { label: "Cổng CDP profile", help: "Cổng CDP local theo profile." },
-          cdpUrl: { label: "URL CDP profile", help: "URL CDP theo profile để định tuyến remote rõ ràng." },
-          userDataDir: { label: "Thư mục dữ liệu người dùng", help: "Thư mục user data theo profile để attach session hiện có." },
-          driver: { label: "Driver profile", help: "Driver profile (`openclaw`/`clawd` hoặc `existing-session`)." },
-          attachOnly: { label: "Chỉ attach theo profile", help: "Bỏ qua launch local, chỉ attach endpoint CDP sẵn có cho profile." },
-          color: { label: "Màu profile", help: "Màu nhận diện theo profile trong dashboard/UI." },
+          help: "Ánh xạ profile trình duyệt theo tên để định tuyến rõ ràng tới cổng CDP hoặc URL kèm metadata tùy chọn. Giữ tên profile thống nhất và tránh định nghĩa endpoint chồng chéo.",
+          cdpPort: {
+            label: "Cổng CDP profile",
+            help: "Cổng CDP local theo profile.",
+          },
+          cdpUrl: {
+            label: "URL CDP profile",
+            help: "URL CDP theo profile để định tuyến remote rõ ràng.",
+          },
+          userDataDir: {
+            label: "Thư mục dữ liệu người dùng",
+            help: "Thư mục user data theo profile để attach session hiện có.",
+          },
+          driver: {
+            label: "Driver profile",
+            help: "Driver profile (`openclaw`/`clawd` hoặc `existing-session`).",
+          },
+          attachOnly: {
+            label: "Chỉ attach theo profile",
+            help: "Bỏ qua launch local, chỉ attach endpoint CDP sẵn có cho profile.",
+          },
+          color: {
+            label: "Màu profile",
+            help: "Màu nhận diện theo profile trong dashboard/UI.",
+          },
         },
-        evaluateEnabled: { label: "Bật evaluate", help: "Bật helper evaluate phía browser khi workflow cần." },
+        evaluateEnabled: {
+          label: "Bật evaluate",
+          help: "Bật helper evaluate phía browser khi workflow cần.",
+        },
         snapshotDefaults: {
           label: "Mặc định snapshot",
-          mode: { label: "Chế độ snapshot", help: "Chế độ trích xuất snapshot mặc định cho tác vụ agent." },
+          help: "Cấu hình chụp snapshot mặc định khi caller không cung cấp tùy chọn snapshot rõ ràng. Tinh chỉnh để hành vi capture đồng nhất giữa các kênh và luồng tự động.",
+          mode: {
+            label: "Chế độ snapshot",
+            help: "Chế độ trích xuất snapshot mặc định cho tác vụ agent.",
+          },
         },
         ssrfPolicy: {
           label: "Chính sách SSRF",
-          allowPrivateNetwork: { label: "Cho phép mạng private (legacy)", help: "Alias cũ cho khóa dangerouslyAllowPrivateNetwork." },
+          help: "Thanh chắn SSRF cho đường fetch browser/network có thể chạm tới host nội bộ. Production giữ mặc định hạn chế; chỉ mở các mục tiêu đã được phê duyệt rõ ràng.",
+          allowPrivateNetwork: {
+            label: "Cho phép mạng private (legacy)",
+            help: "Alias cũ cho khóa dangerouslyAllowPrivateNetwork.",
+          },
           dangerouslyAllowPrivateNetwork: {
             label: "Cho phép mạng private (nguy hiểm)",
             help: "Cho phép truy cập dải địa chỉ private từ công cụ browser/network.",
           },
-          allowedHostnames: { label: "Hostname cho phép", help: "Danh sách hostname cho phép theo ngoại lệ SSRF." },
-          hostnameAllowlist: { label: "Allowlist hostname (legacy)", help: "Trường allowlist hostname dạng legacy/alternate." },
+          allowedHostnames: {
+            label: "Hostname cho phép",
+            help: "Danh sách hostname cho phép theo ngoại lệ SSRF.",
+          },
+          hostnameAllowlist: {
+            label: "Allowlist hostname (legacy)",
+            help: "Trường allowlist hostname dạng legacy/alternate.",
+          },
         },
-        remoteCdpTimeoutMs: { label: "Timeout kết nối remote CDP (ms)", help: "Timeout kết nối endpoint remote CDP." },
-        remoteCdpHandshakeTimeoutMs: { label: "Timeout handshake remote CDP (ms)", help: "Timeout bắt tay CDP sau khi đã kết nối." },
+        remoteCdpTimeoutMs: {
+          label: "Timeout kết nối remote CDP (ms)",
+          help: "Timeout kết nối endpoint remote CDP.",
+        },
+        remoteCdpHandshakeTimeoutMs: {
+          label: "Timeout handshake remote CDP (ms)",
+          help: "Timeout bắt tay CDP sau khi đã kết nối.",
+        },
       },
       discovery: {
         label: "Khám phá",
         help: "Thiết lập khám phá dịch vụ cho mDNS cục bộ và wide-area discovery.",
         wideArea: {
           label: "Wide-area discovery",
-          enabled: { label: "Bật wide-area discovery", help: "Bật tín hiệu khám phá ngoài phạm vi mạng cục bộ." },
-          domain: { label: "Miền wide-area discovery", help: "Miền DNS-SD unicast cho khám phá wide-area." },
+          help: "Nhóm cấu hình wide-area discovery để phát tín hiệu khám phá ra ngoài phạm vi local-link. Chỉ bật khi triển khai cố ý gom sự hiện diện gateway giữa nhiều site.",
+          enabled: {
+            label: "Bật wide-area discovery",
+            help: "Bật tín hiệu khám phá ngoài phạm vi mạng cục bộ.",
+          },
+          domain: {
+            label: "Miền wide-area discovery",
+            help: "Miền DNS-SD unicast cho khám phá wide-area.",
+          },
         },
         mdns: {
           label: "mDNS discovery",
-          mode: { label: "Chế độ mDNS", help: "Chế độ quảng bá mDNS (`minimal`, `full`, `off`)." },
+          help: "Nhóm cấu hình mDNS cho quảng bá và tinh chỉnh hành vi khám phá trên mạng LAN. Giữ chế độ minimal cho khám phá LAN thường lệ trừ khi cần thêm metadata.",
+          mode: {
+            label: "Chế độ mDNS",
+            help: "Chế độ quảng bá mDNS (`minimal`, `full`, `off`).",
+          },
         },
       },
       cron: {
