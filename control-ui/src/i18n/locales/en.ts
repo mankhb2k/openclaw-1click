@@ -19,11 +19,11 @@ export const en: TranslationMap = {
   },
   desktopUpdate: {
     availableTitle: "Update available:",
-    runningVersion: "running v{version}",
+    newVersion: "new version v{version}",
     downloading: "Downloading...",
     updateButton: "Update now",
     updatingButton: "Updating…",
-    installButton: "Install update",
+    installButton: "Restart",
   },
   nav: {
     chat: "Chat",

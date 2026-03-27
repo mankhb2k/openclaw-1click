@@ -4,6 +4,7 @@ export type RunUpdateOpenclawResult =
   | { ok: true; message?: string }
   | { ok: false; error?: string; stderrTail?: string };
 export type DesktopUpdateState = {
+  isPackaged: boolean;
   enabled: boolean;
   phase: 'idle' | 'checking' | 'available' | 'downloading' | 'downloaded' | 'error' | 'unsupported';
   currentVersion: string;

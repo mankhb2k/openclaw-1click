@@ -19,11 +19,11 @@ export const vi: TranslationMap = {
   },
   desktopUpdate: {
     availableTitle: "Đã có bản cập nhật:",
-    runningVersion: "đang chạy v{version}",
+    newVersion: "{version}",
     downloading: "Đang tải...",
     updateButton: "Cập nhật ngay",
     updatingButton: "Đang cập nhật…",
-    installButton: "Cài đặt bản cập nhật",
+    installButton: "Khởi động lại",
   },
   nav: {
     chat: "Trò chuyện",

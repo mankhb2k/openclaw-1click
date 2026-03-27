@@ -666,8 +666,8 @@ export function renderApp(state: AppViewState) {
           ? html`<div class="update-banner callout danger" role="alert">
               <strong>${t("desktopUpdate.availableTitle")}</strong>
               v${state.desktopUpdateState.availableVersion}
-              (${t("desktopUpdate.runningVersion", {
-                version: state.desktopUpdateState.currentVersion,
+              (${t("desktopUpdate.newVersion", {
+                version: state.desktopUpdateState.availableVersion,
               })}).
               ${state.desktopUpdateState.announcementTitle
                 ? html`<div style="margin-top: 6px; white-space: pre-wrap;">
@@ -694,7 +694,9 @@ export function renderApp(state: AppViewState) {
                     : t("desktopUpdate.updateButton")}
               </button>
             </div>`
-          : state.updateAvailable &&
+          : state.desktopUpdateState?.isPackaged
+            ? nothing
+            : state.updateAvailable &&
               state.updateAvailable.latestVersion !==
                 state.updateAvailable.currentVersion &&
               !isUpdateBannerDismissed(state.updateAvailable)

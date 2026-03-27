@@ -58,6 +58,7 @@ type DesktopUpdatePhase =
   | 'error'
   | 'unsupported';
 type DesktopUpdateState = {
+  isPackaged: boolean;
   enabled: boolean;
   phase: DesktopUpdatePhase;
   currentVersion: string;
@@ -68,6 +69,7 @@ type DesktopUpdateState = {
 };
 
 let desktopUpdateState: DesktopUpdateState = {
+  isPackaged: app.isPackaged,
   enabled: false,
   phase: 'idle',
   currentVersion: app.getVersion(),
@@ -88,6 +90,7 @@ function setDesktopUpdateState(next: Partial<DesktopUpdateState>): void {
   desktopUpdateState = {
     ...desktopUpdateState,
     ...next,
+    isPackaged: app.isPackaged,
     currentVersion: app.getVersion(),
   };
   publishDesktopUpdateState();
@@ -107,7 +110,11 @@ function normalizeLocale(locale: string): string[] {
   return [...new Set(candidates)];
 }
 
-function resolveUpdateTitleFromJson(payload: unknown, locale: string): string | null {
+function resolveUpdateTitleFromJson(
+  payload: unknown,
+  locale: string,
+  params?: { newVersion?: string | null; currentVersion?: string | null },
+): string | null {
   if (!payload || typeof payload !== 'object') {
     return null;
   }
@@ -125,20 +132,28 @@ function resolveUpdateTitleFromJson(payload: unknown, locale: string): string | 
     }
     const title = (entry as { title?: unknown }).title;
     if (typeof title === 'string' && title.trim()) {
-      return title.trim();
+      const withNewVersion = title.replaceAll('{newVersion}', params?.newVersion ?? '');
+      const withCurrentVersion = withNewVersion.replaceAll(
+        '{currentVersion}',
+        params?.currentVersion ?? '',
+      );
+      return withCurrentVersion.trim();
     }
   }
   return null;
 }
 
-async function fetchLocalizedUpdateTitle(): Promise<string | null> {
+async function fetchLocalizedUpdateTitle(params?: {
+  newVersion?: string | null;
+  currentVersion?: string | null;
+}): Promise<string | null> {
   try {
     const locale = app.getLocale();
     const response = await axios.get(UPDATE_NOTICE_URL, {
       timeout: 5000,
       responseType: 'json',
     });
-    return resolveUpdateTitleFromJson(response.data, locale);
+    return resolveUpdateTitleFromJson(response.data, locale, params);
   } catch {
     return null;
   }
@@ -239,7 +254,10 @@ function initDesktopUpdater(): void {
     });
   });
   autoUpdater.on('update-available', async (info) => {
-    const localizedTitle = await fetchLocalizedUpdateTitle();
+    const localizedTitle = await fetchLocalizedUpdateTitle({
+      newVersion: info.version ?? null,
+      currentVersion: app.getVersion(),
+    });
     setDesktopUpdateState({
       phase: 'available',
       availableVersion: info.version ?? null,
