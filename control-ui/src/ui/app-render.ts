@@ -3,10 +3,10 @@ import {
   buildAgentMainSessionKey,
   parseAgentSessionKey,
 } from "@openclaw/routing/session-key.js";
-import { t } from "../i18n/index.ts";
-import { getSafeLocalStorage } from "../local-storage.ts";
-import { refreshChatAvatar } from "./app-chat.ts";
-import { renderUsageTab } from "./app-render-usage-tab.ts";
+import { t } from "../i18n/index";
+import { getSafeLocalStorage } from "../local-storage";
+import { refreshChatAvatar } from "./app-chat";
+import { renderUsageTab } from "./app-render-usage-tab";
 import {
   renderChatControls,
   renderChatMobileToggle,
@@ -15,25 +15,25 @@ import {
   renderSidebarConnectionStatus,
   renderTopbarThemeModeToggle,
   switchChatSession,
-} from "./app-render.helpers.ts";
+} from "./app-render.helpers";
 import type { AppViewState } from "./app-view-state.ts";
 import {
   loadAgentFileContent,
   loadAgentFiles,
   saveAgentFile,
-} from "./controllers/agent-files.ts";
+} from "./controllers/agent-files";
 import {
   loadAgentIdentities,
   loadAgentIdentity,
-} from "./controllers/agent-identity.ts";
-import { loadAgentSkills } from "./controllers/agent-skills.ts";
+} from "./controllers/agent-identity";
+import { loadAgentSkills } from "./controllers/agent-skills";
 import {
   loadAgents,
   loadToolsCatalog,
   saveAgentsConfig,
-} from "./controllers/agents.ts";
-import { loadChannels } from "./controllers/channels.ts";
-import { loadChatHistory } from "./controllers/chat.ts";
+} from "./controllers/agents";
+import { loadChannels } from "./controllers/channels";
+import { loadChatHistory } from "./controllers/chat";
 import {
   applyConfig,
   ensureAgentConfigEntry,
@@ -44,7 +44,7 @@ import {
   saveConfig,
   updateConfigFormValue,
   removeConfigFormValue,
-} from "./controllers/config.ts";
+} from "./controllers/config";
 import {
   loadCronRuns,
   loadMoreCronJobs,
@@ -64,60 +64,60 @@ import {
   getVisibleCronJobs,
   updateCronJobsFilter,
   updateCronRunsFilter,
-} from "./controllers/cron.ts";
-import { loadDebug, callDebugMethod } from "./controllers/debug.ts";
+} from "./controllers/cron";
+import { loadDebug, callDebugMethod } from "./controllers/debug";
 import {
   approveDevicePairing,
   loadDevices,
   rejectDevicePairing,
   revokeDeviceToken,
   rotateDeviceToken,
-} from "./controllers/devices.ts";
+} from "./controllers/devices";
 import {
   loadExecApprovals,
   removeExecApprovalsFormValue,
   saveExecApprovals,
   updateExecApprovalsFormValue,
-} from "./controllers/exec-approvals.ts";
-import { loadLogs } from "./controllers/logs.ts";
-import { loadNodes } from "./controllers/nodes.ts";
-import { loadPresence } from "./controllers/presence.ts";
+} from "./controllers/exec-approvals";
+import { loadLogs } from "./controllers/logs";
+import { loadNodes } from "./controllers/nodes";
+import { loadPresence } from "./controllers/presence";
 import {
   deleteSessionsAndRefresh,
   loadSessions,
   patchSession,
-} from "./controllers/sessions.ts";
+} from "./controllers/sessions";
 import {
   installSkill,
   loadSkills,
   saveSkillApiKey,
   updateSkillEdit,
   updateSkillEnabled,
-} from "./controllers/skills.ts";
+} from "./controllers/skills";
 import "./components/dashboard-header.ts";
-import { buildExternalLinkRel, EXTERNAL_LINK_TARGET } from "./external-link.ts";
-import { icons } from "./icons.ts";
+import { buildExternalLinkRel, EXTERNAL_LINK_TARGET } from "./external-link";
+import { icons } from "./icons";
 import {
   normalizeBasePath,
   TAB_GROUPS,
   subtitleForTab,
   titleForTab,
-} from "./navigation.ts";
-import { agentLogoUrl } from "./views/agents-utils.ts";
+} from "./navigation";
+import { agentLogoUrl } from "./views/agents-utils";
 import {
   resolveAgentConfig,
   resolveConfiguredCronModelSuggestions,
   resolveEffectiveModelFallbacks,
   resolveModelPrimary,
   sortLocaleStrings,
-} from "./views/agents-utils.ts";
-import { renderChat } from "./views/chat.ts";
-import { renderCommandPalette } from "./views/command-palette.ts";
-import { renderConfig } from "./views/config.ts";
-import { renderExecApprovalPrompt } from "./views/exec-approval.ts";
-import { renderGatewayUrlConfirmation } from "./views/gateway-url-confirmation.ts";
-import { renderLoginGate } from "./views/login-gate.ts";
-import { renderOverview } from "./views/overview.ts";
+} from "./views/agents-utils";
+import { renderChat } from "./views/chat";
+import { renderCommandPalette } from "./views/command-palette";
+import { renderConfig } from "./views/config";
+import { renderExecApprovalPrompt } from "./views/exec-approval";
+import { renderGatewayUrlConfirmation } from "./views/gateway-url-confirmation";
+import { renderLoginGate } from "./views/login-gate";
+import { renderOverview } from "./views/overview";
 
 // Lazy-loaded view modules – deferred so the initial bundle stays small.
 // Each loader resolves once; subsequent calls return the cached module.
@@ -142,15 +142,15 @@ function createLazy<T>(loader: () => Promise<T>): () => T | null {
   };
 }
 
-const lazyAgents = createLazy(() => import("./views/agents.ts"));
-const lazyChannels = createLazy(() => import("./views/channels.ts"));
-const lazyCron = createLazy(() => import("./views/cron.ts"));
-const lazyDebug = createLazy(() => import("./views/debug.ts"));
-const lazyInstances = createLazy(() => import("./views/instances.ts"));
-const lazyLogs = createLazy(() => import("./views/logs.ts"));
-const lazyNodes = createLazy(() => import("./views/nodes.ts"));
-const lazySessions = createLazy(() => import("./views/sessions.ts"));
-const lazySkills = createLazy(() => import("./views/skills.ts"));
+const lazyAgents = createLazy(() => import("./views/agents"));
+const lazyChannels = createLazy(() => import("./views/channels"));
+const lazyCron = createLazy(() => import("./views/cron"));
+const lazyDebug = createLazy(() => import("./views/debug"));
+const lazyInstances = createLazy(() => import("./views/instances"));
+const lazyLogs = createLazy(() => import("./views/logs"));
+const lazyNodes = createLazy(() => import("./views/nodes"));
+const lazySessions = createLazy(() => import("./views/sessions"));
+const lazySkills = createLazy(() => import("./views/skills"));
 
 function lazyRender<M>(getter: () => M | null, render: (mod: M) => unknown) {
   const mod = getter();
@@ -659,35 +659,70 @@ export function renderApp(state: AppViewState) {
         </aside>
       </div>
       <main class="content ${isChat ? "content--chat" : ""}">
-        ${state.updateAvailable &&
-        state.updateAvailable.latestVersion !==
-          state.updateAvailable.currentVersion &&
-        !isUpdateBannerDismissed(state.updateAvailable)
+        ${state.desktopUpdateState?.enabled &&
+        state.desktopUpdateState.availableVersion &&
+        state.desktopUpdateState.availableVersion !==
+          state.desktopUpdateState.currentVersion
           ? html`<div class="update-banner callout danger" role="alert">
-              <strong>Update available:</strong> v${state.updateAvailable
-                .latestVersion}
-              (running v${state.updateAvailable.currentVersion}).
+              <strong>${t("desktopUpdate.availableTitle")}</strong>
+              v${state.desktopUpdateState.availableVersion}
+              (${t("desktopUpdate.runningVersion", {
+                version: state.desktopUpdateState.currentVersion,
+              })}).
+              ${state.desktopUpdateState.announcementTitle
+                ? html`<div style="margin-top: 6px; white-space: pre-wrap;">
+                    ${state.desktopUpdateState.announcementTitle}
+                  </div>`
+                : nothing}
+              ${state.desktopUpdateState.phase === "downloading"
+                ? html`<div style="margin-top: 6px;">
+                    ${t("desktopUpdate.downloading")}
+                    ${state.desktopUpdateState.progressPercent != null
+                      ? `${Math.round(state.desktopUpdateState.progressPercent)}%`
+                      : ""}
+                  </div>`
+                : nothing}
               <button
                 class="btn btn--sm update-banner__btn"
-                ?disabled=${state.updateRunning || !state.connected}
+                ?disabled=${state.updateRunning}
                 @click=${() => runUpdate(state)}
               >
-                ${state.updateRunning ? "Updating…" : "Update now"}
-              </button>
-              <button
-                class="update-banner__close"
-                type="button"
-                title="Dismiss"
-                aria-label="Dismiss update banner"
-                @click=${() => {
-                  dismissUpdateBanner(state.updateAvailable);
-                  state.updateAvailable = null;
-                }}
-              >
-                ${icons.x}
+                ${state.desktopUpdateState.phase === "downloaded"
+                  ? t("desktopUpdate.installButton")
+                  : state.updateRunning
+                    ? t("desktopUpdate.updatingButton")
+                    : t("desktopUpdate.updateButton")}
               </button>
             </div>`
-          : nothing}
+          : state.updateAvailable &&
+              state.updateAvailable.latestVersion !==
+                state.updateAvailable.currentVersion &&
+              !isUpdateBannerDismissed(state.updateAvailable)
+            ? html`<div class="update-banner callout danger" role="alert">
+                <strong>Update available:</strong> v${state.updateAvailable
+                  .latestVersion}
+                (running v${state.updateAvailable.currentVersion}).
+                <button
+                  class="btn btn--sm update-banner__btn"
+                  ?disabled=${state.updateRunning || !state.connected}
+                  @click=${() => runUpdate(state)}
+                >
+                  ${state.updateRunning ? "Updating…" : "Update now"}
+                </button>
+                <button
+                  class="update-banner__close"
+                  type="button"
+                  title="Dismiss"
+                  aria-label="Dismiss update banner"
+                  @click=${() => {
+                    dismissUpdateBanner(state.updateAvailable);
+                    state.updateAvailable = null;
+                  }}
+                >
+                  ${icons.x}
+                </button>
+              </div>`
+            : nothing}
         ${state.updateNotice
           ? html`<div class="update-banner callout" role="status">
               <strong>Đã chạy cập nhật.</strong>
@@ -705,323 +740,369 @@ export function renderApp(state: AppViewState) {
               </button>
             </div>`
           : nothing}
-        ${state.tab === "config"
-          ? nothing
-          : html`<section class="content-header">
-              <div>
-                ${isChat
-                  ? renderChatSessionSelect(state)
-                  : html`<div class="page-title">
-                      ${titleForTab(state.tab)}
-                    </div>`}
-                ${isChat
-                  ? nothing
-                  : html`<div class="page-sub">
-                      ${subtitleForTab(state.tab)}
-                    </div>`}
-              </div>
-              <div class="page-meta">
-                ${state.lastError && !isChat && state.tab !== "overview"
-                  ? html`<div class="pill danger">${state.lastError}</div>`
-                  : nothing}
-                ${isChat ? renderChatControls(state) : nothing}
-              </div>
-            </section>`}
+        ${state.tab === "chat"
+          ? html`<section class="content-header">
+              <div>${renderChatSessionSelect(state)}</div>
+              <div class="page-meta">${renderChatControls(state)}</div>
+            </section>`
+          : nothing}
         ${state.tab === "overview"
-          ? renderOverview({
-              connected: state.connected,
-              hello: state.hello,
-              settings: state.settings,
-              password: state.password,
-              lastError: state.lastError,
-              lastErrorCode: state.lastErrorCode,
-              presenceCount,
-              sessionsCount,
-              cronEnabled: state.cronStatus?.enabled ?? null,
-              cronNext,
-              lastChannelsRefresh: state.channelsLastSuccess,
-              usageResult: state.usageResult,
-              sessionsResult: state.sessionsResult,
-              skillsReport: state.skillsReport,
-              cronJobs: state.cronJobs,
-              cronStatus: state.cronStatus,
-              attentionItems: state.attentionItems,
-              eventLog: state.eventLog,
-              overviewLogLines: state.overviewLogLines,
-              showGatewayToken: state.overviewShowGatewayToken,
-              showGatewayPassword: state.overviewShowGatewayPassword,
-              onSettingsChange: (next) => state.applySettings(next),
-              onPasswordChange: (next) => (state.password = next),
-              onSessionKeyChange: (next) => {
-                state.sessionKey = next;
-                state.chatMessage = "";
-                state.resetToolStream();
-                state.applySettings({
-                  ...state.settings,
-                  sessionKey: next,
-                  lastActiveSessionKey: next,
-                });
-                void state.loadAssistantIdentity();
-              },
-              onToggleGatewayTokenVisibility: () => {
-                state.overviewShowGatewayToken =
-                  !state.overviewShowGatewayToken;
-              },
-              onToggleGatewayPasswordVisibility: () => {
-                state.overviewShowGatewayPassword =
-                  !state.overviewShowGatewayPassword;
-              },
-              onConnect: () => state.connect(),
-              onRefresh: () => state.loadOverview(),
-              onNavigate: (tab) =>
-                state.setTab(tab as import("./navigation.ts").Tab),
-              onRefreshLogs: () => state.loadOverview(),
-            })
+          ? html`<div class="content-page">
+              <section class="usage-page">
+                <section class="usage-page-header">
+                  <div class="usage-page-title">${titleForTab(state.tab)}</div>
+                  <div class="usage-page-subtitle">
+                    ${subtitleForTab(state.tab)}
+                  </div>
+                </section>
+                ${renderOverview({
+                  connected: state.connected,
+                  hello: state.hello,
+                  settings: state.settings,
+                  password: state.password,
+                  lastError: state.lastError,
+                  lastErrorCode: state.lastErrorCode,
+                  presenceCount,
+                  sessionsCount,
+                  cronEnabled: state.cronStatus?.enabled ?? null,
+                  cronNext,
+                  lastChannelsRefresh: state.channelsLastSuccess,
+                  usageResult: state.usageResult,
+                  sessionsResult: state.sessionsResult,
+                  skillsReport: state.skillsReport,
+                  cronJobs: state.cronJobs,
+                  cronStatus: state.cronStatus,
+                  attentionItems: state.attentionItems,
+                  eventLog: state.eventLog,
+                  overviewLogLines: state.overviewLogLines,
+                  showGatewayToken: state.overviewShowGatewayToken,
+                  showGatewayPassword: state.overviewShowGatewayPassword,
+                  onSettingsChange: (next) => state.applySettings(next),
+                  onPasswordChange: (next) => (state.password = next),
+                  onSessionKeyChange: (next) => {
+                    state.sessionKey = next;
+                    state.chatMessage = "";
+                    state.resetToolStream();
+                    state.applySettings({
+                      ...state.settings,
+                      sessionKey: next,
+                      lastActiveSessionKey: next,
+                    });
+                    void state.loadAssistantIdentity();
+                  },
+                  onToggleGatewayTokenVisibility: () => {
+                    state.overviewShowGatewayToken =
+                      !state.overviewShowGatewayToken;
+                  },
+                  onToggleGatewayPasswordVisibility: () => {
+                    state.overviewShowGatewayPassword =
+                      !state.overviewShowGatewayPassword;
+                  },
+                  onConnect: () => state.connect(),
+                  onRefresh: () => state.loadOverview(),
+                  onNavigate: (tab) =>
+                    state.setTab(tab as import("./navigation.ts").Tab),
+                  onRefreshLogs: () => state.loadOverview(),
+                })}
+              </section>
+            </div>`
           : nothing}
         ${state.tab === "channels"
-          ? lazyRender(lazyChannels, (m) =>
-              m.renderChannels({
-                connected: state.connected,
-                loading: state.channelsLoading,
-                snapshot: state.channelsSnapshot,
-                lastError: state.channelsError,
-                lastSuccessAt: state.channelsLastSuccess,
-                whatsappMessage: state.whatsappLoginMessage,
-                whatsappQrDataUrl: state.whatsappLoginQrDataUrl,
-                whatsappConnected: state.whatsappLoginConnected,
-                whatsappBusy: state.whatsappBusy,
-                configSchema: state.configSchema,
-                configSchemaLoading: state.configSchemaLoading,
-                configForm: state.configForm,
-                configUiHints: state.configUiHints,
-                configSaving: state.configSaving,
-                configFormDirty: state.configFormDirty,
-                nostrProfileFormState: state.nostrProfileFormState,
-                nostrProfileAccountId: state.nostrProfileAccountId,
-                onRefresh: (probe) => loadChannels(state, probe),
-                onWhatsAppStart: (force) => state.handleWhatsAppStart(force),
-                onWhatsAppWait: () => state.handleWhatsAppWait(),
-                onWhatsAppLogout: () => state.handleWhatsAppLogout(),
-                onConfigPatch: (path, value) =>
-                  updateConfigFormValue(state, path, value),
-                onConfigSave: () => state.handleChannelConfigSave(),
-                onConfigReload: () => state.handleChannelConfigReload(),
-                onNostrProfileEdit: (accountId, profile) =>
-                  state.handleNostrProfileEdit(accountId, profile),
-                onNostrProfileCancel: () => state.handleNostrProfileCancel(),
-                onNostrProfileFieldChange: (field, value) =>
-                  state.handleNostrProfileFieldChange(field, value),
-                onNostrProfileSave: () => state.handleNostrProfileSave(),
-                onNostrProfileImport: () => state.handleNostrProfileImport(),
-                onNostrProfileToggleAdvanced: () =>
-                  state.handleNostrProfileToggleAdvanced(),
-              }),
-            )
+          ? html`<div class="content-page">
+              <section class="usage-page">
+                <section class="usage-page-header">
+                  <div class="usage-page-title">${titleForTab(state.tab)}</div>
+                  <div class="usage-page-subtitle">
+                    ${subtitleForTab(state.tab)}
+                  </div>
+                </section>
+                ${lazyRender(lazyChannels, (m) =>
+                  m.renderChannels({
+                    connected: state.connected,
+                    loading: state.channelsLoading,
+                    snapshot: state.channelsSnapshot,
+                    lastError: state.channelsError,
+                    lastSuccessAt: state.channelsLastSuccess,
+                    whatsappMessage: state.whatsappLoginMessage,
+                    whatsappQrDataUrl: state.whatsappLoginQrDataUrl,
+                    whatsappConnected: state.whatsappLoginConnected,
+                    whatsappBusy: state.whatsappBusy,
+                    configSchema: state.configSchema,
+                    configSchemaLoading: state.configSchemaLoading,
+                    configForm: state.configForm,
+                    configUiHints: state.configUiHints,
+                    configSaving: state.configSaving,
+                    configFormDirty: state.configFormDirty,
+                    nostrProfileFormState: state.nostrProfileFormState,
+                    nostrProfileAccountId: state.nostrProfileAccountId,
+                    onRefresh: (probe) => loadChannels(state, probe),
+                    onWhatsAppStart: (force) =>
+                      state.handleWhatsAppStart(force),
+                    onWhatsAppWait: () => state.handleWhatsAppWait(),
+                    onWhatsAppLogout: () => state.handleWhatsAppLogout(),
+                    onConfigPatch: (path, value) =>
+                      updateConfigFormValue(state, path, value),
+                    onConfigSave: () => state.handleChannelConfigSave(),
+                    onConfigReload: () => state.handleChannelConfigReload(),
+                    onNostrProfileEdit: (accountId, profile) =>
+                      state.handleNostrProfileEdit(accountId, profile),
+                    onNostrProfileCancel: () =>
+                      state.handleNostrProfileCancel(),
+                    onNostrProfileFieldChange: (field, value) =>
+                      state.handleNostrProfileFieldChange(field, value),
+                    onNostrProfileSave: () => state.handleNostrProfileSave(),
+                    onNostrProfileImport: () =>
+                      state.handleNostrProfileImport(),
+                    onNostrProfileToggleAdvanced: () =>
+                      state.handleNostrProfileToggleAdvanced(),
+                  }),
+                )}
+              </section>
+            </div>`
           : nothing}
         ${state.tab === "instances"
-          ? lazyRender(lazyInstances, (m) =>
-              m.renderInstances({
-                loading: state.presenceLoading,
-                entries: state.presenceEntries,
-                lastError: state.presenceError,
-                statusMessage: state.presenceStatus,
-                onRefresh: () => loadPresence(state),
-              }),
-            )
+          ? html`<div class="content-page">
+              <section class="usage-page">
+                <section class="usage-page-header">
+                  <div class="usage-page-title">${titleForTab(state.tab)}</div>
+                  <div class="usage-page-subtitle">
+                    ${subtitleForTab(state.tab)}
+                  </div>
+                </section>
+                ${lazyRender(lazyInstances, (m) =>
+                  m.renderInstances({
+                    loading: state.presenceLoading,
+                    entries: state.presenceEntries,
+                    lastError: state.presenceError,
+                    statusMessage: state.presenceStatus,
+                    onRefresh: () => loadPresence(state),
+                  }),
+                )}
+              </section>
+            </div>`
           : nothing}
         ${state.tab === "sessions"
-          ? lazyRender(lazySessions, (m) =>
-              m.renderSessions({
-                loading: state.sessionsLoading,
-                result: state.sessionsResult,
-                error: state.sessionsError,
-                activeMinutes: state.sessionsFilterActive,
-                limit: state.sessionsFilterLimit,
-                includeGlobal: state.sessionsIncludeGlobal,
-                includeUnknown: state.sessionsIncludeUnknown,
-                basePath: state.basePath,
-                searchQuery: state.sessionsSearchQuery,
-                sortColumn: state.sessionsSortColumn,
-                sortDir: state.sessionsSortDir,
-                page: state.sessionsPage,
-                pageSize: state.sessionsPageSize,
-                selectedKeys: state.sessionsSelectedKeys,
-                onFiltersChange: (next) => {
-                  state.sessionsFilterActive = next.activeMinutes;
-                  state.sessionsFilterLimit = next.limit;
-                  state.sessionsIncludeGlobal = next.includeGlobal;
-                  state.sessionsIncludeUnknown = next.includeUnknown;
-                },
-                onSearchChange: (q) => {
-                  state.sessionsSearchQuery = q;
-                  state.sessionsPage = 0;
-                },
-                onSortChange: (col, dir) => {
-                  state.sessionsSortColumn = col;
-                  state.sessionsSortDir = dir;
-                  state.sessionsPage = 0;
-                },
-                onPageChange: (p) => {
-                  state.sessionsPage = p;
-                },
-                onPageSizeChange: (s) => {
-                  state.sessionsPageSize = s;
-                  state.sessionsPage = 0;
-                },
-                onRefresh: () => loadSessions(state),
-                onPatch: (key, patch) => patchSession(state, key, patch),
-                onToggleSelect: (key) => {
-                  const next = new Set(state.sessionsSelectedKeys);
-                  if (next.has(key)) {
-                    next.delete(key);
-                  } else {
-                    next.add(key);
-                  }
-                  state.sessionsSelectedKeys = next;
-                },
-                onSelectPage: (keys) => {
-                  const next = new Set(state.sessionsSelectedKeys);
-                  for (const k of keys) {
-                    next.add(k);
-                  }
-                  state.sessionsSelectedKeys = next;
-                },
-                onDeselectPage: (keys) => {
-                  const next = new Set(state.sessionsSelectedKeys);
-                  for (const k of keys) {
-                    next.delete(k);
-                  }
-                  state.sessionsSelectedKeys = next;
-                },
-                onDeselectAll: () => {
-                  state.sessionsSelectedKeys = new Set();
-                },
-                onDeleteSelected: async () => {
-                  const keys = [...state.sessionsSelectedKeys];
-                  const deleted = await deleteSessionsAndRefresh(state, keys);
-                  if (deleted.length > 0) {
-                    const next = new Set(state.sessionsSelectedKeys);
-                    for (const k of deleted) {
-                      next.delete(k);
-                    }
-                    state.sessionsSelectedKeys = next;
-                  }
-                },
-                onNavigateToChat: (sessionKey) => {
-                  switchChatSession(state, sessionKey);
-                  state.setTab("chat" as import("./navigation.ts").Tab);
-                },
-              }),
-            )
+          ? html`<div class="content-page">
+              <section class="usage-page">
+                <section class="usage-page-header">
+                  <div class="usage-page-title">${titleForTab(state.tab)}</div>
+                  <div class="usage-page-subtitle">
+                    ${subtitleForTab(state.tab)}
+                  </div>
+                </section>
+                ${lazyRender(lazySessions, (m) =>
+                  m.renderSessions({
+                    loading: state.sessionsLoading,
+                    result: state.sessionsResult,
+                    error: state.sessionsError,
+                    activeMinutes: state.sessionsFilterActive,
+                    limit: state.sessionsFilterLimit,
+                    includeGlobal: state.sessionsIncludeGlobal,
+                    includeUnknown: state.sessionsIncludeUnknown,
+                    basePath: state.basePath,
+                    searchQuery: state.sessionsSearchQuery,
+                    sortColumn: state.sessionsSortColumn,
+                    sortDir: state.sessionsSortDir,
+                    page: state.sessionsPage,
+                    pageSize: state.sessionsPageSize,
+                    selectedKeys: state.sessionsSelectedKeys,
+                    onFiltersChange: (next) => {
+                      state.sessionsFilterActive = next.activeMinutes;
+                      state.sessionsFilterLimit = next.limit;
+                      state.sessionsIncludeGlobal = next.includeGlobal;
+                      state.sessionsIncludeUnknown = next.includeUnknown;
+                    },
+                    onSearchChange: (q) => {
+                      state.sessionsSearchQuery = q;
+                      state.sessionsPage = 0;
+                    },
+                    onSortChange: (col, dir) => {
+                      state.sessionsSortColumn = col;
+                      state.sessionsSortDir = dir;
+                      state.sessionsPage = 0;
+                    },
+                    onPageChange: (p) => {
+                      state.sessionsPage = p;
+                    },
+                    onPageSizeChange: (s) => {
+                      state.sessionsPageSize = s;
+                      state.sessionsPage = 0;
+                    },
+                    onRefresh: () => loadSessions(state),
+                    onPatch: (key, patch) => patchSession(state, key, patch),
+                    onToggleSelect: (key) => {
+                      const next = new Set(state.sessionsSelectedKeys);
+                      if (next.has(key)) {
+                        next.delete(key);
+                      } else {
+                        next.add(key);
+                      }
+                      state.sessionsSelectedKeys = next;
+                    },
+                    onSelectPage: (keys) => {
+                      const next = new Set(state.sessionsSelectedKeys);
+                      for (const k of keys) {
+                        next.add(k);
+                      }
+                      state.sessionsSelectedKeys = next;
+                    },
+                    onDeselectPage: (keys) => {
+                      const next = new Set(state.sessionsSelectedKeys);
+                      for (const k of keys) {
+                        next.delete(k);
+                      }
+                      state.sessionsSelectedKeys = next;
+                    },
+                    onDeselectAll: () => {
+                      state.sessionsSelectedKeys = new Set();
+                    },
+                    onDeleteSelected: async () => {
+                      const keys = [...state.sessionsSelectedKeys];
+                      const deleted = await deleteSessionsAndRefresh(state, keys);
+                      if (deleted.length > 0) {
+                        const next = new Set(state.sessionsSelectedKeys);
+                        for (const k of deleted) {
+                          next.delete(k);
+                        }
+                        state.sessionsSelectedKeys = next;
+                      }
+                    },
+                    onNavigateToChat: (sessionKey) => {
+                      switchChatSession(state, sessionKey);
+                      state.setTab("chat" as import("./navigation.ts").Tab);
+                    },
+                  }),
+                )}
+              </section>
+            </div>`
           : nothing}
         ${renderUsageTab(state)}
         ${state.tab === "cron"
-          ? lazyRender(lazyCron, (m) =>
-              m.renderCron({
-                basePath: state.basePath,
-                loading: state.cronLoading,
-                status: state.cronStatus,
-                jobs: visibleCronJobs,
-                jobsLoadingMore: state.cronJobsLoadingMore,
-                jobsTotal: state.cronJobsTotal,
-                jobsHasMore: state.cronJobsHasMore,
-                jobsQuery: state.cronJobsQuery,
-                jobsEnabledFilter: state.cronJobsEnabledFilter,
-                jobsScheduleKindFilter: state.cronJobsScheduleKindFilter,
-                jobsLastStatusFilter: state.cronJobsLastStatusFilter,
-                jobsSortBy: state.cronJobsSortBy,
-                jobsSortDir: state.cronJobsSortDir,
-                editingJobId: state.cronEditingJobId,
-                error: state.cronError,
-                busy: state.cronBusy,
-                form: state.cronForm,
-                channels: state.channelsSnapshot?.channelMeta?.length
-                  ? state.channelsSnapshot.channelMeta.map((entry) => entry.id)
-                  : (state.channelsSnapshot?.channelOrder ?? []),
-                channelLabels: state.channelsSnapshot?.channelLabels ?? {},
-                channelMeta: state.channelsSnapshot?.channelMeta ?? [],
-                runsJobId: state.cronRunsJobId,
-                runs: state.cronRuns,
-                runsTotal: state.cronRunsTotal,
-                runsHasMore: state.cronRunsHasMore,
-                runsLoadingMore: state.cronRunsLoadingMore,
-                runsScope: state.cronRunsScope,
-                runsStatuses: state.cronRunsStatuses,
-                runsDeliveryStatuses: state.cronRunsDeliveryStatuses,
-                runsStatusFilter: state.cronRunsStatusFilter,
-                runsQuery: state.cronRunsQuery,
-                runsSortDir: state.cronRunsSortDir,
-                fieldErrors: state.cronFieldErrors,
-                canSubmit:
-                  !hasCronFormErrors(state.cronFieldErrors) &&
-                  !isCronFormUnchanged(state),
-                agentSuggestions: cronAgentSuggestions,
-                modelSuggestions: cronModelSuggestions,
-                thinkingSuggestions: CRON_THINKING_SUGGESTIONS,
-                timezoneSuggestions: CRON_TIMEZONE_SUGGESTIONS,
-                deliveryToSuggestions,
-                accountSuggestions,
-                onFormChange: (patch) => {
-                  state.cronForm = normalizeCronFormState({
-                    ...state.cronForm,
-                    ...patch,
-                  });
-                  state.cronFieldErrors = validateCronForm(state.cronForm);
-                },
-                onRefresh: () => state.loadCron(),
-                onAdd: () => addCronJob(state),
-                onEdit: (job) => startCronEdit(state, job),
-                onClone: (job) => startCronClone(state, job),
-                onCancelEdit: () => cancelCronEdit(state),
-                onToggle: (job, enabled) => toggleCronJob(state, job, enabled),
-                onRun: (job, mode) => runCronJob(state, job, mode ?? "force"),
-                onRemove: (job) => removeCronJob(state, job),
-                onLoadRuns: async (jobId) => {
-                  updateCronRunsFilter(state, { cronRunsScope: "job" });
-                  await loadCronRuns(state, jobId);
-                },
-                onLoadMoreJobs: () => loadMoreCronJobs(state),
-                onJobsFiltersChange: async (patch) => {
-                  updateCronJobsFilter(state, patch);
-                  const shouldReload =
-                    typeof patch.cronJobsQuery === "string" ||
-                    Boolean(patch.cronJobsEnabledFilter) ||
-                    Boolean(patch.cronJobsSortBy) ||
-                    Boolean(patch.cronJobsSortDir);
-                  if (shouldReload) {
-                    await reloadCronJobs(state);
-                  }
-                },
-                onJobsFiltersReset: async () => {
-                  updateCronJobsFilter(state, {
-                    cronJobsQuery: "",
-                    cronJobsEnabledFilter: "all",
-                    cronJobsScheduleKindFilter: "all",
-                    cronJobsLastStatusFilter: "all",
-                    cronJobsSortBy: "nextRunAtMs",
-                    cronJobsSortDir: "asc",
-                  });
-                  await reloadCronJobs(state);
-                },
-                onLoadMoreRuns: () => loadMoreCronRuns(state),
-                onRunsFiltersChange: async (patch) => {
-                  updateCronRunsFilter(state, patch);
-                  if (state.cronRunsScope === "all") {
-                    await loadCronRuns(state, null);
-                    return;
-                  }
-                  await loadCronRuns(state, state.cronRunsJobId);
-                },
-                onNavigateToChat: (sessionKey) => {
-                  switchChatSession(state, sessionKey);
-                  state.setTab("chat" as import("./navigation.ts").Tab);
-                },
-              }),
-            )
+          ? html`<div class="content-page">
+              <section class="usage-page">
+                <section class="usage-page-header">
+                  <div class="usage-page-title">${titleForTab(state.tab)}</div>
+                  <div class="usage-page-subtitle">
+                    ${subtitleForTab(state.tab)}
+                  </div>
+                </section>
+                ${lazyRender(lazyCron, (m) =>
+                  m.renderCron({
+                    basePath: state.basePath,
+                    loading: state.cronLoading,
+                    status: state.cronStatus,
+                    jobs: visibleCronJobs,
+                    jobsLoadingMore: state.cronJobsLoadingMore,
+                    jobsTotal: state.cronJobsTotal,
+                    jobsHasMore: state.cronJobsHasMore,
+                    jobsQuery: state.cronJobsQuery,
+                    jobsEnabledFilter: state.cronJobsEnabledFilter,
+                    jobsScheduleKindFilter: state.cronJobsScheduleKindFilter,
+                    jobsLastStatusFilter: state.cronJobsLastStatusFilter,
+                    jobsSortBy: state.cronJobsSortBy,
+                    jobsSortDir: state.cronJobsSortDir,
+                    editingJobId: state.cronEditingJobId,
+                    error: state.cronError,
+                    busy: state.cronBusy,
+                    form: state.cronForm,
+                    channels: state.channelsSnapshot?.channelMeta?.length
+                      ? state.channelsSnapshot.channelMeta.map((entry) => entry.id)
+                      : (state.channelsSnapshot?.channelOrder ?? []),
+                    channelLabels: state.channelsSnapshot?.channelLabels ?? {},
+                    channelMeta: state.channelsSnapshot?.channelMeta ?? [],
+                    runsJobId: state.cronRunsJobId,
+                    runs: state.cronRuns,
+                    runsTotal: state.cronRunsTotal,
+                    runsHasMore: state.cronRunsHasMore,
+                    runsLoadingMore: state.cronRunsLoadingMore,
+                    runsScope: state.cronRunsScope,
+                    runsStatuses: state.cronRunsStatuses,
+                    runsDeliveryStatuses: state.cronRunsDeliveryStatuses,
+                    runsStatusFilter: state.cronRunsStatusFilter,
+                    runsQuery: state.cronRunsQuery,
+                    runsSortDir: state.cronRunsSortDir,
+                    fieldErrors: state.cronFieldErrors,
+                    canSubmit:
+                      !hasCronFormErrors(state.cronFieldErrors) &&
+                      !isCronFormUnchanged(state),
+                    agentSuggestions: cronAgentSuggestions,
+                    modelSuggestions: cronModelSuggestions,
+                    thinkingSuggestions: CRON_THINKING_SUGGESTIONS,
+                    timezoneSuggestions: CRON_TIMEZONE_SUGGESTIONS,
+                    deliveryToSuggestions,
+                    accountSuggestions,
+                    onFormChange: (patch) => {
+                      state.cronForm = normalizeCronFormState({
+                        ...state.cronForm,
+                        ...patch,
+                      });
+                      state.cronFieldErrors = validateCronForm(state.cronForm);
+                    },
+                    onRefresh: () => state.loadCron(),
+                    onAdd: () => addCronJob(state),
+                    onEdit: (job) => startCronEdit(state, job),
+                    onClone: (job) => startCronClone(state, job),
+                    onCancelEdit: () => cancelCronEdit(state),
+                    onToggle: (job, enabled) =>
+                      toggleCronJob(state, job, enabled),
+                    onRun: (job, mode) => runCronJob(state, job, mode ?? "force"),
+                    onRemove: (job) => removeCronJob(state, job),
+                    onLoadRuns: async (jobId) => {
+                      updateCronRunsFilter(state, { cronRunsScope: "job" });
+                      await loadCronRuns(state, jobId);
+                    },
+                    onLoadMoreJobs: () => loadMoreCronJobs(state),
+                    onJobsFiltersChange: async (patch) => {
+                      updateCronJobsFilter(state, patch);
+                      const shouldReload =
+                        typeof patch.cronJobsQuery === "string" ||
+                        Boolean(patch.cronJobsEnabledFilter) ||
+                        Boolean(patch.cronJobsSortBy) ||
+                        Boolean(patch.cronJobsSortDir);
+                      if (shouldReload) {
+                        await reloadCronJobs(state);
+                      }
+                    },
+                    onJobsFiltersReset: async () => {
+                      updateCronJobsFilter(state, {
+                        cronJobsQuery: "",
+                        cronJobsEnabledFilter: "all",
+                        cronJobsScheduleKindFilter: "all",
+                        cronJobsLastStatusFilter: "all",
+                        cronJobsSortBy: "nextRunAtMs",
+                        cronJobsSortDir: "asc",
+                      });
+                      await reloadCronJobs(state);
+                    },
+                    onLoadMoreRuns: () => loadMoreCronRuns(state),
+                    onRunsFiltersChange: async (patch) => {
+                      updateCronRunsFilter(state, patch);
+                      if (state.cronRunsScope === "all") {
+                        await loadCronRuns(state, null);
+                        return;
+                      }
+                      await loadCronRuns(state, state.cronRunsJobId);
+                    },
+                    onNavigateToChat: (sessionKey) => {
+                      switchChatSession(state, sessionKey);
+                      state.setTab("chat" as import("./navigation.ts").Tab);
+                    },
+                  }),
+                )}
+              </section>
+            </div>`
           : nothing}
         ${state.tab === "agents"
-          ? lazyRender(lazyAgents, (m) =>
-              m.renderAgents({
+          ? html`<div class="content-page">
+              <section class="usage-page">
+                <section class="usage-page-header">
+                  <div class="usage-page-title">${titleForTab(state.tab)}</div>
+                  <div class="usage-page-subtitle">
+                    ${subtitleForTab(state.tab)}
+                  </div>
+                </section>
+                ${lazyRender(lazyAgents, (m) =>
+                  m.renderAgents({
                 basePath: state.basePath ?? "",
                 loading: state.agentsLoading,
                 error: state.agentsError,
@@ -1436,12 +1517,22 @@ export function renderApp(state: AppViewState) {
                     agentId,
                   );
                 },
-              }),
-            )
+                  }),
+                )}
+              </section>
+            </div>`
           : nothing}
         ${state.tab === "skills"
-          ? lazyRender(lazySkills, (m) =>
-              m.renderSkills({
+          ? html`<div class="content-page">
+              <section class="usage-page">
+                <section class="usage-page-header">
+                  <div class="usage-page-title">${titleForTab(state.tab)}</div>
+                  <div class="usage-page-subtitle">
+                    ${subtitleForTab(state.tab)}
+                  </div>
+                </section>
+                ${lazyRender(lazySkills, (m) =>
+                  m.renderSkills({
                 connected: state.connected,
                 loading: state.skillsLoading,
                 report: state.skillsReport,
@@ -1458,12 +1549,22 @@ export function renderApp(state: AppViewState) {
                 onSaveKey: (key) => saveSkillApiKey(state, key),
                 onInstall: (skillKey, name, installId) =>
                   installSkill(state, skillKey, name, installId),
-              }),
-            )
+                  }),
+                )}
+              </section>
+            </div>`
           : nothing}
         ${state.tab === "nodes"
-          ? lazyRender(lazyNodes, (m) =>
-              m.renderNodes({
+          ? html`<div class="content-page">
+              <section class="usage-page">
+                <section class="usage-page-header">
+                  <div class="usage-page-title">${titleForTab(state.tab)}</div>
+                  <div class="usage-page-subtitle">
+                    ${subtitleForTab(state.tab)}
+                  </div>
+                </section>
+                ${lazyRender(lazyNodes, (m) =>
+                  m.renderNodes({
                 loading: state.nodesLoading,
                 nodes: state.nodes,
                 devicesLoading: state.devicesLoading,
@@ -1562,8 +1663,10 @@ export function renderApp(state: AppViewState) {
                       : { kind: "gateway" as const };
                   return saveExecApprovals(state, target);
                 },
-              }),
-            )
+                  }),
+                )}
+              </section>
+            </div>`
           : nothing}
         ${state.tab === "chat"
           ? renderChat({
@@ -2122,50 +2225,70 @@ export function renderApp(state: AppViewState) {
             })
           : nothing}
         ${state.tab === "debug"
-          ? lazyRender(lazyDebug, (m) =>
-              m.renderDebug({
-                loading: state.debugLoading,
-                status: state.debugStatus,
-                health: state.debugHealth,
-                models: state.debugModels,
-                heartbeat: state.debugHeartbeat,
-                eventLog: state.eventLog,
-                methods: (state.hello?.features?.methods ?? []).toSorted(),
-                callMethod: state.debugCallMethod,
-                callParams: state.debugCallParams,
-                callResult: state.debugCallResult,
-                callError: state.debugCallError,
-                onCallMethodChange: (next) => (state.debugCallMethod = next),
-                onCallParamsChange: (next) => (state.debugCallParams = next),
-                onRefresh: () => loadDebug(state),
-                onCall: () => callDebugMethod(state),
-              }),
-            )
+          ? html`<div class="content-page">
+              <section class="usage-page">
+                <section class="usage-page-header">
+                  <div class="usage-page-title">${titleForTab(state.tab)}</div>
+                  <div class="usage-page-subtitle">
+                    ${subtitleForTab(state.tab)}
+                  </div>
+                </section>
+                ${lazyRender(lazyDebug, (m) =>
+                  m.renderDebug({
+                    loading: state.debugLoading,
+                    status: state.debugStatus,
+                    health: state.debugHealth,
+                    models: state.debugModels,
+                    heartbeat: state.debugHeartbeat,
+                    eventLog: state.eventLog,
+                    methods: (state.hello?.features?.methods ?? []).toSorted(),
+                    callMethod: state.debugCallMethod,
+                    callParams: state.debugCallParams,
+                    callResult: state.debugCallResult,
+                    callError: state.debugCallError,
+                    onCallMethodChange: (next) => (state.debugCallMethod = next),
+                    onCallParamsChange: (next) => (state.debugCallParams = next),
+                    onRefresh: () => loadDebug(state),
+                    onCall: () => callDebugMethod(state),
+                  }),
+                )}
+              </section>
+            </div>`
           : nothing}
         ${state.tab === "logs"
-          ? lazyRender(lazyLogs, (m) =>
-              m.renderLogs({
-                loading: state.logsLoading,
-                error: state.logsError,
-                file: state.logsFile,
-                entries: state.logsEntries,
-                filterText: state.logsFilterText,
-                levelFilters: state.logsLevelFilters,
-                autoFollow: state.logsAutoFollow,
-                truncated: state.logsTruncated,
-                onFilterTextChange: (next) => (state.logsFilterText = next),
-                onLevelToggle: (level, enabled) => {
-                  state.logsLevelFilters = {
-                    ...state.logsLevelFilters,
-                    [level]: enabled,
-                  };
-                },
-                onToggleAutoFollow: (next) => (state.logsAutoFollow = next),
-                onRefresh: () => loadLogs(state, { reset: true }),
-                onExport: (lines, label) => state.exportLogs(lines, label),
-                onScroll: (event) => state.handleLogsScroll(event),
-              }),
-            )
+          ? html`<div class="content-page">
+              <section class="usage-page">
+                <section class="usage-page-header">
+                  <div class="usage-page-title">${titleForTab(state.tab)}</div>
+                  <div class="usage-page-subtitle">
+                    ${subtitleForTab(state.tab)}
+                  </div>
+                </section>
+                ${lazyRender(lazyLogs, (m) =>
+                  m.renderLogs({
+                    loading: state.logsLoading,
+                    error: state.logsError,
+                    file: state.logsFile,
+                    entries: state.logsEntries,
+                    filterText: state.logsFilterText,
+                    levelFilters: state.logsLevelFilters,
+                    autoFollow: state.logsAutoFollow,
+                    truncated: state.logsTruncated,
+                    onFilterTextChange: (next) => (state.logsFilterText = next),
+                    onLevelToggle: (level, enabled) => {
+                      state.logsLevelFilters = {
+                        ...state.logsLevelFilters,
+                        [level]: enabled,
+                      };
+                    },
+                    onToggleAutoFollow: (next) => (state.logsAutoFollow = next),
+                    onRefresh: () => loadLogs(state, { reset: true }),
+                    onExport: (lines, label) => state.exportLogs(lines, label),
+                    onScroll: (event) => state.handleLogsScroll(event),
+                  }),
+                )}
+              </section>
+            </div>`
           : nothing}
       </main>
       ${renderExecApprovalPrompt(state)} ${renderGatewayUrlConfirmation(state)}

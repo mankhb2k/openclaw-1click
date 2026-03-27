@@ -17,6 +17,14 @@ export const en: TranslationMap = {
     resources: "Resources",
     search: "Search",
   },
+  desktopUpdate: {
+    availableTitle: "Update available:",
+    runningVersion: "running v{version}",
+    downloading: "Downloading...",
+    updateButton: "Update now",
+    updatingButton: "Updating…",
+    installButton: "Install update",
+  },
   nav: {
     chat: "Chat",
     control: "Control",

@@ -17,6 +17,14 @@ export const vi: TranslationMap = {
     resources: "Tài nguyên",
     search: "Tìm kiếm",
   },
+  desktopUpdate: {
+    availableTitle: "Đã có bản cập nhật:",
+    runningVersion: "đang chạy v{version}",
+    downloading: "Đang tải...",
+    updateButton: "Cập nhật ngay",
+    updatingButton: "Đang cập nhật…",
+    installButton: "Cài đặt bản cập nhật",
+  },
   nav: {
     chat: "Trò chuyện",
     control: "Điều khiển",

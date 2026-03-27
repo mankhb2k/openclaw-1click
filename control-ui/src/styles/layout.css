@@ -880,6 +880,14 @@
   margin-top: 20px;
 }
 
+.content-page {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  min-height: 0;
+  align-content: start;
+}
+
 :root[data-theme-mode="light"] .content {
   background: var(--bg-content);
 }

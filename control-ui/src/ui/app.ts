@@ -84,6 +84,7 @@ import type {
   StatusSummary,
   NostrProfile,
   ToolsCatalogResult,
+  DesktopUpdateState,
 } from "./types.ts";
 import { type ChatAttachment, type ChatQueueItem, type CronFormState } from "./ui-types.ts";
 import { generateUUID } from "./uuid.ts";
@@ -385,6 +386,7 @@ export class OpenClawApp extends LitElement {
   @state() cronBusy = false;
 
   @state() updateAvailable: import("./types.js").UpdateAvailable | null = null;
+  @state() desktopUpdateState: DesktopUpdateState | null = null;
 
   // Overview dashboard state
   @state() attentionItems: import("./types.js").AttentionItem[] = [];
@@ -451,6 +453,7 @@ export class OpenClawApp extends LitElement {
   private popStateHandler = () =>
     onPopStateInternal(this as unknown as Parameters<typeof onPopStateInternal>[0]);
   private topbarObserver: ResizeObserver | null = null;
+  private desktopUpdateUnsubscribe: (() => void) | null = null;
   private globalKeydownHandler = (e: KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key === "k") {
       e.preventDefault();
@@ -482,6 +485,27 @@ export class OpenClawApp extends LitElement {
       }
     };
     document.addEventListener("keydown", this.globalKeydownHandler);
+    const bridge = (window as Window & {
+      openclawDesktop?: {
+        getUpdateState?: () => Promise<DesktopUpdateState>;
+        onUpdateState?: (listener: (state: DesktopUpdateState) => void) => () => void;
+      };
+    }).openclawDesktop;
+    if (bridge?.onUpdateState) {
+      this.desktopUpdateUnsubscribe = bridge.onUpdateState((state) => {
+        this.desktopUpdateState = state;
+      });
+    }
+    if (bridge?.getUpdateState) {
+      void bridge
+        .getUpdateState()
+        .then((state) => {
+          this.desktopUpdateState = state;
+        })
+        .catch(() => {
+          // Ignore bridge bootstrap failures and keep gateway update flow.
+        });
+    }
     handleConnected(this as unknown as Parameters<typeof handleConnected>[0]);
   }
 
@@ -491,6 +515,8 @@ export class OpenClawApp extends LitElement {
 
   disconnectedCallback() {
     document.removeEventListener("keydown", this.globalKeydownHandler);
+    this.desktopUpdateUnsubscribe?.();
+    this.desktopUpdateUnsubscribe = null;
     handleDisconnected(this as unknown as Parameters<typeof handleDisconnected>[0]);
     super.disconnectedCallback();
   }
