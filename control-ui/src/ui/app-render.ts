@@ -159,6 +159,8 @@ function lazyRender<M>(getter: () => M | null, render: (mod: M) => unknown) {
 
 const UPDATE_BANNER_DISMISS_KEY =
   "openclaw:control-ui:update-banner-dismissed:v1";
+const DESKTOP_UPDATE_BANNER_DISMISS_KEY =
+  "openclaw:control-ui:desktop-update-banner-dismissed:v1";
 const CRON_THINKING_SUGGESTIONS = ["off", "minimal", "low", "medium", "high"];
 const CRON_TIMEZONE_SUGGESTIONS = [
   "UTC",
@@ -266,6 +268,61 @@ function dismissUpdateBanner(updateAvailable: unknown) {
   try {
     getSafeLocalStorage()?.setItem(
       UPDATE_BANNER_DISMISS_KEY,
+      JSON.stringify(payload),
+    );
+  } catch {
+    // ignore
+  }
+}
+
+type DismissedDesktopUpdateBanner = {
+  availableVersion: string;
+  dismissedAtMs: number;
+};
+
+function loadDismissedDesktopUpdateBanner(): DismissedDesktopUpdateBanner | null {
+  try {
+    const raw = getSafeLocalStorage()?.getItem(
+      DESKTOP_UPDATE_BANNER_DISMISS_KEY,
+    );
+    if (!raw) {
+      return null;
+    }
+    const parsed = JSON.parse(raw) as Partial<DismissedDesktopUpdateBanner>;
+    if (!parsed || typeof parsed.availableVersion !== "string") {
+      return null;
+    }
+    return {
+      availableVersion: parsed.availableVersion,
+      dismissedAtMs:
+        typeof parsed.dismissedAtMs === "number"
+          ? parsed.dismissedAtMs
+          : Date.now(),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function isDesktopUpdateBannerDismissed(availableVersion: string | null) {
+  if (!availableVersion) {
+    return false;
+  }
+  const dismissed = loadDismissedDesktopUpdateBanner();
+  return dismissed?.availableVersion === availableVersion;
+}
+
+function dismissDesktopUpdateBanner(availableVersion: string | null) {
+  if (!availableVersion) {
+    return;
+  }
+  const payload: DismissedDesktopUpdateBanner = {
+    availableVersion,
+    dismissedAtMs: Date.now(),
+  };
+  try {
+    getSafeLocalStorage()?.setItem(
+      DESKTOP_UPDATE_BANNER_DISMISS_KEY,
       JSON.stringify(payload),
     );
   } catch {
@@ -662,37 +719,54 @@ export function renderApp(state: AppViewState) {
         ${state.desktopUpdateState?.enabled &&
         state.desktopUpdateState.availableVersion &&
         state.desktopUpdateState.availableVersion !==
-          state.desktopUpdateState.currentVersion
-          ? html`<div class="update-banner callout danger" role="alert">
-              <strong>${t("desktopUpdate.availableTitle")}</strong>
-              v${state.desktopUpdateState.availableVersion}
-              (${t("desktopUpdate.newVersion", {
-                version: state.desktopUpdateState.availableVersion,
-              })}).
-              ${state.desktopUpdateState.announcementTitle
-                ? html`<div style="margin-top: 6px; white-space: pre-wrap;">
-                    ${state.desktopUpdateState.announcementTitle}
-                  </div>`
-                : nothing}
+          state.desktopUpdateState.currentVersion &&
+        !isDesktopUpdateBannerDismissed(
+          state.desktopUpdateState.availableVersion,
+        )
+          ? html`<div
+              class="update-banner update-banner--desktop callout danger"
+              role="alert"
+            >
+              <div class="update-banner__row">
+                <span class="update-banner__title">
+                  <strong>${t("desktopUpdate.availableTitle")}</strong>
+                  v${state.desktopUpdateState.availableVersion}
+                </span>
+                <button
+                  class="btn btn--sm update-banner__btn"
+                  ?disabled=${state.updateRunning}
+                  @click=${() => runUpdate(state)}
+                >
+                  ${state.desktopUpdateState.phase === "downloaded"
+                    ? t("desktopUpdate.installButton")
+                    : state.updateRunning
+                      ? t("desktopUpdate.updatingButton")
+                      : t("desktopUpdate.updateButton")}
+                </button>
+                <button
+                  class="update-banner__close"
+                  type="button"
+                  aria-label=${t("desktopUpdate.dismissBannerAria")}
+                  @click=${() => {
+                    dismissDesktopUpdateBanner(
+                      state.desktopUpdateState?.availableVersion ?? null,
+                    );
+                    (
+                      state as AppViewState & { requestUpdate?: () => void }
+                    ).requestUpdate?.();
+                  }}
+                >
+                  ${icons.x}
+                </button>
+              </div>
               ${state.desktopUpdateState.phase === "downloading"
-                ? html`<div style="margin-top: 6px;">
+                ? html`<div class="update-banner__sub">
                     ${t("desktopUpdate.downloading")}
                     ${state.desktopUpdateState.progressPercent != null
                       ? `${Math.round(state.desktopUpdateState.progressPercent)}%`
                       : ""}
                   </div>`
                 : nothing}
-              <button
-                class="btn btn--sm update-banner__btn"
-                ?disabled=${state.updateRunning}
-                @click=${() => runUpdate(state)}
-              >
-                ${state.desktopUpdateState.phase === "downloaded"
-                  ? t("desktopUpdate.installButton")
-                  : state.updateRunning
-                    ? t("desktopUpdate.updatingButton")
-                    : t("desktopUpdate.updateButton")}
-              </button>
             </div>`
           : state.desktopUpdateState?.isPackaged
             ? nothing
@@ -714,7 +788,6 @@ export function renderApp(state: AppViewState) {
                 <button
                   class="update-banner__close"
                   type="button"
-                  title="Dismiss"
                   aria-label="Dismiss update banner"
                   @click=${() => {
                     dismissUpdateBanner(state.updateAvailable);
@@ -732,7 +805,6 @@ export function renderApp(state: AppViewState) {
               <button
                 class="update-banner__close"
                 type="button"
-                title="Đóng"
                 aria-label="Đóng thông báo cập nhật"
                 @click=${() => {
                   state.updateNotice = null;

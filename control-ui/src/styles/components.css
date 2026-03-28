@@ -148,6 +148,48 @@
   padding: 10px 16px;
 }
 
+/* Desktop app (electron-updater): one compact row — title + version + button */
+.update-banner.update-banner--desktop.callout {
+  padding: 8px 16px;
+  line-height: 1.35;
+}
+
+.update-banner--desktop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.update-banner--desktop .update-banner__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.update-banner--desktop .update-banner__title {
+  text-align: start;
+}
+
+.update-banner--desktop .update-banner__row .update-banner__btn {
+  margin-left: 0;
+  flex-shrink: 0;
+}
+
+.update-banner--desktop .update-banner__row .update-banner__close {
+  margin-left: 0;
+  flex-shrink: 0;
+}
+
+.update-banner--desktop .update-banner__sub {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
 .update-banner__btn {
   margin-left: 8px;
   border-color: var(--danger);

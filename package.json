@@ -1,7 +1,7 @@
 {
   "name": "openclaw-desktop",
   "version": "1.0.2",
-  "description": "OpenClaw desktop shell: Electron + dashboard + OpenClaw CLI",
+  "description": "OpenClaw desktop",
   "main": "dist/main/main.js",
   "author": "OpenClaw",
   "license": "MIT",

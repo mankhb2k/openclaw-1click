@@ -24,6 +24,7 @@ export const vi: TranslationMap = {
     updateButton: "Cập nhật ngay",
     updatingButton: "Đang cập nhật…",
     installButton: "Khởi động lại",
+    dismissBannerAria: "Ẩn thông báo cập nhật ứng dụng",
   },
   nav: {
     chat: "Trò chuyện",
