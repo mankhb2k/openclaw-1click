@@ -8,6 +8,7 @@ export type DesktopUpdatePhase =
   | "error"
   | "unsupported";
 export type DesktopUpdateState = {
+  isPackaged: boolean;
   enabled: boolean;
   phase: DesktopUpdatePhase;
   currentVersion: string;
