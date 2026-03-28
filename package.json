@@ -1,6 +1,6 @@
 {
   "name": "openclaw-desktop",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "OpenClaw desktop",
   "main": "dist/main/main.js",
   "author": "OpenClaw",
