@@ -3775,17 +3775,22 @@ td.data-table-key-col {
 
 .agent-skill-row .list-meta.skills-page-skill-meta {
   flex-direction: column;
-  align-items: flex-end;
+  align-items: stretch;
+  /* Row-oriented .list-meta uses justify-content: flex-end; as a column that wrongly packs to the bottom. */
+  justify-content: flex-start;
   gap: 10px;
 }
 
 .skills-page-skill-actions {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
   gap: 10px;
   max-width: 100%;
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  width: fit-content;
 }
 
 .skills-page-skill-actions .btn {
@@ -3812,7 +3817,9 @@ td.data-table-key-col {
   }
 
   .skills-page-skill-card .skills-page-skill-actions {
-    justify-content: flex-start;
+    align-items: flex-end;
+    width: 100%;
+    margin-inline-start: 0;
   }
 }
 
