@@ -45,7 +45,6 @@ win:
   # (Mặc định true; đang bật vì bạn thấy exe vẫn mang icon mặc định của Electron.)
   signAndEditExecutable: true
   # Shown where Windows expects a publisher label (full effect with code signing + matching cert subject).
-  publisherName: OpenClaw
   target:
     - target: portable
       arch:
