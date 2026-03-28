@@ -39,6 +39,8 @@ asarUnpack:
   - "vendor/control-ui/**"
 
 # Avoid winCodeSign extraction (symlinks) on machines without Developer Mode / admin.
+# Code signing (production): set CSC_LINK (.pfx path or base64) + CSC_KEY_PASSWORD on the build machine
+# so NSIS + OpenClaw.exe are Authenticode-signed; updater then verifies the same publisher automatically.
 win:
   icon: control-ui/public/favicon.ico
   # Cách A: để electron-builder tự patch icon/metadata vào file exe.

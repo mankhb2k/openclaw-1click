@@ -19,7 +19,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { spawn, ChildProcess } from 'child_process';
 import treeKill from 'tree-kill';
-import { autoUpdater, type ProgressInfo } from 'electron-updater';
+import { autoUpdater, type NsisUpdater, type ProgressInfo } from 'electron-updater';
 import { ENV_DATA_ROOT } from '../backend/config';
 import { runFirstLaunchOnboardingIfNeeded } from './onboard';
 import { ENV_DESKTOP_RESOURCES } from '../backend/config';
@@ -167,6 +167,15 @@ function isElectronUpdaterEnabled(): boolean {
   return app.isPackaged && process.platform === 'win32' && !isPortableRuntime();
 }
 
+/**
+ * Unsigned NSIS builds only. When "1", skips Authenticode verification on the
+ * downloaded installer (MITM risk). Remove once every release is signed with the
+ * same cert as the installed app. Env: OPENCLAW_SKIP_WINDOWS_UPDATE_SIGNATURE
+ */
+function shouldSkipWindowsUpdateSignatureVerify(): boolean {
+  return process.env.OPENCLAW_SKIP_WINDOWS_UPDATE_SIGNATURE === '1';
+}
+
 async function checkDesktopUpdates(): Promise<void> {
   if (!isElectronUpdaterEnabled()) {
     return;
@@ -234,6 +243,10 @@ function initDesktopUpdater(): void {
   setDesktopUpdateState({ enabled: true, phase: 'idle', message: null });
   autoUpdater.autoDownload = false;
   autoUpdater.autoInstallOnAppQuit = false;
+
+  if (shouldSkipWindowsUpdateSignatureVerify()) {
+    (autoUpdater as NsisUpdater).verifyUpdateCodeSignature = async () => null;
+  }
 
   autoUpdater.on('checking-for-update', () => {
     setDesktopUpdateState({
