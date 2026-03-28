@@ -48,7 +48,7 @@ type DesktopUpdateBridge = {
   getUpdateState?: () => Promise<DesktopUpdateState>;
 };
 
-function getDesktopUpdateBridge(): DesktopUpdateBridge | undefined {
+export function getDesktopUpdateBridge(): DesktopUpdateBridge | undefined {
   if (typeof window === "undefined") {
     return undefined;
   }
@@ -240,12 +240,16 @@ export async function applyConfig(state: ConfigState) {
 }
 
 export async function runUpdate(state: ConfigState) {
-  if (!state.connected) {
-    return;
-  }
-
   const desktopBridge = getDesktopUpdateBridge();
   if (desktopBridge) {
+    if (!state.connected) {
+      const peek = desktopBridge.getUpdateState
+        ? await desktopBridge.getUpdateState().catch(() => null)
+        : null;
+      if (!(peek?.enabled && peek.phase === "downloaded")) {
+        return;
+      }
+    }
     state.updateRunning = true;
     state.lastError = null;
     try {
@@ -272,6 +276,10 @@ export async function runUpdate(state: ConfigState) {
     } finally {
       state.updateRunning = false;
     }
+    return;
+  }
+
+  if (!state.connected) {
     return;
   }
 

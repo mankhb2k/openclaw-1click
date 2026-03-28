@@ -38,6 +38,7 @@ import {
   applyConfig,
   ensureAgentConfigEntry,
   findAgentConfigEntryIndex,
+  getDesktopUpdateBridge,
   loadConfig,
   openConfigFile,
   runUpdate,
@@ -775,11 +776,6 @@ export function renderApp(state: AppViewState) {
                     ${icons.x}
                   </button>
                 </div>
-                ${du?.announcementDescription
-                  ? html`<div class="update-banner__desc">
-                      ${du.announcementDescription}
-                    </div>`
-                  : nothing}
                 ${readyToRestart
                   ? html`<div class="update-banner__sub update-banner__sub--ready">
                       <strong>${t("desktopUpdate.downloadCompleteTitle")}</strong>
@@ -953,6 +949,14 @@ export function renderApp(state: AppViewState) {
                     lastError: state.presenceError,
                     statusMessage: state.presenceStatus,
                     onRefresh: () => loadPresence(state),
+                    desktopShell: Boolean(getDesktopUpdateBridge()),
+                    desktopAppVersion: state.desktopUpdateState?.currentVersion ?? null,
+                    desktopInstancesUpdate: m.buildDesktopInstancesUpdateProps(
+                      state.desktopUpdateState,
+                      state.updateRunning,
+                      state.connected,
+                      () => runUpdate(state),
+                    ),
                   }),
                 )}
               </section>

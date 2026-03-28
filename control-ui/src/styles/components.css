@@ -148,7 +148,7 @@
   padding: 10px 16px;
 }
 
-/* Desktop app (electron-updater): title row + optional description; close on the right */
+/* Desktop app (electron-updater): title row + action; long copy lives on Instances tab */
 .update-banner.update-banner--desktop.callout {
   padding: 10px 16px 12px;
   line-height: 1.35;
@@ -230,6 +230,42 @@
 
 .update-banner__btn:hover:not(:disabled) {
   background: rgba(239, 68, 68, 0.15);
+}
+
+/* Instances tab: desktop app update strip (uses notice JSON body; top banner omits description) */
+.instances-desktop-update {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--card);
+}
+
+.instances-desktop-update__body {
+  min-width: 0;
+  flex: 1;
+}
+
+.instances-desktop-update__title {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.instances-desktop-update__notes {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.instances-desktop-update__btn {
+  flex-shrink: 0;
+  align-self: center;
 }
 
 .update-banner__close {

@@ -113,6 +113,12 @@ export const en: TranslationMap = {
         w: "w",
       },
     },
+    desktopGatewayTitle: "Openclaw-Desktop",
+    desktopUpdate: {
+      fallbackTitle: "New OpenClaw Desktop: v{version}",
+      updateButton: "Update",
+      regionAria: "Desktop app update",
+    },
   },
   sessions: {
     title: "Sessions",

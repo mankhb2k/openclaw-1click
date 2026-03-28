@@ -1,10 +1,12 @@
 {
   "messages": {
     "en": {
-      "description": "a new update"
+      "title": "OpenClaw Desktop v{newVersion}",
+      "description": "Bug fixes and improvements. Restart after install to finish updating."
     },
     "vi": {
-      "description": "bản cập nhật mới"
+      "title": "OpenClaw Desktop v{newVersion}",
+      "description": "Sửa lỗi và cải tiến. Khởi động lại sau khi cài để hoàn tất cập nhật."
     }
   }
 }

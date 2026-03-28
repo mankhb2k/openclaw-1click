@@ -80,7 +80,7 @@ export const vi: TranslationMap = {
   },
   instances: {
     connectedInstances: {
-      title: "Các phiên đang kết nối",
+      title: "Các phiên bản đang kết nối",
       subtitle: "Tín hiệu hiện diện từ gateway và các client.",
     },
     toggleHosts: {
@@ -112,6 +112,12 @@ export const vi: TranslationMap = {
         d: "ngày",
         w: "tuần",
       },
+    },
+    desktopGatewayTitle: "Openclaw-Desktop",
+    desktopUpdate: {
+      fallbackTitle: "Bản OpenClaw Desktop mới: v{version}",
+      updateButton: "Cập nhật",
+      regionAria: "Cập nhật ứng dụng desktop",
     },
   },
   sessions: {
