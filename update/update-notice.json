@@ -1,10 +1,10 @@
 {
   "messages": {
     "en": {
-      "title": "a new update"
+      "description": "a new update"
     },
     "vi": {
-      "title": "bản cập nhật mới"
+      "description": "bản cập nhật mới"
     }
   }
 }

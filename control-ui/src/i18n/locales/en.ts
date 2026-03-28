@@ -25,6 +25,7 @@ export const en: TranslationMap = {
     updatingButton: "Updating…",
     installButton: "Restart",
     dismissBannerAria: "Dismiss app update notification",
+    downloadCompleteTitle: "Update downloaded",
   },
   nav: {
     chat: "Chat",

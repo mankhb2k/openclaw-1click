@@ -36,7 +36,6 @@ function createState(): ConfigState {
     connected: false,
     lastError: null,
     updateRunning: false,
-    updateNotice: null,
   };
 }
 
@@ -388,7 +387,6 @@ describe("runUpdate", () => {
 
       expect(runUpdateOpenclaw).toHaveBeenCalledOnce();
       expect(request).not.toHaveBeenCalled();
-      expect(state.updateNotice).toContain("Đã gửi lệnh cập nhật");
       expect(state.lastError).toBeNull();
     } finally {
       vi.unstubAllGlobals();
@@ -413,7 +411,6 @@ describe("runUpdate", () => {
 
       expect(state.lastError).toContain("npm failed");
       expect(state.lastError).toContain("ERR!");
-      expect(state.updateNotice).toBeNull();
     } finally {
       vi.unstubAllGlobals();
     }
@@ -446,11 +443,10 @@ describe("runUpdate", () => {
 
     await runUpdate(state);
 
-    expect(state.updateNotice).toBeNull();
     expect(state.lastError).toContain("npm run update:openclaw");
   });
 
-  it("shows notice only when update result status is ok", async () => {
+  it("clears errors when gateway update.run returns ok", async () => {
     const request = vi.fn().mockResolvedValue({
       ok: true,
       result: { status: "ok", before: { version: "1" }, after: { version: "2" } },
@@ -462,6 +458,5 @@ describe("runUpdate", () => {
     await runUpdate(state);
 
     expect(state.lastError).toBeNull();
-    expect(state.updateNotice).toContain("Đã chạy cập nhật");
   });
 });

@@ -9,6 +9,7 @@ import {
   dialog,
   globalShortcut,
   ipcMain,
+  nativeImage,
   shell,
   type Event as ElectronEvent,
   type WebContents,
@@ -64,6 +65,7 @@ type DesktopUpdateState = {
   currentVersion: string;
   availableVersion: string | null;
   announcementTitle: string | null;
+  announcementDescription: string | null;
   progressPercent: number | null;
   message: string | null;
 };
@@ -75,6 +77,7 @@ let desktopUpdateState: DesktopUpdateState = {
   currentVersion: app.getVersion(),
   availableVersion: null,
   announcementTitle: null,
+  announcementDescription: null,
   progressPercent: null,
   message: null,
 };
@@ -96,6 +99,11 @@ function setDesktopUpdateState(next: Partial<DesktopUpdateState>): void {
   publishDesktopUpdateState();
 }
 
+/** Read current phase (avoids TS control-flow narrowing after `await` in async listeners). */
+function getDesktopUpdatePhaseNow(): DesktopUpdatePhase {
+  return desktopUpdateState.phase;
+}
+
 function normalizeLocale(locale: string): string[] {
   const raw = (locale || '').trim().toLowerCase();
   if (!raw) {
@@ -110,52 +118,67 @@ function normalizeLocale(locale: string): string[] {
   return [...new Set(candidates)];
 }
 
-function resolveUpdateTitleFromJson(
-  payload: unknown,
-  locale: string,
+function applyUpdateNoticePlaceholders(
+  text: string,
   params?: { newVersion?: string | null; currentVersion?: string | null },
-): string | null {
+): string {
+  return text
+    .replaceAll('{newVersion}', params?.newVersion ?? '')
+    .replaceAll('{currentVersion}', params?.currentVersion ?? '')
+    .trim();
+}
+
+function getMessagesTable(payload: unknown): Record<string, unknown> | null {
   if (!payload || typeof payload !== 'object') {
     return null;
   }
-  const candidates = normalizeLocale(locale);
   const root = payload as Record<string, unknown>;
-  const messages =
-    root.messages && typeof root.messages === 'object'
-      ? (root.messages as Record<string, unknown>)
-      : root;
+  if (root.messages && typeof root.messages === 'object') {
+    return root.messages as Record<string, unknown>;
+  }
+  return root;
+}
 
+function pickLocalizedNoticeField(
+  messages: Record<string, unknown>,
+  locale: string,
+  field: 'title' | 'description',
+  params?: { newVersion?: string | null; currentVersion?: string | null },
+): string | null {
+  const candidates = normalizeLocale(locale);
   for (const key of candidates) {
     const entry = messages[key];
     if (!entry || typeof entry !== 'object') {
       continue;
     }
-    const title = (entry as { title?: unknown }).title;
-    if (typeof title === 'string' && title.trim()) {
-      const withNewVersion = title.replaceAll('{newVersion}', params?.newVersion ?? '');
-      const withCurrentVersion = withNewVersion.replaceAll(
-        '{currentVersion}',
-        params?.currentVersion ?? '',
-      );
-      return withCurrentVersion.trim();
+    const raw = (entry as Record<string, unknown>)[field];
+    if (typeof raw === 'string' && raw.trim()) {
+      return applyUpdateNoticePlaceholders(raw, params);
     }
   }
   return null;
 }
 
-async function fetchLocalizedUpdateTitle(params?: {
+async function fetchLocalizedUpdateNotice(params?: {
   newVersion?: string | null;
   currentVersion?: string | null;
-}): Promise<string | null> {
+}): Promise<{ title: string | null; description: string | null }> {
   try {
     const locale = app.getLocale();
     const response = await axios.get(UPDATE_NOTICE_URL, {
       timeout: 5000,
       responseType: 'json',
     });
-    return resolveUpdateTitleFromJson(response.data, locale, params);
+    const table = getMessagesTable(response.data);
+    if (!table) {
+      return { title: null, description: null };
+    }
+    return {
+      title: pickLocalizedNoticeField(table, locale, 'title', params),
+      description: pickLocalizedNoticeField(table, locale, 'description', params),
+    };
   } catch {
-    return null;
+    return { title: null, description: null };
   }
 }
 
@@ -176,8 +199,15 @@ function shouldSkipWindowsUpdateSignatureVerify(): boolean {
   return process.env.OPENCLAW_SKIP_WINDOWS_UPDATE_SIGNATURE === '1';
 }
 
+/** Serialize `downloadUpdate()` so rapid double-clicks / duplicate IPC cannot start two downloads. */
+let desktopDownloadInFlight: Promise<void> | null = null;
+
 async function checkDesktopUpdates(): Promise<void> {
   if (!isElectronUpdaterEnabled()) {
+    return;
+  }
+  // Do not clobber an active or finished download with a new "checking" cycle.
+  if (desktopUpdateState.phase === 'downloading' || desktopUpdateState.phase === 'downloaded') {
     return;
   }
   setDesktopUpdateState({
@@ -185,6 +215,7 @@ async function checkDesktopUpdates(): Promise<void> {
     phase: 'checking',
     availableVersion: null,
     announcementTitle: null,
+    announcementDescription: null,
     progressPercent: null,
     message: null,
   });
@@ -200,28 +231,44 @@ async function downloadDesktopUpdate(): Promise<void> {
   if (!isElectronUpdaterEnabled()) {
     return;
   }
+  if (desktopUpdateState.phase === 'downloaded') {
+    return;
+  }
+  if (desktopUpdateState.phase === 'downloading') {
+    if (desktopDownloadInFlight) {
+      await desktopDownloadInFlight;
+    }
+    return;
+  }
   if (desktopUpdateState.phase !== 'available') {
     return;
   }
-  setDesktopUpdateState({
-    phase: 'downloading',
-    progressPercent: 0,
-    message: null,
+  const run = async () => {
+    setDesktopUpdateState({
+      phase: 'downloading',
+      progressPercent: 0,
+      message: null,
+    });
+    try {
+      await autoUpdater.downloadUpdate();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setDesktopUpdateState({ phase: 'error', message, progressPercent: null });
+      throw error;
+    }
+  };
+  desktopDownloadInFlight = run().finally(() => {
+    desktopDownloadInFlight = null;
   });
-  try {
-    await autoUpdater.downloadUpdate();
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    setDesktopUpdateState({ phase: 'error', message, progressPercent: null });
-    throw error;
-  }
+  await desktopDownloadInFlight;
 }
 
 function installDesktopUpdate(): void {
   if (!isElectronUpdaterEnabled() || desktopUpdateState.phase !== 'downloaded') {
     return;
   }
-  autoUpdater.quitAndInstall(false, true);
+  // Windows NSIS: first arg must be `true` or the downloaded Setup.exe opens the full wizard (per-user vs all users, etc.).
+  autoUpdater.quitAndInstall(true, true);
 }
 
 function initDesktopUpdater(): void {
@@ -234,6 +281,7 @@ function initDesktopUpdater(): void {
       phase: 'unsupported',
       availableVersion: null,
       announcementTitle: null,
+      announcementDescription: null,
       progressPercent: null,
       message: 'Auto-update chỉ hỗ trợ bản cài NSIS, không hỗ trợ bản portable.',
     });
@@ -249,37 +297,57 @@ function initDesktopUpdater(): void {
   }
 
   autoUpdater.on('checking-for-update', () => {
+    if (desktopUpdateState.phase === 'downloading' || desktopUpdateState.phase === 'downloaded') {
+      return;
+    }
     setDesktopUpdateState({
       phase: 'checking',
       availableVersion: null,
       announcementTitle: null,
+      announcementDescription: null,
       progressPercent: null,
       message: null,
     });
   });
   autoUpdater.on('update-not-available', () => {
+    if (desktopUpdateState.phase === 'downloading' || desktopUpdateState.phase === 'downloaded') {
+      return;
+    }
     setDesktopUpdateState({
       phase: 'idle',
       availableVersion: null,
       announcementTitle: null,
+      announcementDescription: null,
       progressPercent: null,
       message: null,
     });
   });
   autoUpdater.on('update-available', async (info) => {
-    const localizedTitle = await fetchLocalizedUpdateTitle({
+    if (getDesktopUpdatePhaseNow() === 'downloading' || getDesktopUpdatePhaseNow() === 'downloaded') {
+      return;
+    }
+    const { title, description } = await fetchLocalizedUpdateNotice({
       newVersion: info.version ?? null,
       currentVersion: app.getVersion(),
     });
+    if (getDesktopUpdatePhaseNow() === 'downloading' || getDesktopUpdatePhaseNow() === 'downloaded') {
+      return;
+    }
     setDesktopUpdateState({
       phase: 'available',
       availableVersion: info.version ?? null,
-      announcementTitle: localizedTitle ?? 'A new update is available.',
+      announcementTitle: title,
+      announcementDescription: description,
       progressPercent: null,
       message: null,
     });
   });
   autoUpdater.on('download-progress', (progress: ProgressInfo) => {
+    // electron-updater can emit extra progress after `update-downloaded` (e.g. NSIS / blockmap).
+    // Never move back from `downloaded` → `downloading` or the UI looks like a second download.
+    if (getDesktopUpdatePhaseNow() === 'downloaded') {
+      return;
+    }
     setDesktopUpdateState({
       phase: 'downloading',
       progressPercent: Number.isFinite(progress.percent) ? progress.percent : null,
@@ -723,6 +791,10 @@ function killBackendTree(): void {
   backendLauncher = null;
 }
 
+function dashboardWindowTitle(): string {
+  return `OpenClaw Dashboard v${app.getVersion()}`;
+}
+
 async function createWindow(): Promise<void> {
   const dataRoot = getDataRoot();
   const controlUiUrl = await ensureBackendAndGetUrl(dataRoot);
@@ -735,12 +807,23 @@ async function createWindow(): Promise<void> {
     minHeight: MAIN_WINDOW_MIN_HEIGHT,
     show: false,
     backgroundColor: '#0e1015',
-    ...(windowIcon ? { icon: windowIcon } : {}),
+    title: dashboardWindowTitle(),
+    // Windows: empty icon removes the small logo in the native title bar (exe/taskbar icon unchanged).
+    ...(process.platform === 'win32'
+      ? { icon: nativeImage.createEmpty() }
+      : windowIcon
+        ? { icon: windowIcon }
+        : {}),
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
       preload: path.join(__dirname, 'preload-control-ui.js'),
     },
+  });
+
+  mainWindow.on('page-title-updated', (e) => {
+    e.preventDefault();
+    mainWindow?.setTitle(dashboardWindowTitle());
   });
 
   wireControlUiExternalLinks(mainWindow.webContents, controlUiUrl);
@@ -769,6 +852,7 @@ async function createWindow(): Promise<void> {
   mainWindow.once('ready-to-show', () => mainWindow?.show());
   quitAppWhenAllWindowsClosed = true;
   await mainWindow.loadURL(controlUiUrl);
+  mainWindow.setTitle(dashboardWindowTitle());
   publishDesktopUpdateState();
 
   // DevTools: detached Chromium window (not the system default browser).

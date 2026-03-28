@@ -14,6 +14,7 @@ export type DesktopUpdateState = {
   currentVersion: string;
   availableVersion: string | null;
   announcementTitle: string | null;
+  announcementDescription: string | null;
   progressPercent: number | null;
   message: string | null;
 };

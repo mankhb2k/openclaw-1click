@@ -39,8 +39,6 @@ export type ConfigState = {
   configActiveSection: string | null;
   configActiveSubsection: string | null;
   lastError: string | null;
-  /** Transient success / follow-up message after `update.run` (e.g. restart desktop). */
-  updateNotice: string | null;
 };
 
 type DesktopUpdateBridge = {
@@ -250,7 +248,6 @@ export async function runUpdate(state: ConfigState) {
   if (desktopBridge) {
     state.updateRunning = true;
     state.lastError = null;
-    state.updateNotice = null;
     try {
       const updateState = desktopBridge.getUpdateState ? await desktopBridge.getUpdateState() : null;
       if (updateState?.enabled && updateState.phase === "downloaded") {
@@ -261,7 +258,6 @@ export async function runUpdate(state: ConfigState) {
           return;
         }
         state.lastError = null;
-        state.updateNotice = res.message ?? "Đang cài đặt bản cập nhật và khởi động lại ứng dụng.";
         return;
       }
       const res = await desktopBridge.runUpdateOpenclaw();
@@ -271,7 +267,6 @@ export async function runUpdate(state: ConfigState) {
         return;
       }
       state.lastError = null;
-      state.updateNotice = res.message ?? "Đã gửi lệnh cập nhật.";
     } catch (err) {
       state.lastError = String(err);
     } finally {
@@ -285,7 +280,6 @@ export async function runUpdate(state: ConfigState) {
   }
   state.updateRunning = true;
   state.lastError = null;
-  state.updateNotice = null;
   try {
     const res = await state.client.request<UpdateRunResponse>("update.run", {
       sessionKey: state.applySessionKey,
@@ -314,8 +308,6 @@ export async function runUpdate(state: ConfigState) {
     }
 
     state.lastError = null;
-    state.updateNotice =
-      "Đã chạy cập nhật gói openclaw. Đóng hoàn toàn OpenClaw rồi mở lại để gateway nạp bản mới (Windows thường không tự restart process). Nếu banner vẫn báo có bản mới, chạy thêm: npm run update:openclaw trong thư mục dự án.";
   } catch (err) {
     state.lastError = String(err);
   } finally {

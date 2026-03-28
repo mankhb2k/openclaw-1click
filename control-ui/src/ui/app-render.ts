@@ -723,51 +723,70 @@ export function renderApp(state: AppViewState) {
         !isDesktopUpdateBannerDismissed(
           state.desktopUpdateState.availableVersion,
         )
-          ? html`<div
-              class="update-banner update-banner--desktop callout danger"
-              role="alert"
-            >
-              <div class="update-banner__row">
-                <span class="update-banner__title">
-                  <strong>${t("desktopUpdate.availableTitle")}</strong>
-                  v${state.desktopUpdateState.availableVersion}
-                </span>
-                <button
-                  class="btn btn--sm update-banner__btn"
-                  ?disabled=${state.updateRunning}
-                  @click=${() => runUpdate(state)}
-                >
-                  ${state.desktopUpdateState.phase === "downloaded"
-                    ? t("desktopUpdate.installButton")
-                    : state.updateRunning
-                      ? t("desktopUpdate.updatingButton")
-                      : t("desktopUpdate.updateButton")}
-                </button>
-                <button
-                  class="update-banner__close"
-                  type="button"
-                  aria-label=${t("desktopUpdate.dismissBannerAria")}
-                  @click=${() => {
-                    dismissDesktopUpdateBanner(
-                      state.desktopUpdateState?.availableVersion ?? null,
-                    );
-                    (
-                      state as AppViewState & { requestUpdate?: () => void }
-                    ).requestUpdate?.();
-                  }}
-                >
-                  ${icons.x}
-                </button>
-              </div>
-              ${state.desktopUpdateState.phase === "downloading"
-                ? html`<div class="update-banner__sub">
-                    ${t("desktopUpdate.downloading")}
-                    ${state.desktopUpdateState.progressPercent != null
-                      ? `${Math.round(state.desktopUpdateState.progressPercent)}%`
-                      : ""}
-                  </div>`
-                : nothing}
-            </div>`
+          ? (() => {
+              const du = state.desktopUpdateState;
+              const pct = du?.progressPercent ?? 0;
+              const readyToRestart =
+                du?.phase === "downloaded" ||
+                (du?.phase === "downloading" && pct >= 100);
+              const canInstallRestart =
+                du?.phase === "downloaded" && !state.updateRunning;
+              return html`<div
+                class="update-banner update-banner--desktop callout danger"
+                role="alert"
+              >
+                <div class="update-banner__row update-banner__row--main">
+                  <div class="update-banner__main-left">
+                    <span class="update-banner__title">
+                      <strong>${t("desktopUpdate.availableTitle")}</strong>
+                      v${du?.availableVersion}
+                    </span>
+                    <button
+                      class="btn btn--sm update-banner__btn"
+                      ?disabled=${readyToRestart ? !canInstallRestart : state.updateRunning}
+                      @click=${() => runUpdate(state)}
+                    >
+                      ${readyToRestart
+                        ? t("desktopUpdate.installButton")
+                        : du?.phase === "downloading"
+                          ? `${t("desktopUpdate.downloading")}${
+                              du.progressPercent != null
+                                ? ` ${Math.round(du.progressPercent)}%`
+                                : ""
+                            }`
+                        : state.updateRunning
+                          ? t("desktopUpdate.updatingButton")
+                          : t("desktopUpdate.updateButton")}
+                    </button>
+                  </div>
+                  <button
+                    class="update-banner__close update-banner__close--end"
+                    type="button"
+                    aria-label=${t("desktopUpdate.dismissBannerAria")}
+                    @click=${() => {
+                      dismissDesktopUpdateBanner(
+                        state.desktopUpdateState?.availableVersion ?? null,
+                      );
+                      (
+                        state as AppViewState & { requestUpdate?: () => void }
+                      ).requestUpdate?.();
+                    }}
+                  >
+                    ${icons.x}
+                  </button>
+                </div>
+                ${du?.announcementDescription
+                  ? html`<div class="update-banner__desc">
+                      ${du.announcementDescription}
+                    </div>`
+                  : nothing}
+                ${readyToRestart
+                  ? html`<div class="update-banner__sub update-banner__sub--ready">
+                      <strong>${t("desktopUpdate.downloadCompleteTitle")}</strong>
+                    </div>`
+                  : nothing}
+              </div>`;
+            })()
           : state.desktopUpdateState?.isPackaged
             ? nothing
             : state.updateAvailable &&
@@ -798,22 +817,6 @@ export function renderApp(state: AppViewState) {
                 </button>
               </div>`
             : nothing}
-        ${state.updateNotice
-          ? html`<div class="update-banner callout" role="status">
-              <strong>Đã chạy cập nhật.</strong>
-              ${state.updateNotice}
-              <button
-                class="update-banner__close"
-                type="button"
-                aria-label="Đóng thông báo cập nhật"
-                @click=${() => {
-                  state.updateNotice = null;
-                }}
-              >
-                ${icons.x}
-              </button>
-            </div>`
-          : nothing}
         ${state.tab === "chat"
           ? html`<section class="content-header">
               <div>${renderChatSessionSelect(state)}</div>
