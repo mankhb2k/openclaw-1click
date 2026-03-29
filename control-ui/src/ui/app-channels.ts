@@ -1,13 +1,22 @@
 import type { OpenClawApp } from "./app.ts";
 import {
   loadChannels,
+  logoutChannel,
   logoutWhatsApp,
   startWhatsAppLogin,
   waitWhatsAppLogin,
-} from "./controllers/channels.ts";
-import { loadConfig, saveConfig } from "./controllers/config.ts";
+} from "./controllers/channels";
+import {
+  closeChannelWizard,
+  openChannelWizard,
+  updateWizardField,
+  wizardSaveAndAdvance,
+  wizardStartWhatsAppQR,
+  wizardWaitWhatsAppScan,
+} from "./controllers/channels-wizard";
+import { loadConfig, saveConfig } from "./controllers/config";
 import type { NostrProfile } from "./types.ts";
-import { createNostrProfileFormState } from "./views/channels.nostr-profile-form.ts";
+import { createNostrProfileFormState } from "./views/channels.nostr-profile-form";
 
 export async function handleWhatsAppStart(host: OpenClawApp, force: boolean) {
   await startWhatsAppLogin(host, force);
@@ -22,6 +31,44 @@ export async function handleWhatsAppWait(host: OpenClawApp) {
 export async function handleWhatsAppLogout(host: OpenClawApp) {
   await logoutWhatsApp(host);
   await loadChannels(host, true);
+}
+
+export async function handleLogoutChannel(host: OpenClawApp, channelId: string) {
+  if (host.channelLogoutBusy) return;
+  host.channelLogoutBusy = channelId;
+  host.channelLogoutError = null;
+  try {
+    await logoutChannel(host, channelId);
+    await loadChannels(host, true);
+  } catch (err) {
+    host.channelLogoutError = String(err);
+  } finally {
+    host.channelLogoutBusy = null;
+  }
+}
+
+export function handleOpenChannelWizard(host: OpenClawApp, channel: string) {
+  openChannelWizard(host, channel);
+}
+
+export function handleCloseChannelWizard(host: OpenClawApp) {
+  closeChannelWizard(host);
+}
+
+export function handleWizardFieldChange(host: OpenClawApp, key: string, value: string) {
+  updateWizardField(host, key, value);
+}
+
+export async function handleWizardSaveAndAdvance(host: OpenClawApp) {
+  await wizardSaveAndAdvance(host);
+}
+
+export async function handleWizardStartWhatsAppQR(host: OpenClawApp, force = false) {
+  await wizardStartWhatsAppQR(host, force);
+}
+
+export async function handleWizardWaitWhatsAppScan(host: OpenClawApp) {
+  await wizardWaitWhatsAppScan(host);
 }
 
 export async function handleChannelConfigSave(host: OpenClawApp) {

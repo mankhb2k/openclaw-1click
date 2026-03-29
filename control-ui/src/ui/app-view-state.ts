@@ -35,6 +35,8 @@ import type {
 } from "./types.ts";
 import type { ChatAttachment, ChatQueueItem } from "./ui-types.ts";
 import type { NostrProfileFormState } from "./views/channels.nostr-profile-form.ts";
+import type { ChannelWizardStep } from "./views/channels.setup-wizard.types.ts";
+import type { WizardStep, WizardSessionStatus } from "./controllers/gateway-wizard.ts";
 import type { SessionLogEntry } from "./views/usage.ts";
 
 export type AppViewState = {
@@ -149,8 +151,26 @@ export type AppViewState = {
   whatsappLoginQrDataUrl: string | null;
   whatsappLoginConnected: boolean | null;
   whatsappBusy: boolean;
+  channelLogoutBusy: string | null;
+  channelLogoutError: string | null;
   nostrProfileFormState: NostrProfileFormState | null;
   nostrProfileAccountId: string | null;
+  channelWizardOpen: boolean;
+  channelWizardChannel: string | null;
+  channelWizardStep: ChannelWizardStep;
+  channelWizardFields: Record<string, string>;
+  channelWizardBusy: boolean;
+  channelWizardError: string | null;
+  channelWizardDone: boolean;
+  gatewayWizardOpen: boolean;
+  gatewayWizardSessionId: string | null;
+  gatewayWizardStep: WizardStep | null;
+  gatewayWizardStatus: WizardSessionStatus | null;
+  gatewayWizardBusy: boolean;
+  gatewayWizardError: string | null;
+  gatewayWizardDone: boolean;
+  gatewayWizardInputValue: string;
+  gatewayWizardMultiSelectValues: string[];
   configFormDirty: boolean;
   presenceLoading: boolean;
   presenceEntries: PresenceEntry[];
@@ -321,8 +341,20 @@ export type AppViewState = {
     handleWhatsAppStart: (force: boolean) => Promise<void>;
     handleWhatsAppWait: () => Promise<void>;
     handleWhatsAppLogout: () => Promise<void>;
+    handleLogoutChannel: (channelId: string) => Promise<void>;
     handleChannelConfigSave: () => Promise<void>;
     handleChannelConfigReload: () => Promise<void>;
+    handleOpenChannelWizard: (channel: string) => void;
+    handleCloseChannelWizard: () => void;
+    handleWizardFieldChange: (key: string, value: string) => void;
+    handleWizardSaveAndAdvance: () => Promise<void>;
+    handleWizardStartWhatsAppQR: (force: boolean) => Promise<void>;
+    handleWizardWaitWhatsAppScan: () => Promise<void>;
+    handleStartGatewayWizard: () => Promise<void>;
+    handleCancelGatewayWizard: () => Promise<void>;
+    handleGatewayWizardNext: (answer?: { stepId: string; value?: unknown }) => Promise<void>;
+    handleGatewayWizardInputChange: (value: string) => void;
+    handleGatewayWizardToggleMultiSelect: (value: string) => void;
     handleNostrProfileEdit: (accountId: string, profile: NostrProfile | null) => void;
     handleNostrProfileCancel: () => void;
     handleNostrProfileFieldChange: (field: keyof NostrProfile, value: string) => void;

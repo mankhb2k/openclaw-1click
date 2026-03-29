@@ -3,7 +3,7 @@ import { t } from "../../i18n/index";
 import { formatRelativeTimestamp } from "../format";
 import type { ChannelAccountSnapshot, TelegramStatus } from "../types";
 import { renderChannelConfigSection } from "./channels.config";
-import { formatProbeStatusLead } from "./channels.shared";
+import { formatProbeStatusLead, renderChannelStatusPill } from "./channels.shared";
 import type { ChannelsProps } from "./channels.types";
 
 export function renderTelegramCard(params: {
@@ -54,10 +54,25 @@ export function renderTelegramCard(params: {
     `;
   };
 
+  const isRunning = telegram?.running ?? false;
+  const isConfigured = telegram?.configured ?? false;
+  const statusPill = isRunning
+    ? renderChannelStatusPill("running", t("channels.status.yes"))
+    : isConfigured
+      ? renderChannelStatusPill("stopped", t("channels.status.no"))
+      : renderChannelStatusPill("inactive", t("common.na"));
+
   return html`
     <div class="card">
-      <div class="card-title">Telegram</div>
-      <div class="card-sub">${t("channels.cardSub.telegram")}</div>
+      <div class="card-header-top">
+        <div>
+          <div class="card-title">${t("channels.titles.telegram")}</div>
+          <div class="card-sub">${t("channels.cardSub.telegram")}</div>
+        </div>
+        <div class="card-actions">
+          ${statusPill}
+        </div>
+      </div>
       ${accountCountLabel}
 
       ${
@@ -79,7 +94,7 @@ export function renderTelegramCard(params: {
               </div>
               <div>
                 <span class="label">${t("channels.labels.mode")}</span>
-                <span>${telegram?.mode ?? t("common.na")}</span>
+                <span>${telegram?.mode ? t("channels.modes." + telegram.mode) : t("common.na")}</span>
               </div>
               <div>
                 <span class="label">${t("channels.labels.lastStart")}</span>
@@ -110,12 +125,36 @@ export function renderTelegramCard(params: {
           : nothing
       }
 
+      ${
+        !telegram?.configured
+          ? html`
+            <div class="row" style="margin-top: 16px;">
+              <button
+                class="btn primary"
+                @click=${() => props.onOpenChannelWizard("telegram")}
+              >
+                ${t("common.setup")} Telegram
+              </button>
+            </div>
+          `
+          : nothing
+      }
+
       ${renderChannelConfigSection({ channelId: "telegram", props })}
 
       <div class="row" style="margin-top: 12px;">
         <button class="btn" @click=${() => props.onRefresh(true)}>
           ${t("channels.actions.probe")}
         </button>
+        ${telegram?.configured
+          ? html`<button
+              class="btn danger"
+              ?disabled=${props.channelLogoutBusy === "telegram"}
+              @click=${() => props.onLogoutChannel("telegram")}
+            >
+              ${props.channelLogoutBusy === "telegram" ? "..." : t("channels.actions.logout")}
+            </button>`
+          : nothing}
       </div>
     </div>
   `;

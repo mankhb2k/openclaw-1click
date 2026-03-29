@@ -1,41 +1,48 @@
 import { LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
-import { i18n, I18nController, isSupportedLocale } from "../i18n/index.ts";
+import { i18n, I18nController, isSupportedLocale } from "../i18n/index";
 import {
   handleChannelConfigReload as handleChannelConfigReloadInternal,
   handleChannelConfigSave as handleChannelConfigSaveInternal,
+  handleCloseChannelWizard as handleCloseChannelWizardInternal,
+  handleLogoutChannel as handleLogoutChannelInternal,
   handleNostrProfileCancel as handleNostrProfileCancelInternal,
   handleNostrProfileEdit as handleNostrProfileEditInternal,
   handleNostrProfileFieldChange as handleNostrProfileFieldChangeInternal,
   handleNostrProfileImport as handleNostrProfileImportInternal,
   handleNostrProfileSave as handleNostrProfileSaveInternal,
   handleNostrProfileToggleAdvanced as handleNostrProfileToggleAdvancedInternal,
+  handleOpenChannelWizard as handleOpenChannelWizardInternal,
   handleWhatsAppLogout as handleWhatsAppLogoutInternal,
   handleWhatsAppStart as handleWhatsAppStartInternal,
   handleWhatsAppWait as handleWhatsAppWaitInternal,
-} from "./app-channels.ts";
+  handleWizardFieldChange as handleWizardFieldChangeInternal,
+  handleWizardSaveAndAdvance as handleWizardSaveAndAdvanceInternal,
+  handleWizardStartWhatsAppQR as handleWizardStartWhatsAppQRInternal,
+  handleWizardWaitWhatsAppScan as handleWizardWaitWhatsAppScanInternal,
+} from "./app-channels";
 import {
   handleAbortChat as handleAbortChatInternal,
   handleSendChat as handleSendChatInternal,
   removeQueuedMessage as removeQueuedMessageInternal,
-} from "./app-chat.ts";
-import { DEFAULT_CRON_FORM, DEFAULT_LOG_LEVEL_FILTERS } from "./app-defaults.ts";
-import type { EventLogEntry } from "./app-events.ts";
-import { connectGateway as connectGatewayInternal } from "./app-gateway.ts";
+} from "./app-chat";
+import { DEFAULT_CRON_FORM, DEFAULT_LOG_LEVEL_FILTERS } from "./app-defaults";
+import type { EventLogEntry } from "./app-events";
+import { connectGateway as connectGatewayInternal } from "./app-gateway";
 import {
   handleConnected,
   handleDisconnected,
   handleFirstUpdated,
   handleUpdated,
-} from "./app-lifecycle.ts";
-import { renderApp } from "./app-render.ts";
+} from "./app-lifecycle";
+import { renderApp } from "./app-render";
 import {
   exportLogs as exportLogsInternal,
   handleChatScroll as handleChatScrollInternal,
   handleLogsScroll as handleLogsScrollInternal,
   resetChatScroll as resetChatScrollInternal,
   scheduleChatScroll as scheduleChatScrollInternal,
-} from "./app-scroll.ts";
+} from "./app-scroll";
 import {
   applySettings as applySettingsInternal,
   loadCron as loadCronInternal,
@@ -44,25 +51,25 @@ import {
   setTheme as setThemeInternal,
   setThemeMode as setThemeModeInternal,
   onPopState as onPopStateInternal,
-} from "./app-settings.ts";
+} from "./app-settings";
 import {
   resetToolStream as resetToolStreamInternal,
   type ToolStreamEntry,
   type CompactionStatus,
   type FallbackStatus,
-} from "./app-tool-stream.ts";
-import type { AppViewState } from "./app-view-state.ts";
-import { normalizeAssistantIdentity } from "./assistant-identity.ts";
-import { exportChatMarkdown } from "./chat/export.ts";
-import { loadAssistantIdentity as loadAssistantIdentityInternal } from "./controllers/assistant-identity.ts";
-import type { DevicePairingList } from "./controllers/devices.ts";
-import type { ExecApprovalRequest } from "./controllers/exec-approval.ts";
-import type { ExecApprovalsFile, ExecApprovalsSnapshot } from "./controllers/exec-approvals.ts";
-import type { SkillMessage } from "./controllers/skills.ts";
-import type { GatewayBrowserClient, GatewayHelloOk } from "./gateway.ts";
-import type { Tab } from "./navigation.ts";
-import { loadSettings, type UiSettings } from "./storage.ts";
-import { VALID_THEME_NAMES, type ResolvedTheme, type ThemeMode, type ThemeName } from "./theme.ts";
+} from "./app-tool-stream";
+import type { AppViewState } from "./app-view-state";
+import { normalizeAssistantIdentity } from "./assistant-identity";
+import { exportChatMarkdown } from "./chat/export";
+import { loadAssistantIdentity as loadAssistantIdentityInternal } from "./controllers/assistant-identity";
+import type { DevicePairingList } from "./controllers/devices";
+import type { ExecApprovalRequest } from "./controllers/exec-approval";
+import type { ExecApprovalsFile, ExecApprovalsSnapshot } from "./controllers/exec-approvals";
+import type { SkillMessage } from "./controllers/skills";
+import type { GatewayBrowserClient, GatewayHelloOk } from "./gateway";
+import type { Tab } from "./navigation";
+import { loadSettings, type UiSettings } from "./storage";
+import { VALID_THEME_NAMES, type ResolvedTheme, type ThemeMode, type ThemeName } from "./theme";
 import type {
   AgentsListResult,
   AgentsFilesListResult,
@@ -85,10 +92,19 @@ import type {
   NostrProfile,
   ToolsCatalogResult,
   DesktopUpdateState,
-} from "./types.ts";
-import { type ChatAttachment, type ChatQueueItem, type CronFormState } from "./ui-types.ts";
-import { generateUUID } from "./uuid.ts";
-import type { NostrProfileFormState } from "./views/channels.nostr-profile-form.ts";
+} from "./types";
+import { type ChatAttachment, type ChatQueueItem, type CronFormState } from "./ui-types";
+import { generateUUID } from "./uuid";
+import type { NostrProfileFormState } from "./views/channels.nostr-profile-form";
+import type { ChannelWizardStep } from "./views/channels.setup-wizard.types";
+import type { WizardStep, WizardSessionStatus } from "./controllers/gateway-wizard";
+import {
+  handleCancelGatewayWizard as handleCancelGatewayWizardInternal,
+  handleGatewayWizardInputChange as handleGatewayWizardInputChangeInternal,
+  handleGatewayWizardNext as handleGatewayWizardNextInternal,
+  handleGatewayWizardToggleMultiSelect as handleGatewayWizardToggleMultiSelectInternal,
+  handleStartGatewayWizard as handleStartGatewayWizardInternal,
+} from "./app-wizard";
 
 declare global {
   interface Window {
@@ -245,8 +261,26 @@ export class OpenClawApp extends LitElement {
   @state() whatsappLoginQrDataUrl: string | null = null;
   @state() whatsappLoginConnected: boolean | null = null;
   @state() whatsappBusy = false;
+  @state() channelLogoutBusy: string | null = null;
+  @state() channelLogoutError: string | null = null;
   @state() nostrProfileFormState: NostrProfileFormState | null = null;
   @state() nostrProfileAccountId: string | null = null;
+  @state() channelWizardOpen = false;
+  @state() channelWizardChannel: string | null = null;
+  @state() channelWizardStep: ChannelWizardStep = 1;
+  @state() channelWizardFields: Record<string, string> = {};
+  @state() channelWizardBusy = false;
+  @state() channelWizardError: string | null = null;
+  @state() channelWizardDone = false;
+  @state() gatewayWizardOpen = false;
+  @state() gatewayWizardSessionId: string | null = null;
+  @state() gatewayWizardStep: WizardStep | null = null;
+  @state() gatewayWizardStatus: WizardSessionStatus | null = null;
+  @state() gatewayWizardBusy = false;
+  @state() gatewayWizardError: string | null = null;
+  @state() gatewayWizardDone = false;
+  @state() gatewayWizardInputValue = "";
+  @state() gatewayWizardMultiSelectValues: string[] = [];
 
   @state() presenceLoading = false;
   @state() presenceEntries: PresenceEntry[] = [];
@@ -386,6 +420,10 @@ export class OpenClawApp extends LitElement {
 
   @state() updateAvailable: import("./types.js").UpdateAvailable | null = null;
   @state() desktopUpdateState: DesktopUpdateState | null = null;
+
+  get appVersion(): string {
+    return this.desktopUpdateState?.currentVersion ?? "";
+  }
 
   // Overview dashboard state
   @state() attentionItems: import("./types.js").AttentionItem[] = [];
@@ -645,12 +683,60 @@ export class OpenClawApp extends LitElement {
     await handleWhatsAppLogoutInternal(this);
   }
 
+  async handleLogoutChannel(channelId: string) {
+    await handleLogoutChannelInternal(this, channelId);
+  }
+
   async handleChannelConfigSave() {
     await handleChannelConfigSaveInternal(this);
   }
 
   async handleChannelConfigReload() {
     await handleChannelConfigReloadInternal(this);
+  }
+
+  handleOpenChannelWizard(channel: string) {
+    handleOpenChannelWizardInternal(this, channel);
+  }
+
+  handleCloseChannelWizard() {
+    handleCloseChannelWizardInternal(this);
+  }
+
+  handleWizardFieldChange(key: string, value: string) {
+    handleWizardFieldChangeInternal(this, key, value);
+  }
+
+  async handleWizardSaveAndAdvance() {
+    await handleWizardSaveAndAdvanceInternal(this);
+  }
+
+  async handleWizardStartWhatsAppQR(force: boolean) {
+    await handleWizardStartWhatsAppQRInternal(this, force);
+  }
+
+  async handleWizardWaitWhatsAppScan() {
+    await handleWizardWaitWhatsAppScanInternal(this);
+  }
+
+  async handleStartGatewayWizard() {
+    await handleStartGatewayWizardInternal(this);
+  }
+
+  async handleCancelGatewayWizard() {
+    await handleCancelGatewayWizardInternal(this);
+  }
+
+  async handleGatewayWizardNext(answer?: { stepId: string; value?: unknown }) {
+    await handleGatewayWizardNextInternal(this, answer);
+  }
+
+  handleGatewayWizardInputChange(value: string) {
+    handleGatewayWizardInputChangeInternal(this, value);
+  }
+
+  handleGatewayWizardToggleMultiSelect(value: string) {
+    handleGatewayWizardToggleMultiSelectInternal(this, value);
   }
 
   handleNostrProfileEdit(accountId: string, profile: NostrProfile | null) {

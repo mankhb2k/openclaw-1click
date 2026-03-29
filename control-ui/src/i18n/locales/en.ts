@@ -16,6 +16,12 @@ export const en: TranslationMap = {
     theme: "Theme",
     resources: "Resources",
     search: "Search",
+    setup: "Setup",
+    edit: "Edit",
+    cancel: "Cancel",
+    working: "Working...",
+    loading: "Loading...",
+    close: "Close",
   },
   desktopUpdate: {
     availableTitle: "Update available:",
@@ -802,6 +808,20 @@ export const en: TranslationMap = {
     },
   },
   channels: {
+    titles: {
+      telegram: "Telegram",
+      whatsapp: "WhatsApp",
+      discord: "Discord",
+      slack: "Slack",
+      signal: "Signal",
+      imessage: "iMessage",
+      googlechat: "Google Chat",
+      nostr: "Nostr",
+    },
+    modes: {
+      bridge: "Bridge",
+      direct: "Direct",
+    },
     page: {
       healthTitle: "Channel health",
       healthSub: "Channel status snapshots from the gateway.",
@@ -894,6 +914,35 @@ export const en: TranslationMap = {
       noProfileHint:
         'No profile set. Click "Edit Profile" to add your name, bio, and avatar.',
       profilePictureAlt: "Profile picture",
+    },
+    wizard: {
+      stepDetails: "Enter Details",
+      stepConnect: "Connect",
+      stepFinish: "Finish",
+      setupTitle: "Setup {label}",
+      setupSub: "Communication channel configuration",
+      docs: {
+        telegram: "Create bot via @BotFather → /newbot → get token",
+        discord: "Discord Developer Portal → New Application → Bot → Copy Token",
+        slack: "Slack App Settings → OAuth & Permissions → Bot User OAuth Token",
+        signal: "Enter your registered Signal phone number",
+        googlechat: "Google Chat Space → Manage Webhooks → Copy URL",
+      },
+      whatsapp: {
+        intro: "WhatsApp uses a QR code for authentication. Click <strong>Continue</strong> to start and display the QR code.",
+        note: "<strong>Note:</strong> Open WhatsApp on your phone → Settings → Linked Devices → Link a Device → scan the QR code.",
+        scanPrompt: "Scan the QR code below with your phone's WhatsApp.",
+        scannedButton: "Scanned ✓",
+        waitScanned: "After scanning, click <strong>Scanned</strong> to confirm connection.",
+      },
+      processing: "Saving configuration and connecting...",
+      successTitle: "{label} is set up!",
+      successSub: "Category is enabled and running. You can see detailed status on the channel card.",
+      continue: "Continue →",
+      enabling: "Enabling channel...",
+      enable: "Enable Channel",
+      saving: "Saving...",
+      saveAndConnect: "Save & Connect",
     },
   },
   agents: {
@@ -1296,6 +1345,140 @@ export const en: TranslationMap = {
       noCustomEntries: "No custom entries.",
       key: "Key",
       removeEntry: "Remove entry",
+      accounts: "Accounts",
+      ackReaction: "Ack Reaction",
+      actions: "Actions",
+      allowFrom: "Allow From",
+      blockStreaming: "Block Streaming",
+      blockStreamingCoalesce: "Block Streaming Coalesce",
+      streamMode: "Stream Mode",
+      dmPolicy: "DM Policy",
+      capabilities: "Capabilities",
+      chunkMode: "Chunk Mode",
+      commands: "Commands",
+      createForumTopic: "Create Forum Topic",
+      deleteMessage: "Delete Message",
+      editMessage: "Edit Message",
+      poll: "Poll",
+      reactions: "Reactions",
+      sendMessage: "Send Message",
+      defaultAccount: "Default Account",
+      defaultTo: "Default To",
+      directLabel: "Direct",
+      breakPreference: "Break Preference",
+      maxChars: "Max Chars",
+      minChars: "Min Chars",
+      draftChunk: "Draft Chunk",
+      enabled: "Enabled",
+      groupAllowFrom: "Group Allow From",
+      groupPolicy: "Group Policy",
+      groups: "Groups",
+      heartbeat: "Heartbeat",
+      showAlerts: "Show Alerts",
+      showOk: "Show Ok",
+      useIndicator: "Use Indicator",
+      historyLimit: "History Limit",
+      linkPreview: "Link Preview",
+      tables: "Tables",
+      reactionLevel: "Reaction Level",
+      reactionNotifications: "Reaction Notifications",
+      replyToMode: "Reply To Mode",
+      responsePrefix: "Response Prefix",
+      retry: "Retry",
+      threadBindings: "Thread Bindings",
+      telegram: {
+        nativeCommands: "Telegram Native Commands",
+        nativeSkillCommands: "Telegram Native Skill Commands",
+        configWritesLabel: "Telegram Config Writes",
+        configWritesHelp:
+          "Allow Telegram to write config in response to channel events/commands (default: true).",
+        customCommands: "Telegram Custom Commands",
+        additionalMenuCommands:
+          "Additional Telegram bot menu commands (merged with native; conflicts ignored).",
+        botTokenLabel: "Telegram Bot Token",
+        botTokenHelp:
+          "Telegram bot token used to authenticate Bot API requests for this account/provider config. Use secret/env substitution and rotate tokens if exposure is suspected.",
+        dmAccessControlLabel: "Direct Message Access Control",
+        dmAccessControlHelp:
+          'Direct message access control ("pairing" recommended). "open" requires channels.telegram.allowFrom=["*"].',
+        execApprovals: {
+          label: "Telegram Exec Approvals",
+          help: "Telegram-native exec approval routing and approver authorization. Enable this only when Telegram should act as an explicit exec-approval client for the selected bot account.",
+          agentFilterLabel: "Telegram Exec Approval Agent Filter",
+          agentFilterHelp:
+            'Optional allowlist of agent IDs eligible for Telegram exec approvals, for example ["main", "ops-agent"]. Use this to keep approval prompts scoped to the agents you actually operate from Telegram.',
+          approversLabel: "Telegram Exec Approval Approvers",
+          approversHelp:
+            "Telegram user IDs allowed to approve exec requests for this bot account. Use numeric Telegram user IDs; prompts are only delivered to these approvers when target includes dm.",
+          enabledLabel: "Telegram Exec Approvals Enabled",
+          enabledHelp:
+            "Enable Telegram exec approvals for this account. When false or unset, Telegram messages/buttons cannot approve exec requests.",
+          sessionFilterLabel: "Telegram Exec Approval Session Filter",
+          sessionFilterHelp:
+            "Optional session-key filters matched as substring or regex-style patterns before Telegram approval routing is used. Use narrow patterns so Telegram approvals only appear for intended sessions.",
+          targetLabel: "Telegram Exec Approval Target",
+          targetHelp:
+            'Controls where Telegram approval prompts are sent: "dm" sends to approver DMs (default), "channel" sends to the originating Telegram chat/topic, and "both" sends to both. Channel delivery exposes the command text to the chat, so only use it in trusted groups/topics.',
+        },
+        overrideAutoSelectFamilyLabel:
+          "Override Node autoSelectFamily for Telegram (true=enable, false=disable)",
+        retry: {
+          attemptsLabel: "Telegram Retry Attempts",
+          attemptsHelp:
+            "Max retry attempts for outbound Telegram API calls (default: 3).",
+          jitterLabel: "Telegram Retry Jitter",
+          jitterHelp: "Jitter factor (0-1) applied to Telegram retry delays.",
+          maxDelayLabel: "Telegram Retry Max Delay (ms)",
+          maxDelayHelp:
+            "Maximum retry delay cap in ms for Telegram outbound calls.",
+          minDelayLabel: "Telegram Retry Min Delay (ms)",
+          minDelayHelp:
+            "Minimum retry delay in ms for Telegram outbound calls.",
+        },
+        streamingModeLabel: "Telegram Streaming Mode",
+        streamingModeHelp:
+          'Unified Telegram stream preview mode: "off" | "partial" | "block" | "progress" (default: "partial"). "progress" maps to "partial" on Telegram. Legacy boolean/streamMode keys are auto-mapped.',
+        threadBinding: {
+          enabledLabel: "Telegram Thread Binding Enabled",
+          enabledHelp:
+            "Enable Telegram conversation binding features (/focus, /unfocus, /agents, and /session idle|max-age). Overrides session.threadBindings.enabled when set.",
+          idleTimeoutLabel: "Telegram Thread Binding Idle Timeout (hours)",
+          idleTimeoutHelp:
+            "Inactivity window in hours for Telegram bound sessions. Set 0 to disable idle auto-unfocus (default: 24). Overrides session.threadBindings.idleHours when set.",
+          maxAgeLabel: "Telegram Thread Binding Max Age (hours)",
+          maxAgeHelp:
+            "Optional hard max age in hours for Telegram bound sessions. Set 0 to disable hard cap (default: 0). Overrides session.threadBindings.maxAgeHours when set.",
+          acpSpawnLabel: "Telegram Thread-Bound ACP Spawn",
+          acpSpawnHelp:
+            "Allow ACP spawns with thread=true to auto-bind Telegram current conversations when supported.",
+          subagentSpawnLabel: "Telegram Thread-Bound Subagent Spawn",
+          subagentSpawnHelp:
+            "Allow subagent spawns with thread=true to auto-bind Telegram current conversations when supported.",
+        },
+        apiTimeoutLabel: "Telegram API Timeout (seconds)",
+        apiTimeoutHelp:
+          "Max seconds before Telegram API requests are aborted (default: 500 per grammY).",
+        webhook: {
+          certPathLabel: "Webhook Cert Path",
+          certPathHelp:
+            "Path to the self-signed certificate (PEM) to upload to Telegram during webhook registration. Required for self-signed certs (direct IP or no domain).",
+          bindHostLabel: "Webhook Bind Host",
+          bindHostHelp:
+            "Local bind host for the webhook listener. Defaults to 127.0.0.1; keep loopback unless you intentionally expose direct ingress.",
+          pathLabel: "Webhook Path",
+          pathHelp:
+            "Local webhook route path served by the gateway listener. Defaults to /telegram-webhook.",
+          portLabel: "Webhook Bind Port",
+          portHelp:
+            "Local bind port for the webhook listener. Defaults to 8787; set to 0 to let the OS assign an ephemeral port.",
+          secretLabel: "Webhook Secret",
+          secretHelp:
+            "Secret token sent to Telegram during webhook registration and verified on inbound webhook requests. Telegram returns this value for verification; this is not the gateway auth token and not the bot token.",
+          urlLabel: "Public Webhook URL",
+          urlHelp:
+            "Public HTTPS webhook URL registered with Telegram for inbound updates. This must be internet-reachable and requires channels.telegram.webhookSecret.",
+        },
+      },
       random: "random",
       default: "default",
       off: "off",

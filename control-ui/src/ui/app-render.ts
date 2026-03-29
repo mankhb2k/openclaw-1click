@@ -900,6 +900,9 @@ export function renderApp(state: AppViewState) {
                     whatsappQrDataUrl: state.whatsappLoginQrDataUrl,
                     whatsappConnected: state.whatsappLoginConnected,
                     whatsappBusy: state.whatsappBusy,
+                    channelLogoutBusy: state.channelLogoutBusy,
+                    channelLogoutError: state.channelLogoutError,
+                    onLogoutChannel: (channelId) => state.handleLogoutChannel(channelId),
                     configSchema: state.configSchema,
                     configSchemaLoading: state.configSchemaLoading,
                     configForm: state.configForm,
@@ -928,6 +931,39 @@ export function renderApp(state: AppViewState) {
                       state.handleNostrProfileImport(),
                     onNostrProfileToggleAdvanced: () =>
                       state.handleNostrProfileToggleAdvanced(),
+                    channelWizardOpen: state.channelWizardOpen,
+                    channelWizardChannel: state.channelWizardChannel,
+                    channelWizardStep: state.channelWizardStep,
+                    channelWizardFields: state.channelWizardFields,
+                    channelWizardBusy: state.channelWizardBusy,
+                    channelWizardError: state.channelWizardError,
+                    channelWizardDone: state.channelWizardDone,
+                    onOpenChannelWizard: (channel) =>
+                      state.handleOpenChannelWizard(channel),
+                    onCloseChannelWizard: () =>
+                      state.handleCloseChannelWizard(),
+                    onWizardFieldChange: (key, value) =>
+                      state.handleWizardFieldChange(key, value),
+                    onWizardSaveAndAdvance: () =>
+                      state.handleWizardSaveAndAdvance(),
+                    onWizardWhatsAppQR: (force) =>
+                      state.handleWizardStartWhatsAppQR(force),
+                    onWizardWaitWhatsAppScan: () =>
+                      state.handleWizardWaitWhatsAppScan(),
+                    gatewayWizardOpen: state.gatewayWizardOpen,
+                    gatewayWizardSessionId: state.gatewayWizardSessionId,
+                    gatewayWizardStep: state.gatewayWizardStep,
+                    gatewayWizardStatus: state.gatewayWizardStatus,
+                    gatewayWizardBusy: state.gatewayWizardBusy,
+                    gatewayWizardError: state.gatewayWizardError,
+                    gatewayWizardDone: state.gatewayWizardDone,
+                    gatewayWizardInputValue: state.gatewayWizardInputValue,
+                    gatewayWizardMultiSelectValues: state.gatewayWizardMultiSelectValues,
+                    onStartGatewayWizard: () => state.handleStartGatewayWizard(),
+                    onCancelGatewayWizard: () => state.handleCancelGatewayWizard(),
+                    onGatewayWizardNext: (answer) => state.handleGatewayWizardNext(answer),
+                    onGatewayWizardInputChange: (v) => state.handleGatewayWizardInputChange(v),
+                    onGatewayWizardToggleMultiSelect: (v) => state.handleGatewayWizardToggleMultiSelect(v),
                   }),
                 )}
               </section>

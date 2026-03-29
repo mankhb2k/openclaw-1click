@@ -356,6 +356,139 @@ const CONFIG_COPY_KEY_BY_TEXT: Record<string, string> = {
     "config.copy.aiAgents.heartbeatTarget.help",
   'Delivery target ("last", "none", or a channel id). Known channels: telegram, whatsapp, discord, irc, googlechat, slack, signal, imessage, line.':
     "config.copy.aiAgents.heartbeatTargetKnownChannels.help",
+  Accounts: "config.copy.accounts",
+  "Ack Reaction": "config.copy.ackReaction",
+  Actions: "config.copy.actions",
+  "Allow From": "config.copy.allowFrom",
+  "Block Streaming": "config.copy.blockStreaming",
+  "Block Streaming Coalesce": "config.copy.blockStreamingCoalesce",
+  Capabilities: "config.copy.capabilities",
+  "Chunk Mode": "config.copy.chunkMode",
+  Commands: "config.copy.commands",
+  "Create Forum Topic": "config.copy.createForumTopic",
+  "Delete Message": "config.copy.deleteMessage",
+  "Edit Message": "config.copy.editMessage",
+  Poll: "config.copy.poll",
+  Reactions: "config.copy.reactions",
+  "Send Message": "config.copy.sendMessage",
+  "Default Account": "config.copy.defaultAccount",
+  "Default To": "config.copy.defaultTo",
+  Direct: "config.copy.directLabel",
+  "Break Preference": "config.copy.breakPreference",
+  "Max Chars": "config.copy.maxChars",
+  "Min Chars": "config.copy.minChars",
+  "Telegram Native Commands": "config.copy.telegram.nativeCommands",
+  "Telegram Native Skill Commands": "config.copy.telegram.nativeSkillCommands",
+  "Telegram Config Writes": "config.copy.telegram.configWritesLabel",
+  "Telegram Custom Commands": "config.copy.telegram.customCommands",
+  "Additional Telegram bot menu commands (merged with native; conflicts ignored).":
+    "config.copy.telegram.additionalMenuCommands",
+  "Telegram bot token used to authenticate Bot API requests for this account/provider config. Use secret/env substitution and rotate tokens if exposure is suspected.":
+    "config.copy.telegram.botTokenHelp",
+  "Allow Telegram to write config in response to channel events/commands (default: true).":
+    "config.copy.telegram.configWritesHelp",
+  'Direct message access control ("pairing" recommended). "open" requires channels.telegram.allowFrom=["*"].':
+    "config.copy.telegram.dmAccessControlHelp",
+  "Draft Chunk": "config.copy.draftChunk",
+  Enabled: "config.copy.enabled",
+  "Telegram Exec Approvals": "config.copy.telegram.execApprovals.label",
+  "Telegram-native exec approval routing and approver authorization. Enable this only when Telegram should act as an explicit exec-approval client for the selected bot account.":
+    "config.copy.telegram.execApprovals.help",
+  "Telegram Exec Approval Agent Filter":
+    "config.copy.telegram.execApprovals.agentFilterLabel",
+  'Optional allowlist of agent IDs eligible for Telegram exec approvals, for example `["main", "ops-agent"]`. Use this to keep approval prompts scoped to the agents you actually operate from Telegram.':
+    "config.copy.telegram.execApprovals.agentFilterHelp",
+  "Telegram Exec Approval Approvers":
+    "config.copy.telegram.execApprovals.approversLabel",
+  "Telegram user IDs allowed to approve exec requests for this bot account. Use numeric Telegram user IDs; prompts are only delivered to these approvers when target includes dm.":
+    "config.copy.telegram.execApprovals.approversHelp",
+  "Telegram Exec Approvals Enabled":
+    "config.copy.telegram.execApprovals.enabledLabel",
+  "Enable Telegram exec approvals for this account. When false or unset, Telegram messages/buttons cannot approve exec requests.":
+    "config.copy.telegram.execApprovals.enabledHelp",
+  "Telegram Exec Approval Session Filter":
+    "config.copy.telegram.execApprovals.sessionFilterLabel",
+  "Optional session-key filters matched as substring or regex-style patterns before Telegram approval routing is used. Use narrow patterns so Telegram approvals only appear for intended sessions.":
+    "config.copy.telegram.execApprovals.sessionFilterHelp",
+  "Telegram Exec Approval Target":
+    "config.copy.telegram.execApprovals.targetLabel",
+  'Controls where Telegram approval prompts are sent: "dm" sends to approver DMs (default), "channel" sends to the originating Telegram chat/topic, and "both" sends to both. Channel delivery exposes the command text to the chat, so only use it in trusted groups/topics.':
+    "config.copy.telegram.execApprovals.targetHelp",
+  "Group Allow From": "config.copy.groupAllowFrom",
+  "Group Policy": "config.copy.groupPolicy",
+  Groups: "config.copy.groups",
+  Heartbeat: "config.copy.heartbeat",
+  "Show Alerts": "config.copy.showAlerts",
+  "Show Ok": "config.copy.showOk",
+  "Use Indicator": "config.copy.useIndicator",
+  "History Limit": "config.copy.historyLimit",
+  "Link Preview": "config.copy.linkPreview",
+  Tables: "config.copy.tables",
+  Name: "config.copy.name",
+  Network: "config.copy.network",
+  "Override Node autoSelectFamily for Telegram (true=enable, false=disable).":
+    "config.copy.telegram.overrideAutoSelectFamilyLabel",
+  "Reaction Level": "config.copy.reactionLevel",
+  "Reaction Notifications": "config.copy.reactionNotifications",
+  "Reply To Mode": "config.copy.replyToMode",
+  "Response Prefix": "config.copy.responsePrefix",
+  Retry: "config.copy.retry",
+  "Telegram Retry Attempts": "config.copy.telegram.retry.attemptsLabel",
+  "Max retry attempts for outbound Telegram API calls (default: 3).":
+    "config.copy.telegram.retry.attemptsHelp",
+  "Telegram Retry Jitter": "config.copy.telegram.retry.jitterLabel",
+  "Jitter factor (0-1) applied to Telegram retry delays.":
+    "config.copy.telegram.retry.jitterHelp",
+  "Telegram Retry Max Delay (ms)": "config.copy.telegram.retry.maxDelayLabel",
+  "Maximum retry delay cap in ms for Telegram outbound calls.":
+    "config.copy.telegram.retry.maxDelayHelp",
+  "elegram Retry Min Delay (ms)": "config.copy.telegram.retry.minDelayLabel",
+  "Telegram Retry Min Delay (ms)": "config.copy.telegram.retry.minDelayLabel",
+  "Minimum retry delay in ms for Telegram outbound calls.":
+    "config.copy.telegram.retry.minDelayHelp",
+  "Telegram Streaming Mode": "config.copy.telegram.streamingModeLabel",
+  'Unified Telegram stream preview mode: "off" | "partial" | "block" | "progress" (default: "partial"). "progress" maps to "partial" on Telegram. Legacy boolean/streamMode keys are auto-mapped.':
+    "config.copy.telegram.streamingModeHelp",
+  "Stream Mode": "config.copy.streamMode",
+  "Thread Bindings": "config.copy.threadBindings",
+  "Telegram Thread Binding Enabled":
+    "config.copy.telegram.threadBinding.enabledLabel",
+  "Enable Telegram conversation binding features (/focus, /unfocus, /agents, and /session idle|max-age). Overrides session.threadBindings.enabled when set.":
+    "config.copy.telegram.threadBinding.enabledHelp",
+  "Telegram Thread Binding Idle Timeout (hours)":
+    "config.copy.telegram.threadBinding.idleTimeoutLabel",
+  "Inactivity window in hours for Telegram bound sessions. Set 0 to disable idle auto-unfocus (default: 24). Overrides session.threadBindings.idleHours when set.":
+    "config.copy.telegram.threadBinding.idleTimeoutHelp",
+  "Telegram Thread Binding Max Age (hours)":
+    "config.copy.telegram.threadBinding.maxAgeLabel",
+  "Optional hard max age in hours for Telegram bound sessions. Set 0 to disable hard cap (default: 0). Overrides session.threadBindings.maxAgeHours when set.":
+    "config.copy.telegram.threadBinding.maxAgeHelp",
+  "Telegram Thread-Bound ACP Spawn":
+    "config.copy.telegram.threadBinding.acpSpawnLabel",
+  "Allow ACP spawns with thread=true to auto-bind Telegram current conversations when supported.":
+    "config.copy.telegram.threadBinding.acpSpawnHelp",
+  "Telegram Thread-Bound Subagent Spawn":
+    "config.copy.telegram.threadBinding.subagentSpawnLabel",
+  "Allow subagent spawns with thread=true to auto-bind Telegram current conversations when supported.":
+    "config.copy.telegram.threadBinding.subagentSpawnHelp",
+  "Telegram API Timeout (seconds)": "config.copy.telegram.apiTimeoutLabel",
+  "Max seconds before Telegram API requests are aborted (default: 500 per grammY).":
+    "config.copy.telegram.apiTimeoutHelp",
+  "Webhook Cert Path": "config.copy.telegram.webhook.certPathLabel",
+  "Path to the self-signed certificate (PEM) to upload to Telegram during webhook registration. Required for self-signed certs (direct IP or no domain).":
+    "config.copy.telegram.webhook.certPathHelp",
+  "Local bind host for the webhook listener. Defaults to 127.0.0.1; keep loopback unless you intentionally expose direct ingress.":
+    "config.copy.telegram.webhook.bindHostHelp",
+  "Webhook Path": "config.copy.telegram.webhook.pathLabel",
+  "Local webhook route path served by the gateway listener. Defaults to /telegram-webhook.":
+    "config.copy.telegram.webhook.pathHelp",
+  "Local bind port for the webhook listener. Defaults to 8787; set to 0 to let the OS assign an ephemeral port.":
+    "config.copy.telegram.webhook.portHelp",
+  "Webhook Secret": "config.copy.telegram.webhook.secretLabel",
+  "Secret token sent to Telegram during webhook registration and verified on inbound webhook requests. Telegram returns this value for verification; this is not the gateway auth token and not the bot token.":
+    "config.copy.telegram.webhook.secretHelp",
+  "Public HTTPS webhook URL registered with Telegram for inbound updates. This must be internet-reachable and requires channels.telegram.webhookSecret.":
+    "config.copy.telegram.webhook.urlHelp",
 };
 
 function translateConfigCopy(raw: string | undefined): string | undefined {

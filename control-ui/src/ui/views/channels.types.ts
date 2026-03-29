@@ -13,6 +13,7 @@ import type {
   WhatsAppStatus,
 } from "../types";
 import type { NostrProfileFormState } from "./channels.nostr-profile-form";
+import type { ChannelWizardStep } from "./channels.setup-wizard.types";
 
 export type ChannelKey = string;
 
@@ -26,6 +27,9 @@ export type ChannelsProps = {
   whatsappQrDataUrl: string | null;
   whatsappConnected: boolean | null;
   whatsappBusy: boolean;
+  channelLogoutBusy: string | null;
+  channelLogoutError: string | null;
+  onLogoutChannel: (channelId: string) => void;
   configSchema: unknown;
   configSchemaLoading: boolean;
   configForm: Record<string, unknown> | null;
@@ -47,6 +51,33 @@ export type ChannelsProps = {
   onNostrProfileSave: () => void;
   onNostrProfileImport: () => void;
   onNostrProfileToggleAdvanced: () => void;
+  channelWizardOpen: boolean;
+  channelWizardChannel: string | null;
+  channelWizardStep: ChannelWizardStep;
+  channelWizardFields: Record<string, string>;
+  channelWizardBusy: boolean;
+  channelWizardError: string | null;
+  channelWizardDone: boolean;
+  onOpenChannelWizard: (channel: string) => void;
+  onCloseChannelWizard: () => void;
+  onWizardFieldChange: (key: string, value: string) => void;
+  onWizardSaveAndAdvance: () => void;
+  onWizardWhatsAppQR: (force: boolean) => void;
+  onWizardWaitWhatsAppScan: () => void;
+  gatewayWizardOpen: boolean;
+  gatewayWizardSessionId: string | null;
+  gatewayWizardStep: import("../controllers/gateway-wizard").WizardStep | null;
+  gatewayWizardStatus: import("../controllers/gateway-wizard").WizardSessionStatus | null;
+  gatewayWizardBusy: boolean;
+  gatewayWizardError: string | null;
+  gatewayWizardDone: boolean;
+  gatewayWizardInputValue: string;
+  gatewayWizardMultiSelectValues: string[];
+  onStartGatewayWizard: () => void;
+  onCancelGatewayWizard: () => void;
+  onGatewayWizardNext: (answer?: { stepId: string; value?: unknown }) => void;
+  onGatewayWizardInputChange: (value: string) => void;
+  onGatewayWizardToggleMultiSelect: (value: string) => void;
 };
 
 export type ChannelsChannelData = {

@@ -3,6 +3,7 @@ import { t } from "../../i18n/index";
 import { formatRelativeTimestamp, formatDurationHuman } from "../format";
 import type { WhatsAppStatus } from "../types";
 import { renderChannelConfigSection } from "./channels.config";
+import { renderChannelStatusPill } from "./channels.shared";
 import type { ChannelsProps } from "./channels.types";
 
 export function renderWhatsAppCard(params: {
@@ -12,10 +13,25 @@ export function renderWhatsAppCard(params: {
 }) {
   const { props, whatsapp, accountCountLabel } = params;
 
+  const isRunning = whatsapp?.running ?? false;
+  const isConfigured = whatsapp?.configured ?? false;
+  const statusPill = isRunning
+    ? renderChannelStatusPill("running", t("channels.status.yes"))
+    : isConfigured
+      ? renderChannelStatusPill("stopped", t("channels.status.no"))
+      : renderChannelStatusPill("inactive", t("common.na"));
+
   return html`
     <div class="card">
-      <div class="card-title">WhatsApp</div>
-      <div class="card-sub">${t("channels.cardSub.whatsapp")}</div>
+      <div class="card-header-top">
+        <div>
+          <div class="card-title">${t("channels.titles.whatsapp")}</div>
+          <div class="card-sub">${t("channels.cardSub.whatsapp")}</div>
+        </div>
+        <div class="card-actions">
+          ${statusPill}
+        </div>
+      </div>
       ${accountCountLabel}
 
       <div class="status-list" style="margin-top: 16px;">
@@ -76,6 +92,21 @@ export function renderWhatsAppCard(params: {
           ? html`<div class="qr-wrap">
             <img src=${props.whatsappQrDataUrl} alt=${t("channels.whatsappQrAlt")} />
           </div>`
+          : nothing
+      }
+
+      ${
+        !whatsapp?.configured
+          ? html`
+            <div class="row" style="margin-top: 16px; margin-bottom: 8px;">
+              <button
+                class="btn primary"
+                @click=${() => props.onOpenChannelWizard("whatsapp")}
+              >
+                ${t("common.setup")} WhatsApp
+              </button>
+            </div>
+          `
           : nothing
       }
 

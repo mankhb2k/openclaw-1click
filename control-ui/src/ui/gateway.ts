@@ -10,8 +10,15 @@ import {
   readConnectErrorRecoveryAdvice,
   readConnectErrorDetailCode,
 } from "@openclaw/gateway/protocol/connect-error-details.js";
-import { clearDeviceAuthToken, loadDeviceAuthToken, storeDeviceAuthToken } from "./device-auth.ts";
-import { loadOrCreateDeviceIdentity, signDevicePayload } from "./device-identity.ts";
+import {
+  clearDeviceAuthToken,
+  loadDeviceAuthToken,
+  storeDeviceAuthToken,
+} from "./device-auth.ts";
+import {
+  loadOrCreateDeviceIdentity,
+  signDevicePayload,
+} from "./device-identity.ts";
 import { generateUUID } from "./uuid.ts";
 
 export type GatewayEventFrame = {
@@ -53,7 +60,9 @@ export class GatewayRequestTimeoutError extends Error {
   readonly method: string;
 
   constructor(params: { method: string; timeoutMs: number }) {
-    super(`gateway request timed out (${params.timeoutMs}ms) for ${params.method}`);
+    super(
+      `gateway request timed out (${params.timeoutMs}ms) for ${params.method}`,
+    );
     this.name = "GatewayRequestTimeoutError";
     this.timeoutMs = params.timeoutMs;
     this.method = params.method;
@@ -76,7 +85,9 @@ export function resolveGatewayErrorDetailCode(
  * when the endpoint is trusted. Reconnect suppression for mismatch is handled
  * with client state (after retry budget is exhausted).
  */
-export function isNonRecoverableAuthError(error: GatewayErrorInfo | undefined): boolean {
+export function isNonRecoverableAuthError(
+  error: GatewayErrorInfo | undefined,
+): boolean {
   if (!error) {
     return false;
   }
@@ -98,7 +109,10 @@ function isTrustedRetryEndpoint(url: string): boolean {
     const gatewayUrl = new URL(url, window.location.href);
     const host = gatewayUrl.hostname.trim().toLowerCase();
     const isLoopbackHost =
-      host === "localhost" || host === "::1" || host === "[::1]" || host === "127.0.0.1";
+      host === "localhost" ||
+      host === "::1" ||
+      host === "[::1]" ||
+      host === "127.0.0.1";
     const isLoopbackIPv4 = host.startsWith("127.");
     if (isLoopbackHost || isLoopbackIPv4) {
       return true;
@@ -154,7 +168,11 @@ export type GatewayBrowserClientOptions = {
   instanceId?: string;
   onHello?: (hello: GatewayHelloOk) => void;
   onEvent?: (evt: GatewayEventFrame) => void;
-  onClose?: (info: { code: number; reason: string; error?: GatewayErrorInfo }) => void;
+  onClose?: (info: {
+    code: number;
+    reason: string;
+    error?: GatewayErrorInfo;
+  }) => void;
   onGap?: (info: { expected: number; received: number }) => void;
 };
 
@@ -201,7 +219,9 @@ export class GatewayBrowserClient {
     }
     this.ws = new WebSocket(this.opts.url);
     this.ws.addEventListener("open", () => this.queueConnect());
-    this.ws.addEventListener("message", (ev) => this.handleMessage(String(ev.data ?? "")));
+    this.ws.addEventListener("message", (ev) =>
+      this.handleMessage(String(ev.data ?? "")),
+    );
     this.ws.addEventListener("close", (ev) => {
       const reason = String(ev.reason ?? "");
       const connectError = this.pendingConnectError;
@@ -264,7 +284,9 @@ export class GatewayBrowserClient {
     const role = "operator";
     const explicitGatewayToken = this.opts.token?.trim() || undefined;
     const explicitPassword = this.opts.password?.trim() || undefined;
-    let deviceIdentity: Awaited<ReturnType<typeof loadOrCreateDeviceIdentity>> | null = null;
+    let deviceIdentity: Awaited<
+      ReturnType<typeof loadOrCreateDeviceIdentity>
+    > | null = null;
     let selectedAuth: SelectedConnectAuth = {
       authToken: explicitGatewayToken,
       authPassword: explicitPassword,
@@ -282,7 +304,8 @@ export class GatewayBrowserClient {
       }
     }
     const authToken = selectedAuth.authToken;
-    const deviceToken = selectedAuth.authDeviceToken ?? selectedAuth.resolvedDeviceToken;
+    const deviceToken =
+      selectedAuth.authDeviceToken ?? selectedAuth.resolvedDeviceToken;
     const auth =
       authToken || selectedAuth.authPassword
         ? {
@@ -315,7 +338,10 @@ export class GatewayBrowserClient {
         token: authToken ?? null,
         nonce,
       });
-      const signature = await signDevicePayload(deviceIdentity.privateKey, payload);
+      const signature = await signDevicePayload(
+        deviceIdentity.privateKey,
+        payload,
+      );
       device = {
         id: deviceIdentity.deviceId,
         publicKey: deviceIdentity.publicKey,
@@ -360,9 +386,13 @@ export class GatewayBrowserClient {
       })
       .catch((err: unknown) => {
         const connectErrorCode =
-          err instanceof GatewayRequestError ? resolveGatewayErrorDetailCode(err) : null;
+          err instanceof GatewayRequestError
+            ? resolveGatewayErrorDetailCode(err)
+            : null;
         const recoveryAdvice =
-          err instanceof GatewayRequestError ? readConnectErrorRecoveryAdvice(err.details) : {};
+          err instanceof GatewayRequestError
+            ? readConnectErrorRecoveryAdvice(err.details)
+            : {};
         const retryWithDeviceTokenRecommended =
           recoveryAdvice.recommendedNextStep === "retry_with_device_token";
         const canRetryWithDeviceTokenHint =
@@ -393,7 +423,8 @@ export class GatewayBrowserClient {
         if (
           selectedAuth.canFallbackToShared &&
           deviceIdentity &&
-          connectErrorCode === ConnectErrorDetailCodes.AUTH_DEVICE_TOKEN_MISMATCH
+          connectErrorCode ===
+            ConnectErrorDetailCodes.AUTH_DEVICE_TOKEN_MISMATCH
         ) {
           clearDeviceAuthToken({ deviceId: deviceIdentity.deviceId, role });
         }
@@ -414,7 +445,8 @@ export class GatewayBrowserClient {
       const evt = parsed as GatewayEventFrame;
       if (evt.event === "connect.challenge") {
         const payload = evt.payload as { nonce?: unknown } | undefined;
-        const nonce = payload && typeof payload.nonce === "string" ? payload.nonce : null;
+        const nonce =
+          payload && typeof payload.nonce === "string" ? payload.nonce : null;
         if (nonce) {
           this.connectNonce = nonce;
           void this.sendConnect();
@@ -461,7 +493,10 @@ export class GatewayBrowserClient {
     }
   }
 
-  private selectConnectAuth(params: { role: string; deviceId: string }): SelectedConnectAuth {
+  private selectConnectAuth(params: {
+    role: string;
+    deviceId: string;
+  }): SelectedConnectAuth {
     const explicitGatewayToken = this.opts.token?.trim() || undefined;
     const authPassword = this.opts.password?.trim() || undefined;
     const storedToken = loadDeviceAuthToken({
@@ -479,7 +514,9 @@ export class GatewayBrowserClient {
     const authToken = explicitGatewayToken ?? resolvedDeviceToken;
     return {
       authToken,
-      authDeviceToken: shouldUseDeviceRetryToken ? (storedToken ?? undefined) : undefined,
+      authDeviceToken: shouldUseDeviceRetryToken
+        ? (storedToken ?? undefined)
+        : undefined,
       authPassword,
       resolvedDeviceToken,
       storedToken: storedToken ?? undefined,

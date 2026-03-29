@@ -296,6 +296,79 @@
 }
 
 /* ===========================================
+   Channels Grid
+   =========================================== */
+
+.channels-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+@media (max-width: 1024px) {
+  .channels-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.channels-page-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.channels-manage-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  animation: scale-in 0.2s var(--ease-out);
+}
+
+.channels-manage-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.channels-manage-row-title {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.channels-manage-toggle {
+  cursor: pointer;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.channels-manage-toggle:hover {
+  color: var(--text);
+}
+
+.channels-manage-toggle--visible {
+  color: var(--accent);
+}
+
+.channels-manage-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ===========================================
    Cards - Refined with depth
    =========================================== */
 
@@ -306,6 +379,9 @@
   padding: 18px;
   min-width: 0;
   max-width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   animation: rise 0.25s var(--ease-out) backwards;
   transition:
     border-color var(--duration-normal) var(--ease-out),
@@ -329,6 +405,73 @@
   font-size: 13px;
   margin-top: 6px;
   line-height: 1.5;
+}
+
+.card--channel {
+  transition: transform 0.2s var(--ease-out), border-color 0.2s, box-shadow 0.2s;
+}
+
+.card--channel.card--expanded {
+  grid-column: span 2;
+}
+
+.channel-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.channel-card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.channel-card-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+
+.channel-card-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+.channel-card-body {
+  margin-top: 18px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.channel-status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+.channel-status-pill--running {
+  background: var(--ok-subtle);
+  color: var(--ok);
+}
+
+.channel-status-pill--stopped {
+  background: var(--warn-subtle);
+  color: var(--warn);
+}
+
+.channel-status-pill--inactive {
+  background: var(--bg-hover);
+  color: var(--muted);
 }
 
 /* ===========================================
@@ -4070,6 +4213,69 @@ td.data-table-key-col {
   letter-spacing: -0.03em;
   line-height: 1.15;
   color: var(--text-strong);
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-strong);
+  line-height: 1.2;
+}
+
+.card-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-sub {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.channel-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+.channel-status-pill--running {
+  background: var(--ok-subtle);
+  color: var(--ok);
+}
+
+.channel-status-pill--stopped {
+  background: var(--warn-subtle);
+  color: var(--warn);
+}
+
+.channel-status-pill--inactive {
+  background: var(--bg-hover);
+  color: var(--muted);
+}
+
+.channel-status-pill::before {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 .ov-card__hint {

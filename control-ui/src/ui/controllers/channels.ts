@@ -92,3 +92,14 @@ export async function logoutWhatsApp(state: ChannelsState) {
     state.whatsappBusy = false;
   }
 }
+
+export async function logoutChannel(state: ChannelsState, channelId: string) {
+  if (!state.client || !state.connected) {
+    return;
+  }
+  try {
+    await state.client.request("channels.logout", { channel: channelId });
+  } catch (err) {
+    state.channelsError = String(err);
+  }
+}

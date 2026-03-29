@@ -16,6 +16,8 @@ export const vi: TranslationMap = {
     theme: "Giao diện",
     resources: "Tài nguyên",
     search: "Tìm kiếm",
+    setup: "Thiết lập",
+    edit: "Sửa",
   },
   desktopUpdate: {
     availableTitle: "Đã có bản cập nhật:",
@@ -814,6 +816,20 @@ export const vi: TranslationMap = {
     },
   },
   channels: {
+    titles: {
+      telegram: "Telegram",
+      whatsapp: "WhatsApp",
+      discord: "Discord",
+      slack: "Slack",
+      signal: "Signal",
+      imessage: "iMessage",
+      googlechat: "Google Chat",
+      nostr: "Nostr",
+    },
+    modes: {
+      bridge: "Cầu nối (Bridge)",
+      direct: "Trực tiếp (Direct)",
+    },
     page: {
       healthTitle: "Sức khỏe kênh",
       healthSub: "Ảnh chụp trạng thái kênh từ gateway.",
@@ -906,6 +922,35 @@ export const vi: TranslationMap = {
       noProfileHint:
         "Chưa có hồ sơ. Nhấn «Sửa hồ sơ» để thêm tên, giới thiệu và ảnh đại diện.",
       profilePictureAlt: "Ảnh đại diện",
+    },
+    wizard: {
+      stepDetails: "Nhập thông tin",
+      stepConnect: "Kết nối",
+      stepFinish: "Hoàn tất",
+      setupTitle: "Thiết lập {label}",
+      setupSub: "Cấu hình kênh giao tiếp",
+      docs: {
+        telegram: "Tạo bot tại @BotFather → /newbot → lấy token",
+        discord: "Discord Developer Portal → New Application → Bot → Copy Token",
+        slack: "Slack App Settings → OAuth & Permissions → Bot User OAuth Token",
+        signal: "Nhập số điện thoại đã đăng ký Signal",
+        googlechat: "Google Chat Space → Manage Webhooks → Copy URL",
+      },
+      whatsapp: {
+        intro: "WhatsApp sử dụng mã QR để xác thực. Nhấn <strong>Tiếp tục</strong> để bắt đầu và hiển thị mã QR.",
+        note: "<strong>Lưu ý:</strong> Mở WhatsApp trên điện thoại → Cài đặt → Thiết bị đã liên kết → Liên kết thiết bị → quét mã QR.",
+        scanPrompt: "Quét mã QR bên dưới bằng WhatsApp trên điện thoại của bạn.",
+        scannedButton: "Đã quét ✓",
+        waitScanned: "Sau khi quét xong, nhấn <strong>Đã quét</strong> để xác nhận kết nối.",
+      },
+      processing: "Đang lưu cấu hình và kết nối...",
+      successTitle: "{label} đã được thiết lập!",
+      successSub: "Kênh đã được bật và đang chạy. Bạn có thể xem trạng thái chi tiết trên card kênh.",
+      continue: "Tiếp tục →",
+      enabling: "Đang bật kênh...",
+      enable: "Bật kênh",
+      saving: "Đang lưu...",
+      saveAndConnect: "Lưu & Kết nối",
     },
   },
   agents: {
@@ -1313,6 +1358,141 @@ export const vi: TranslationMap = {
       noCustomEntries: "Chưa có mục tùy chỉnh.",
       key: "Khóa",
       removeEntry: "Xóa mục",
+      accounts: "Tài khoản",
+      ackReaction: "Phản ứng xác nhận",
+      actions: "Hành động",
+      allowFrom: "Cho phép từ",
+      blockStreaming: "Chặn truyền trực tiếp (Streaming)",
+      blockStreamingCoalesce: "Gộp chặn truyền trực tiếp",
+      streamMode: "Chế độ truyền trực tiếp (Stream Mode)",
+      dmPolicy: "Chính sách tin nhắn riêng (DM)",
+      capabilities: "Khả năng",
+      chunkMode: "Chế độ phân đoạn (Chunk)",
+      commands: "Lệnh",
+      createForumTopic: "Tạo chủ đề Diễn đàn",
+      deleteMessage: "Xóa tin nhắn",
+      editMessage: "Chỉnh sửa tin nhắn",
+      poll: "Cuộc bình chọn",
+      reactions: "Phản ứng",
+      sendMessage: "Gửi tin nhắn",
+      defaultAccount: "Tài khoản mặc định",
+      defaultTo: "Mặc định gửi tới",
+      directLabel: "Trực tiếp (Direct)",
+      breakPreference: "Tùy chọn chia nhỏ (Break Preference)",
+      maxChars: "Ký tự tối đa",
+      minChars: "Ký tự tối thiểu",
+      draftChunk: "Bản nháp phân đoạn (Draft Chunk)",
+      enabled: "Đã bật",
+      groupAllowFrom: "Nhóm cho phép từ",
+      groupPolicy: "Chính sách nhóm",
+      groups: "Nhóm",
+      heartbeat: "Nhịp tim (Heartbeat)",
+      showAlerts: "Hiện cảnh báo",
+      showOk: "Hiện OK",
+      useIndicator: "Dùng chỉ báo",
+      historyLimit: "Giới hạn lịch sử",
+      linkPreview: "Xem trước liên kết",
+      tables: "Bảng",
+      reactionLevel: "Mức độ phản ứng",
+      reactionNotifications: "Thông báo phản ứng",
+      replyToMode: "Chế độ trả lời (Reply To)",
+      responsePrefix: "Tiền tố phản hồi",
+      retry: "Thử lại",
+      threadBindings: "Liên kết luồng (Thread Bindings)",
+      telegram: {
+        nativeCommands: "Lệnh Telegram gốc",
+        nativeSkillCommands: "Lệnh kỹ năng Telegram gốc",
+        configWritesLabel: "Ghi cấu hình Telegram",
+        configWritesHelp:
+          "Cho phép Telegram ghi cấu hình phản hồi các sự kiện/lệnh của kênh (mặc định: true).",
+        customCommands: "Lệnh Telegram tùy chỉnh",
+        additionalMenuCommands:
+          "Các lệnh menu bot Telegram bổ sung (hợp nhất với lệnh gốc; bỏ qua xung đột)",
+        botTokenLabel: "Mã thông báo (Token) Bot Telegram",
+        botTokenHelp:
+          "Token bot Telegram dùng để xác thực các yêu cầu Bot API cho tài khoản/nhà cung cấp này. Sử dụng thay thế secret/env và xoay vòng token nếu nghi ngờ bị lộ.",
+        dmAccessControlLabel: "Kiểm soát truy cập tin nhắn trực tiếp",
+        dmAccessControlHelp:
+          'Kiểm soát truy cập tin nhắn trực tiếp (khuyên dùng "pairing"). "open" yêu cầu channels.telegram.allowFrom=["*"].',
+        execApprovals: {
+          label: "Phê duyệt thực thi Telegram",
+          help: "Định tuyến phê duyệt thực thi gốc Telegram và ủy quyền người phê duyệt. Chỉ bật tính năng này khi Telegram hoạt động như một ứng dụng phê duyệt thực thi rõ ràng cho tài khoản bot đã chọn.",
+          agentFilterLabel: "Bộ lọc Agent phê duyệt thực thi Telegram",
+          agentFilterHelp:
+            'Danh sách ID agent tùy chọn đủ điều kiện để Telegram phê duyệt thực thi, ví dụ ["main", "ops-agent"]. Sử dụng để giữ cho các yêu cầu phê duyệt trong phạm vi các agent bạn thực sự vận hành từ Telegram.',
+          approversLabel: "Người phê duyệt thực thi Telegram",
+          approversHelp:
+            "ID người dùng Telegram được phép phê duyệt các yêu cầu thực thi cho tài khoản bot này. Sử dụng ID người dùng số; các yêu cầu chỉ được gửi đến những người phê duyệt này khi mục tiêu bao gồm dm.",
+          enabledLabel: "Bật phê duyệt thực thi Telegram",
+          enabledHelp:
+            "Bật phê duyệt thực thi Telegram cho tài khoản này. Khi false hoặc chưa đặt, tin nhắn/nút Telegram không thể phê duyệt yêu cầu thực thi.",
+          sessionFilterLabel: "Bộ lọc phiên phê duyệt thực thi Telegram",
+          sessionFilterHelp:
+            "Bộ lọc khóa phiên tùy chọn khớp theo chuỗi con hoặc định dạng regex trước khi định tuyến phê duyệt Telegram được sử dụng. Sử dụng các mẫu hẹp để phê duyệt Telegram chỉ xuất hiện cho các phiên dự định.",
+          targetLabel: "Đích phê duyệt thực thi Telegram",
+          targetHelp:
+            'Kiểm soát nơi gửi yêu cầu phê duyệt Telegram: "dm" gửi đến tin nhắn trực tiếp của người phê duyệt (mặc định), "channel" gửi đến cuộc trò chuyện/chủ đề Telegram ban đầu, và "both" gửi đến cả hai. Gửi đến kênh sẽ làm lộ nội dung lệnh trong cuộc trò chuyện, vì vậy chỉ sử dụng trong các nhóm/chủ đề đáng tin cậy.',
+        },
+        overrideAutoSelectFamilyLabel:
+          "Ghi đè autoSelectFamily của Node cho Telegram (true=bật, false=tắt)",
+        retry: {
+          attemptsLabel: "Số lần thử lại Telegram",
+          attemptsHelp:
+            "Số lần thử lại tối đa cho các cuộc gọi Telegram API (mặc định: 3).",
+          jitterLabel: "Độ nhiễu thử lại Telegram (Jitter)",
+          jitterHelp:
+            "Hệ số nhiễu (0-1) áp dụng cho thời gian chờ thử lại của Telegram.",
+          maxDelayLabel: "Độ trễ tối đa thử lại Telegram (ms)",
+          maxDelayHelp:
+            "Giới hạn độ trễ thử lại tối đa bằng ms cho các cuộc gọi đi của Telegram.",
+          minDelayLabel: "Độ trễ tối thiểu thử lại Telegram (ms)",
+          minDelayHelp:
+            "Độ trễ thử lại tối thiểu bằng ms cho các cuộc gọi đi của Telegram.",
+        },
+        streamingModeLabel: "Chế độ truyền trực tiếp Telegram (Streaming)",
+        streamingModeHelp:
+          'Chế độ xem trước luồng Telegram thống nhất: "off" | "partial" | "block" | "progress" (mặc định: "partial"). "progress" khớp với "partial" trên Telegram. Các khóa streamMode/boolean cũ được tự động ánh xạ.',
+        threadBinding: {
+          enabledLabel: "Bật liên kết luồng Telegram",
+          enabledHelp:
+            "Bật các tính năng liên kết hội thoại Telegram (/focus, /unfocus, /agents, và /session idle|max-age). Ghi đè session.threadBindings.enabled khi được đặt.",
+          idleTimeoutLabel: "Thời gian chờ nhàn rỗi liên kết luồng Telegram (giờ)",
+          idleTimeoutHelp:
+            "Khoảng thời gian không hoạt động tính bằng giờ cho các phiên liên kết Telegram. Đặt 0 để tắt tự động bỏ tập trung khi nhàn rỗi (mặc định: 24). Ghi đè session.threadBindings.idleHours khi được đặt.",
+          maxAgeLabel: "Tuổi thọ tối đa liên kết luồng Telegram (giờ)",
+          maxAgeHelp:
+            "Giới hạn tuổi thọ tối đa tính bằng giờ cho các phiên liên kết Telegram. Đặt 0 để tắt giới hạn cứng (mặc định: 0). Ghi đè session.threadBindings.maxAgeHours khi được đặt.",
+          acpSpawnLabel: "Cho phép tạo ACP liên kết luồng",
+          acpSpawnHelp:
+            "Cho phép tạo ACP với thread=true để tự động liên kết các hội thoại Telegram hiện tại khi được hỗ trợ.",
+          subagentSpawnLabel: "Cho phép tạo Subagent liên kết luồng",
+          subagentSpawnHelp:
+            "Cho phép tạo subagent với thread=true để tự động liên kết các hội thoại Telegram hiện tại khi được hỗ trợ.",
+        },
+        apiTimeoutLabel: "Thời gian chờ Telegram API (giây)",
+        apiTimeoutHelp:
+          "Số giây tối đa trước khi các yêu cầu Telegram API bị hủy (mặc định: 500 theo grammY).",
+        webhook: {
+          certPathLabel: "Đường dẫn chứng chỉ Webhook",
+          certPathHelp:
+            "Đường dẫn đến chứng chỉ tự ký (PEM) để tải lên Telegram khi đăng ký webhook. Yêu cầu đối với chứng chỉ tự ký (IP trực tiếp hoặc không có tên miền).",
+          bindHostLabel: "Host liên kết cục bộ (Webhook)",
+          bindHostHelp:
+            "Host liên kết cục bộ cho webhook listener. Mặc định là 127.0.0.1; giữ nguyên loopback trừ khi bạn cố ý cho phép trực tiếp.",
+          pathLabel: "Đường dẫn Webhook",
+          pathHelp:
+            "Đường dẫn định tuyến webhook cục bộ do gateway listener phục vụ. Mặc định là /telegram-webhook.",
+          portLabel: "Cổng liên kết cục bộ (Webhook)",
+          portHelp:
+            "Cổng liên kết cục bộ cho webhook listener. Mặc định là 8787; đặt thành 0 để hệ điều hành chỉ định cổng tạm thời.",
+          secretLabel: "Bí mật Webhook (Webhook Secret)",
+          secretHelp:
+            "Mã thông báo bí mật được gửi đến Telegram trong quá trình đăng ký webhook và được xác minh trên các yêu cầu webhook đến. Telegram trả về giá trị này để xác minh; đây không phải là gateway auth token và không phải là bot token.",
+          urlLabel: "URL Webhook công khai",
+          urlHelp:
+            "URL webhook HTTPS công khai được đăng ký với Telegram cho các cập nhật đến. URL này phải có thể truy cập được từ internet và yêu cầu channels.telegram.webhookSecret.",
+        },
+      },
       random: "ngẫu nhiên",
       default: "mặc định",
       off: "tắt",

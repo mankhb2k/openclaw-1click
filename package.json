@@ -1,10 +1,10 @@
 {
   "name": "openclaw-desktop",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "description": "OpenClaw desktop",
   "main": "dist/main/main.js",
   "author": "OpenClaw",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "scripts": {
     "postinstall": "node scripts/apply-openclaw-desktop-update.mjs",
     "align:openclaw": "node scripts/align-openclaw-version.mjs",

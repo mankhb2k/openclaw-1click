@@ -16,7 +16,9 @@ function normalizeErrorMessage(message: unknown): string {
   return "unknown error";
 }
 
-function formatErrorFromMessageAndDetails(error: ErrorWithMessageAndDetails): string {
+function formatErrorFromMessageAndDetails(
+  error: ErrorWithMessageAndDetails,
+): string {
   const message = normalizeErrorMessage(error.message);
   const detailCode = resolveGatewayErrorDetailCode(error);
 
@@ -52,7 +54,9 @@ function formatErrorFromMessageAndDetails(error: ErrorWithMessageAndDetails): st
 
 export function formatConnectError(error: unknown): string {
   if (error && typeof error === "object") {
-    return formatErrorFromMessageAndDetails(error as ErrorWithMessageAndDetails);
+    return formatErrorFromMessageAndDetails(
+      error as ErrorWithMessageAndDetails,
+    );
   }
   return normalizeErrorMessage(error);
 }

@@ -1,6 +1,8 @@
 import { html, nothing } from "lit";
 import { t } from "../../i18n/index";
 import { formatRelativeTimestamp } from "../format";
+import { renderChannelSetupWizard } from "./channels.setup-wizard";
+import { renderGatewayWizard } from "./gateway-wizard";
 import type {
   ChannelAccountSnapshot,
   ChannelUiMetaEntry,
@@ -52,6 +54,40 @@ export function renderChannels(props: ChannelsProps) {
     });
 
   return html`
+    ${renderChannelSetupWizard({
+      open: props.channelWizardOpen,
+      channel: props.channelWizardChannel,
+      step: props.channelWizardStep,
+      fields: props.channelWizardFields,
+      busy: props.channelWizardBusy,
+      error: props.channelWizardError,
+      done: props.channelWizardDone,
+      whatsappQrDataUrl: props.whatsappQrDataUrl,
+      whatsappMessage: props.whatsappMessage,
+      whatsappConnected: props.whatsappConnected,
+      onClose: () => props.onCloseChannelWizard(),
+      onFieldChange: (key, value) => props.onWizardFieldChange(key, value),
+      onSaveAndAdvance: () => props.onWizardSaveAndAdvance(),
+      onWhatsAppQR: (force) => props.onWizardWhatsAppQR(force),
+      onWhatsAppWaitScan: () => props.onWizardWaitWhatsAppScan(),
+    })}
+
+    ${renderGatewayWizard({
+      open: props.gatewayWizardOpen,
+      step: props.gatewayWizardStep,
+      status: props.gatewayWizardStatus,
+      busy: props.gatewayWizardBusy,
+      error: props.gatewayWizardError,
+      done: props.gatewayWizardDone,
+      inputValue: props.gatewayWizardInputValue,
+      multiSelectValues: props.gatewayWizardMultiSelectValues,
+      onClose: () => props.onCancelGatewayWizard(),
+      onNext: (answer) => props.onGatewayWizardNext(answer),
+      onInputChange: (v) => props.onGatewayWizardInputChange(v),
+      onToggleMultiSelect: (v) => props.onGatewayWizardToggleMultiSelect(v),
+    })}
+
+
     <section class="grid grid-cols-2">
       ${orderedChannels.map((channel) =>
         renderChannel(channel.key, props, {
@@ -231,6 +267,21 @@ function renderGenericChannelCard(
           : nothing
       }
 
+      ${
+        !configured
+          ? html`
+            <div class="row" style="margin-top: 16px;">
+              <button
+                class="btn primary"
+                @click=${() => props.onOpenChannelWizard(key)}
+              >
+                ${t("common.setup")} ${label}
+              </button>
+            </div>
+          `
+          : nothing
+      }
+
       ${renderChannelConfigSection({ channelId: key, props })}
     </div>
   `;
@@ -246,6 +297,10 @@ function resolveChannelMetaMap(
 }
 
 function resolveChannelLabel(snapshot: ChannelsStatusSnapshot | null, key: string): string {
+  const localized = t(`channels.titles.${key}`);
+  if (localized !== `channels.titles.${key}`) {
+    return localized;
+  }
   const meta = resolveChannelMetaMap(snapshot)[key];
   return meta?.label ?? snapshot?.channelLabels?.[key] ?? key;
 }

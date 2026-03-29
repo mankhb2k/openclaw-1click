@@ -65,6 +65,15 @@ export function renderSignalCard(params: {
         <button class="btn" @click=${() => props.onRefresh(true)}>
           ${t("channels.actions.probe")}
         </button>
+        ${signal?.configured
+          ? html`<button
+              class="btn danger"
+              ?disabled=${props.channelLogoutBusy === "signal"}
+              @click=${() => props.onLogoutChannel("signal")}
+            >
+              ${props.channelLogoutBusy === "signal" ? "..." : "Logout"}
+            </button>`
+          : nothing}
       </div>
     </div>
   `;

@@ -61,6 +61,15 @@ export function renderIMessageCard(params: {
         <button class="btn" @click=${() => props.onRefresh(true)}>
           ${t("channels.actions.probe")}
         </button>
+        ${imessage?.configured
+          ? html`<button
+              class="btn danger"
+              ?disabled=${props.channelLogoutBusy === "imessage"}
+              @click=${() => props.onLogoutChannel("imessage")}
+            >
+              ${props.channelLogoutBusy === "imessage" ? "..." : "Logout"}
+            </button>`
+          : nothing}
       </div>
     </div>
   `;

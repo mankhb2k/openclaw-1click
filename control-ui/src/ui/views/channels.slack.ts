@@ -61,6 +61,15 @@ export function renderSlackCard(params: {
         <button class="btn" @click=${() => props.onRefresh(true)}>
           ${t("channels.actions.probe")}
         </button>
+        ${slack?.configured
+          ? html`<button
+              class="btn danger"
+              ?disabled=${props.channelLogoutBusy === "slack"}
+              @click=${() => props.onLogoutChannel("slack")}
+            >
+              ${props.channelLogoutBusy === "slack" ? "..." : "Logout"}
+            </button>`
+          : nothing}
       </div>
     </div>
   `;

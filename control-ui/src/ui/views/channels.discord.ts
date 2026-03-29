@@ -61,6 +61,15 @@ export function renderDiscordCard(params: {
         <button class="btn" @click=${() => props.onRefresh(true)}>
           ${t("channels.actions.probe")}
         </button>
+        ${discord?.configured
+          ? html`<button
+              class="btn danger"
+              ?disabled=${props.channelLogoutBusy === "discord"}
+              @click=${() => props.onLogoutChannel("discord")}
+            >
+              ${props.channelLogoutBusy === "discord" ? "..." : "Logout"}
+            </button>`
+          : nothing}
       </div>
     </div>
   `;

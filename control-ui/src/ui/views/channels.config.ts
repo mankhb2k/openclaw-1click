@@ -71,14 +71,16 @@ function renderExtraChannelFields(value: Record<string, unknown>) {
   }
   return html`
     <div class="status-list" style="margin-top: 12px;">
-      ${entries.map(
-        ([field, raw]) => html`
+      ${entries.map(([field, raw]) => {
+        const localizedLabel = t(`config.copy.${field}`);
+        const label = localizedLabel === `config.copy.${field}` ? field : localizedLabel;
+        return html`
           <div>
-            <span class="label">${field}</span>
+            <span class="label">${label}</span>
             <span>${formatChannelExtraValue(raw)}</span>
           </div>
-        `,
-      )}
+        `;
+      })}
     </div>
   `;
 }

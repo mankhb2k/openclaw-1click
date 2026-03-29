@@ -32,6 +32,12 @@ export function formatProbeStatusLead(ok: boolean): string {
   return `${t("channels.probe.lead")} ${ok ? t("channels.probe.ok") : t("channels.probe.failed")}${t("channels.probe.suffix")}`;
 }
 
+export type ChannelStatusLevel = "running" | "stopped" | "inactive";
+
+export function renderChannelStatusPill(level: ChannelStatusLevel, label: string) {
+  return html`<span class="channel-status-pill channel-status-pill--${level}">${label}</span>`;
+}
+
 export function renderChannelAccountCount(
   key: ChannelKey,
   channelAccounts?: Record<string, ChannelAccountSnapshot[]> | null,
