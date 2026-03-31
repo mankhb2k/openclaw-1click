@@ -867,7 +867,7 @@
 
 .content {
   grid-area: content;
-  padding: 16px 20px 32px;
+  padding: 16px 20px 16px;
   display: flex;
   flex-direction: column;
   min-height: 0;

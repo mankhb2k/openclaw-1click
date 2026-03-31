@@ -3,6 +3,10 @@ import {
   type GatewayUpdateAvailableEventPayload,
 } from "@openclaw/gateway/events.js";
 import {
+  GATEWAY_CLIENT_MODES,
+  GATEWAY_CLIENT_NAMES,
+} from "@openclaw/gateway/protocol/client-info.js";
+import {
   CHAT_SESSIONS_ACTIVE_MINUTES,
   flushChatQueueForEvent,
 } from "./app-chat.ts";
@@ -214,9 +218,9 @@ export function connectGateway(host: GatewayHost) {
     url: host.settings.gatewayUrl,
     token: host.settings.token.trim() ? host.settings.token : undefined,
     password: host.password.trim() ? host.password : undefined,
-    clientName: "openclaw-control-ui",
+    clientName: GATEWAY_CLIENT_NAMES.CONTROL_UI,
     clientVersion,
-    mode: "webchat",
+    mode: GATEWAY_CLIENT_MODES.WEBCHAT,
     instanceId: host.clientInstanceId,
     onHello: (hello) => {
       if (host.client !== client) {
