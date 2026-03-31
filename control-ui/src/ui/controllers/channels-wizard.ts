@@ -219,6 +219,16 @@ export async function wizardSaveAndAdvance(state: WizardHostState) {
 
     // saveConfig dùng config.set — gateway tự hot-reload channel (không restart toàn bộ)
     await saveConfig(state);
+
+    // Kiểm tra lỗi TRƯỚC khi gọi loadConfig vì loadConfig reset lastError = null
+    // nếu không check ở đây, lỗi từ saveConfig (vd: gateway reject config) bị mất
+    if (state.lastError) {
+      state.channelWizardError = state.lastError;
+      return;
+    }
+
+    // saveConfig đã gọi loadConfig nội bộ khi thành công;
+    // gọi lại để đồng bộ snapshot nếu saveConfig thoát sớm (vd: baseHash missing)
     await loadConfig(state);
 
     if (state.lastError) {
