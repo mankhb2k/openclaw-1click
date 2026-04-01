@@ -118,6 +118,21 @@ async function main(): Promise<void> {
     gatewayEnv.ELECTRON_RUN_AS_NODE = '1';
   }
 
+  // When packaged, appRoot is inside app.asar. openclaw's plugin discovery uses
+  // readdirSync({ withFileTypes: true }) which has known Dirent issues on asar dirs.
+  // Explicitly point to the unpacked extensions directory on real disk so jiti can
+  // compile and load the channel plugins (telegram, whatsapp, discord, etc.) correctly.
+  const normalizedAppRoot = path.normalize(appRoot);
+  const unpackedBase = normalizedAppRoot.toLowerCase().endsWith('.asar')
+    ? path.join(path.dirname(normalizedAppRoot), 'app.asar.unpacked')
+    : null;
+  if (unpackedBase) {
+    const bundledPluginsDir = path.join(unpackedBase, 'node_modules', 'openclaw', 'extensions');
+    if (fs.existsSync(bundledPluginsDir)) {
+      gatewayEnv.OPENCLAW_BUNDLED_PLUGINS_DIR = bundledPluginsDir;
+    }
+  }
+
   const gatewayCwd = resolveSpawnCwd(appRoot, electronExe);
 
   logLine(

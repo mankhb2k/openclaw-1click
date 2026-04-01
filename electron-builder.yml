@@ -37,6 +37,11 @@ asarUnpack:
   # Files inside .asar often report nlink>1; safe-open rejects them → 404 on /assets/*.js. Unpack to real disk.
   - "dist/control-ui/**"
   - "vendor/control-ui/**"
+  # openclaw channel extensions (telegram, whatsapp, discord, etc.) are TypeScript plugins loaded by jiti at
+  # runtime. Electron's readdirSync({ withFileTypes: true }) on asar dirs has known Dirent.isDirectory() issues,
+  # so the gateway's discoverInDirectory() cannot recurse into extension subdirs inside the archive.
+  # Unpack to real disk so both discovery and jiti compilation work correctly.
+  - "node_modules/openclaw/extensions/**"
 
 # Avoid winCodeSign extraction (symlinks) on machines without Developer Mode / admin.
 # Code signing (production): set CSC_LINK (.pfx path or base64) + CSC_KEY_PASSWORD on the build machine
