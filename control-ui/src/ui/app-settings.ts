@@ -294,7 +294,10 @@ export async function refreshActiveTab(host: SettingsHost) {
     await loadExecApprovals(host as unknown as OpenClawApp);
   }
   if (host.tab === "chat") {
-    await refreshChat(host as unknown as Parameters<typeof refreshChat>[0]);
+    await Promise.all([
+      refreshChat(host as unknown as Parameters<typeof refreshChat>[0]),
+      loadConfig(host as unknown as OpenClawApp),
+    ]);
     scheduleChatScroll(
       host as unknown as Parameters<typeof scheduleChatScroll>[0],
       !host.chatHasAutoScrolled,

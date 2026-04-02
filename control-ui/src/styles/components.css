@@ -1054,6 +1054,23 @@
   font-weight: 600;
 }
 
+.ui-select__group-header {
+  padding: 6px 10px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  user-select: none;
+  pointer-events: none;
+}
+
+.ui-select__group-header:not(:first-child) {
+  margin-top: 4px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
 .ui-select__check-option {
   display: grid;
   grid-template-columns: 16px minmax(0, 1fr);

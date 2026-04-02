@@ -602,23 +602,95 @@ export function resolveModelOptions(
   return options;
 }
 
+/**
+ * Derive the set of explicitly configured provider IDs from the config form.
+ * Reads two sources:
+ *  - configForm.models.providers  → providers set up via onboarding wizard
+ *  - configForm.auth.profiles     → providers added via the "Add API Provider" modal
+ *
+ * Returns null when the config form is empty/unavailable (caller shows full catalog).
+ */
+export function resolveConfiguredProviders(
+  configForm: Record<string, unknown> | null,
+): Set<string> | null {
+  if (!configForm) return null;
+  const cfg = configForm as Record<string, unknown>;
+  const providers = new Set<string>();
+
+  // models.providers — onboarding writes { google: {...}, openai: {...}, ... }
+  const modelProviders = (cfg.models as Record<string, unknown> | undefined)?.providers;
+  if (modelProviders && typeof modelProviders === "object") {
+    for (const key of Object.keys(modelProviders)) {
+      const trimmed = key.trim();
+      if (trimmed) providers.add(trimmed);
+    }
+  }
+
+  // auth.profiles — Add Provider modal writes { "openai:default": { provider: "openai", ... } }
+  const authProfiles = (cfg.auth as Record<string, unknown> | undefined)?.profiles;
+  if (authProfiles && typeof authProfiles === "object") {
+    for (const profile of Object.values(authProfiles)) {
+      if (profile && typeof profile === "object") {
+        const p = (profile as Record<string, unknown>).provider;
+        if (typeof p === "string" && p.trim()) providers.add(p.trim());
+      }
+    }
+  }
+
+  return providers.size > 0 ? providers : null;
+}
+
+/**
+ * Filter a model catalog to only entries whose provider is in the configured set.
+ * Falls back to the full catalog when configuredProviders is null (nothing configured yet).
+ */
+export function filterCatalogByProviders(
+  catalog: ModelCatalogEntry[],
+  configuredProviders: Set<string> | null,
+): ModelCatalogEntry[] {
+  if (!configuredProviders) return catalog;
+  return catalog.filter((entry) => configuredProviders.has(entry.provider));
+}
+
 export function resolveModelOptionsFromCatalog(
   catalog: ModelCatalogEntry[],
   current?: string | null,
-): ConfiguredModelOption[] {
+): (ConfiguredModelOption & { isGroup?: boolean })[] {
   if (!catalog || catalog.length === 0) {
     return [];
   }
-  const options: ConfiguredModelOption[] = catalog.map((entry) => ({
-    value: entry.id,
-    label: entry.name && entry.name !== entry.id
-      ? `${entry.name} · ${entry.provider}`
-      : `${entry.id} · ${entry.provider}`,
-  }));
-  const hasCurrent = current ? options.some((o) => o.value === current) : false;
+
+  // Group entries by provider, preserving order of first appearance
+  const groups = new Map<string, ModelCatalogEntry[]>();
+  for (const entry of catalog) {
+    const key = entry.provider;
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+    groups.get(key)!.push(entry);
+  }
+
+  const options: (ConfiguredModelOption & { isGroup?: boolean })[] = [];
+
+  for (const [provider, entries] of groups) {
+    // Group header — not selectable
+    options.push({ value: "", label: provider, isGroup: true });
+    for (const entry of entries) {
+      options.push({
+        value: entry.id,
+        label: entry.name && entry.name !== entry.id ? entry.name : entry.id,
+      });
+    }
+  }
+
+  // If current value isn't in the catalog, prepend it so the select still shows it
+  const hasCurrent = current
+    ? options.some((o) => !o.isGroup && o.value === current)
+    : false;
   if (current && !hasCurrent) {
     options.unshift({ value: current, label: `Current (${current})` });
   }
+
   return options;
 }
 

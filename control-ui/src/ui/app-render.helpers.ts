@@ -20,6 +20,7 @@ import { iconForTab, pathForTab, titleForTab, type Tab } from "./navigation.ts";
 import type { ThemeTransitionContext } from "./theme-transition.ts";
 import type { ThemeMode, ThemeName } from "./theme.ts";
 import type { ModelCatalogEntry, SessionsListResult } from "./types.ts";
+import { resolveConfiguredProviders, filterCatalogByProviders } from "./views/agents-utils.ts";
 
 type SessionDefaultsSnapshot = {
   mainSessionKey?: string;
@@ -567,8 +568,10 @@ function buildChatModelOptions(
 function renderChatModelSelect(state: AppViewState) {
   const currentOverride = resolveModelOverrideValue(state);
   const defaultModel = resolveDefaultModelValue(state);
+  const configuredProviders = resolveConfiguredProviders(state.configForm ?? null);
+  const filteredCatalog = filterCatalogByProviders(state.chatModelCatalog ?? [], configuredProviders);
   const options = buildChatModelOptions(
-    state.chatModelCatalog ?? [],
+    filteredCatalog,
     currentOverride,
     defaultModel,
   );

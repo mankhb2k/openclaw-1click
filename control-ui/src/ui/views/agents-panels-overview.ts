@@ -6,6 +6,8 @@ import {
   normalizeModelValue,
   parseFallbackList,
   resolveModelOptionsFromCatalog,
+  resolveConfiguredProviders,
+  filterCatalogByProviders,
   resolveAgentConfig,
   resolveModelFallbacks,
   resolveModelLabel,
@@ -108,8 +110,10 @@ export function renderAgentOverview(params: {
     }
   };
 
-  const catalogOptions = resolveModelOptionsFromCatalog(modelCatalog, effectivePrimary ?? undefined);
-  const noCatalog = modelCatalog.length === 0;
+  const configuredProviders = resolveConfiguredProviders(configForm);
+  const filteredCatalog = filterCatalogByProviders(modelCatalog, configuredProviders);
+  const catalogOptions = resolveModelOptionsFromCatalog(filteredCatalog, effectivePrimary ?? undefined);
+  const noCatalog = filteredCatalog.length === 0;
 
   return html`
     <section class="card">

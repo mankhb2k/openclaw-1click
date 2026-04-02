@@ -5,6 +5,7 @@ export type UiSelectOption = {
   value: string;
   label: string;
   disabled?: boolean;
+  isGroup?: boolean;
 };
 
 type UiSelectParams = {
@@ -69,7 +70,9 @@ export function renderUiSelect(params: UiSelectParams): TemplateResult {
       </summary>
       <div class="ui-select__menu" role="listbox">
         ${params.options.map(
-          (opt) => html`
+          (opt) => opt.isGroup
+            ? html`<div class="ui-select__group-header" aria-hidden="true">${opt.label}</div>`
+            : html`
             <button
               type="button"
               class="ui-select__option ${opt.value === params.value ? "ui-select__option--active" : ""}"
