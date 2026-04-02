@@ -198,6 +198,11 @@ export type AppViewState = {
   agentSkillsError: string | null;
   agentSkillsReport: SkillStatusReport | null;
   agentSkillsAgentId: string | null;
+  addProviderOpen: boolean;
+  addProviderProvider: string;
+  addProviderKey: string;
+  addProviderBusy: boolean;
+  addProviderError: string | null;
   sessionsLoading: boolean;
   sessionsResult: SessionsListResult | null;
   sessionsError: string | null;

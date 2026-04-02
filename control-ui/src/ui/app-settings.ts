@@ -1,28 +1,32 @@
 import { roleScopesAllow } from "@openclaw/shared/operator-scope-compat.js";
-import { refreshChat } from "./app-chat.ts";
+import { refreshChat } from "./app-chat";
 import {
   startLogsPolling,
   stopLogsPolling,
   startDebugPolling,
   stopDebugPolling,
-} from "./app-polling.ts";
-import { scheduleChatScroll, scheduleLogsScroll } from "./app-scroll.ts";
-import type { OpenClawApp } from "./app.ts";
-import { loadAgentIdentities, loadAgentIdentity } from "./controllers/agent-identity.ts";
-import { loadAgentSkills } from "./controllers/agent-skills.ts";
-import { loadAgents } from "./controllers/agents.ts";
-import { loadChannels } from "./controllers/channels.ts";
-import { loadConfig, loadConfigSchema } from "./controllers/config.ts";
-import { loadCronJobs, loadCronRuns, loadCronStatus } from "./controllers/cron.ts";
-import { loadDebug } from "./controllers/debug.ts";
-import { loadDevices } from "./controllers/devices.ts";
-import { loadExecApprovals } from "./controllers/exec-approvals.ts";
-import { loadLogs } from "./controllers/logs.ts";
-import { loadNodes } from "./controllers/nodes.ts";
-import { loadPresence } from "./controllers/presence.ts";
-import { loadSessions } from "./controllers/sessions.ts";
-import { loadSkills } from "./controllers/skills.ts";
-import { loadUsage } from "./controllers/usage.ts";
+} from "./app-polling";
+import { scheduleChatScroll, scheduleLogsScroll } from "./app-scroll";
+import type { OpenClawApp } from "./app";
+import {
+  loadAgentIdentities,
+  loadAgentIdentity,
+} from "./controllers/agent-identity";
+import { loadAgentSkills } from "./controllers/agent-skills";
+import { loadAgents } from "./controllers/agents";
+import { loadChannels } from "./controllers/channels";
+import { loadConfig, loadConfigSchema } from "./controllers/config";
+import { loadModels } from "./controllers/models";
+import { loadCronJobs, loadCronRuns, loadCronStatus } from "./controllers/cron";
+import { loadDebug } from "./controllers/debug";
+import { loadDevices } from "./controllers/devices";
+import { loadExecApprovals } from "./controllers/exec-approvals";
+import { loadLogs } from "./controllers/logs";
+import { loadNodes } from "./controllers/nodes";
+import { loadPresence } from "./controllers/presence";
+import { loadSessions } from "./controllers/sessions";
+import { loadSkills } from "./controllers/skills";
+import { loadUsage } from "./controllers/usage";
 import {
   inferBasePathFromPathname,
   normalizeBasePath,
@@ -30,12 +34,20 @@ import {
   pathForTab,
   tabFromPath,
   type Tab,
-} from "./navigation.ts";
-import { saveSettings, type UiSettings } from "./storage.ts";
-import { startThemeTransition, type ThemeTransitionContext } from "./theme-transition.ts";
-import { resolveTheme, type ResolvedTheme, type ThemeMode, type ThemeName } from "./theme.ts";
-import type { AgentsListResult, AttentionItem } from "./types.ts";
-import { resetChatViewState } from "./views/chat.ts";
+} from "./navigation";
+import { saveSettings, type UiSettings } from "./storage";
+import {
+  startThemeTransition,
+  type ThemeTransitionContext,
+} from "./theme-transition";
+import {
+  resolveTheme,
+  type ResolvedTheme,
+  type ThemeMode,
+  type ThemeName,
+} from "./theme";
+import type { AgentsListResult, AttentionItem } from "./types";
+import { resetChatViewState } from "./views/chat";
 
 type SettingsHost = {
   settings: UiSettings;
@@ -63,7 +75,8 @@ type SettingsHost = {
 export function applySettings(host: SettingsHost, next: UiSettings) {
   const normalized = {
     ...next,
-    lastActiveSessionKey: next.lastActiveSessionKey?.trim() || next.sessionKey.trim() || "main",
+    lastActiveSessionKey:
+      next.lastActiveSessionKey?.trim() || next.sessionKey.trim() || "main",
   };
   host.settings = normalized;
   saveSettings(normalized);
@@ -93,11 +106,16 @@ export function applySettingsFromUrl(host: SettingsHost) {
   }
   const url = new URL(window.location.href);
   const params = new URLSearchParams(url.search);
-  const hashParams = new URLSearchParams(url.hash.startsWith("#") ? url.hash.slice(1) : url.hash);
+  const hashParams = new URLSearchParams(
+    url.hash.startsWith("#") ? url.hash.slice(1) : url.hash,
+  );
 
-  const gatewayUrlRaw = params.get("gatewayUrl") ?? hashParams.get("gatewayUrl");
+  const gatewayUrlRaw =
+    params.get("gatewayUrl") ?? hashParams.get("gatewayUrl");
   const nextGatewayUrl = gatewayUrlRaw?.trim() ?? "";
-  const gatewayUrlChanged = Boolean(nextGatewayUrl && nextGatewayUrl !== host.settings.gatewayUrl);
+  const gatewayUrlChanged = Boolean(
+    nextGatewayUrl && nextGatewayUrl !== host.settings.gatewayUrl,
+  );
   // Prefer fragment tokens over query tokens. Fragments avoid server-side request
   // logs and referrer leakage; query-param tokens remain a one-time legacy fallback
   // for compatibility with older deep links.
@@ -181,7 +199,11 @@ export function setTab(host: SettingsHost, next: Tab) {
   applyTabSelection(host, next, { refreshPolicy: "always", syncUrl: true });
 }
 
-export function setTheme(host: SettingsHost, next: ThemeName, context?: ThemeTransitionContext) {
+export function setTheme(
+  host: SettingsHost,
+  next: ThemeName,
+  context?: ThemeTransitionContext,
+) {
   const resolved = resolveTheme(next, host.themeMode);
   const applyTheme = () => {
     applySettings(host, { ...host.settings, theme: next });
@@ -238,12 +260,20 @@ export async function refreshActiveTab(host: SettingsHost) {
   if (host.tab === "agents") {
     await loadAgents(host as unknown as OpenClawApp);
     await loadConfig(host as unknown as OpenClawApp);
+    const _app = host as unknown as OpenClawApp;
+    if (_app.client && _app.connected) {
+      void loadModels(_app.client).then((catalog) => {
+        _app.chatModelCatalog = catalog;
+      });
+    }
     const agentIds = host.agentsList?.agents?.map((entry) => entry.id) ?? [];
     if (agentIds.length > 0) {
       void loadAgentIdentities(host as unknown as OpenClawApp, agentIds);
     }
     const agentId =
-      host.agentsSelectedId ?? host.agentsList?.defaultId ?? host.agentsList?.agents?.[0]?.id;
+      host.agentsSelectedId ??
+      host.agentsList?.defaultId ??
+      host.agentsList?.agents?.[0]?.id;
     if (agentId) {
       void loadAgentIdentity(host as unknown as OpenClawApp, agentId);
       if (host.agentsPanel === "skills") {
@@ -288,7 +318,10 @@ export async function refreshActiveTab(host: SettingsHost) {
   if (host.tab === "logs") {
     host.logsAtBottom = true;
     await loadLogs(host as unknown as OpenClawApp, { reset: true });
-    scheduleLogsScroll(host as unknown as Parameters<typeof scheduleLogsScroll>[0], true);
+    scheduleLogsScroll(
+      host as unknown as Parameters<typeof scheduleLogsScroll>[0],
+      true,
+    );
   }
 }
 
@@ -328,14 +361,32 @@ export function applyBorderRadius(value: number) {
   }
   const root = document.documentElement;
   const scale = value / 50;
-  root.style.setProperty("--radius-sm", `${Math.round(BASE_RADII.sm * scale)}px`);
-  root.style.setProperty("--radius-md", `${Math.round(BASE_RADII.md * scale)}px`);
-  root.style.setProperty("--radius-lg", `${Math.round(BASE_RADII.lg * scale)}px`);
-  root.style.setProperty("--radius-xl", `${Math.round(BASE_RADII.xl * scale)}px`);
-  root.style.setProperty("--radius", `${Math.round(BASE_RADII.default * scale)}px`);
+  root.style.setProperty(
+    "--radius-sm",
+    `${Math.round(BASE_RADII.sm * scale)}px`,
+  );
+  root.style.setProperty(
+    "--radius-md",
+    `${Math.round(BASE_RADII.md * scale)}px`,
+  );
+  root.style.setProperty(
+    "--radius-lg",
+    `${Math.round(BASE_RADII.lg * scale)}px`,
+  );
+  root.style.setProperty(
+    "--radius-xl",
+    `${Math.round(BASE_RADII.xl * scale)}px`,
+  );
+  root.style.setProperty(
+    "--radius",
+    `${Math.round(BASE_RADII.default * scale)}px`,
+  );
 }
 
-export function applyResolvedTheme(host: SettingsHost, resolved: ResolvedTheme) {
+export function applyResolvedTheme(
+  host: SettingsHost,
+  resolved: ResolvedTheme,
+) {
   host.themeResolved = resolved;
   if (typeof document === "undefined") {
     return;
@@ -386,7 +437,8 @@ export function syncTabWithLocation(host: SettingsHost, replace: boolean) {
   if (typeof window === "undefined") {
     return;
   }
-  const resolved = tabFromPath(window.location.pathname, host.basePath) ?? "chat";
+  const resolved =
+    tabFromPath(window.location.pathname, host.basePath) ?? "chat";
   setTabFromRoute(host, resolved);
   syncUrlWithTab(host, resolved, replace);
 }
@@ -442,7 +494,9 @@ function applyTabSelection(
     stopLogsPolling(host as unknown as Parameters<typeof stopLogsPolling>[0]);
   }
   if (next === "debug") {
-    startDebugPolling(host as unknown as Parameters<typeof startDebugPolling>[0]);
+    startDebugPolling(
+      host as unknown as Parameters<typeof startDebugPolling>[0],
+    );
   } else {
     stopDebugPolling(host as unknown as Parameters<typeof stopDebugPolling>[0]);
   }
@@ -481,7 +535,11 @@ export function syncUrlWithTab(host: SettingsHost, tab: Tab, replace: boolean) {
   }
 }
 
-export function syncUrlWithSessionKey(host: SettingsHost, sessionKey: string, replace: boolean) {
+export function syncUrlWithSessionKey(
+  host: SettingsHost,
+  sessionKey: string,
+  replace: boolean,
+) {
   if (typeof window === "undefined") {
     return;
   }
@@ -529,7 +587,9 @@ export function hasMissingSkillDependencies(
   if (!missing) {
     return false;
   }
-  return Object.values(missing).some((value) => Array.isArray(value) && value.length > 0);
+  return Object.values(missing).some(
+    (value) => Array.isArray(value) && value.length > 0,
+  );
 }
 
 async function loadOverviewLogs(host: OpenClawApp) {
@@ -571,7 +631,9 @@ function buildAttentionItems(host: OpenClawApp) {
   }
 
   const hello = host.hello;
-  const auth = (hello as { auth?: { role?: string; scopes?: string[] } } | null)?.auth ?? null;
+  const auth =
+    (hello as { auth?: { role?: string; scopes?: string[] } } | null)?.auth ??
+    null;
   if (auth?.scopes && !hasOperatorReadAccess(auth)) {
     items.push({
       severity: "warning",
@@ -585,10 +647,13 @@ function buildAttentionItems(host: OpenClawApp) {
   }
 
   const skills = host.skillsReport?.skills ?? [];
-  const missingDeps = skills.filter((s) => !s.disabled && hasMissingSkillDependencies(s.missing));
+  const missingDeps = skills.filter(
+    (s) => !s.disabled && hasMissingSkillDependencies(s.missing),
+  );
   if (missingDeps.length > 0) {
     const names = missingDeps.slice(0, 3).map((s) => s.name);
-    const more = missingDeps.length > 3 ? ` +${missingDeps.length - 3} more` : "";
+    const more =
+      missingDeps.length > 3 ? ` +${missingDeps.length - 3} more` : "";
     items.push({
       severity: "warning",
       icon: "zap",
@@ -620,7 +685,10 @@ function buildAttentionItems(host: OpenClawApp) {
 
   const now = Date.now();
   const overdue = cronJobs.filter(
-    (j) => j.enabled && j.state?.nextRunAtMs != null && now - j.state.nextRunAtMs > 300_000,
+    (j) =>
+      j.enabled &&
+      j.state?.nextRunAtMs != null &&
+      now - j.state.nextRunAtMs > 300_000,
   );
   if (overdue.length > 0) {
     items.push({
@@ -644,7 +712,8 @@ export async function loadChannelsTab(host: SettingsHost) {
 
 export async function loadCron(host: SettingsHost) {
   const app = host as unknown as OpenClawApp;
-  const activeCronJobId = app.cronRunsScope === "job" ? app.cronRunsJobId : null;
+  const activeCronJobId =
+    app.cronRunsScope === "job" ? app.cronRunsJobId : null;
   await Promise.all([
     loadChannels(app, false),
     loadCronStatus(app),

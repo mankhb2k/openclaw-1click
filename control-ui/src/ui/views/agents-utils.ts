@@ -8,6 +8,7 @@ import type {
   AgentIdentityResult,
   AgentsFilesListResult,
   AgentsListResult,
+  ModelCatalogEntry,
   ToolCatalogProfile,
   ToolsCatalogResult,
 } from "../types";
@@ -595,6 +596,26 @@ export function resolveModelOptions(
 ): ConfiguredModelOption[] {
   const options = resolveConfiguredModels(configForm);
   const hasCurrent = current ? options.some((option) => option.value === current) : false;
+  if (current && !hasCurrent) {
+    options.unshift({ value: current, label: `Current (${current})` });
+  }
+  return options;
+}
+
+export function resolveModelOptionsFromCatalog(
+  catalog: ModelCatalogEntry[],
+  current?: string | null,
+): ConfiguredModelOption[] {
+  if (!catalog || catalog.length === 0) {
+    return [];
+  }
+  const options: ConfiguredModelOption[] = catalog.map((entry) => ({
+    value: entry.id,
+    label: entry.name && entry.name !== entry.id
+      ? `${entry.name} · ${entry.provider}`
+      : `${entry.id} · ${entry.provider}`,
+  }));
+  const hasCurrent = current ? options.some((o) => o.value === current) : false;
   if (current && !hasCurrent) {
     options.unshift({ value: current, label: `Current (${current})` });
   }

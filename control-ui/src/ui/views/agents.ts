@@ -8,6 +8,7 @@ import type {
   ChannelsStatusSnapshot,
   CronJob,
   CronStatus,
+  ModelCatalogEntry,
   SkillStatusReport,
   ToolsCatalogResult,
 } from "../types";
@@ -67,6 +68,14 @@ export type ToolsCatalogState = {
   result: ToolsCatalogResult | null;
 };
 
+export type AddProviderState = {
+  open: boolean;
+  provider: string;
+  key: string;
+  busy: boolean;
+  error: string | null;
+};
+
 export type AgentsProps = {
   basePath: string;
   loading: boolean;
@@ -83,6 +92,8 @@ export type AgentsProps = {
   agentIdentityById: Record<string, AgentIdentityResult>;
   agentSkills: AgentSkillsState;
   toolsCatalog: ToolsCatalogState;
+  modelCatalog: ModelCatalogEntry[];
+  addProvider: AddProviderState;
   onRefresh: () => void;
   onSelectAgent: (agentId: string) => void;
   onSelectPanel: (panel: AgentsPanel) => void;
@@ -106,6 +117,11 @@ export type AgentsProps = {
   onAgentSkillsClear: (agentId: string) => void;
   onAgentSkillsDisableAll: (agentId: string) => void;
   onSetDefault: (agentId: string) => void;
+  onAddProviderOpen: () => void;
+  onAddProviderClose: () => void;
+  onAddProviderProviderChange: (provider: string) => void;
+  onAddProviderKeyChange: (key: string) => void;
+  onAddProviderSubmit: () => void;
 };
 
 export function renderAgents(props: AgentsProps) {
@@ -236,6 +252,13 @@ export function renderAgents(props: AgentsProps) {
                         onModelChange: props.onModelChange,
                         onModelFallbacksChange: props.onModelFallbacksChange,
                         onSelectPanel: props.onSelectPanel,
+                        modelCatalog: props.modelCatalog,
+                        addProvider: props.addProvider,
+                        onAddProviderOpen: props.onAddProviderOpen,
+                        onAddProviderClose: props.onAddProviderClose,
+                        onAddProviderProviderChange: props.onAddProviderProviderChange,
+                        onAddProviderKeyChange: props.onAddProviderKeyChange,
+                        onAddProviderSubmit: props.onAddProviderSubmit,
                       })
                     : nothing
                 }

@@ -3702,6 +3702,42 @@ td.data-table-key-col {
   flex-wrap: wrap;
 }
 
+.add-provider-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fade-in var(--duration-fast) var(--ease-out);
+}
+
+:root[data-theme-mode="light"] .add-provider-overlay {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* .card base styles already apply — override height and shadow only */
+.add-provider-modal {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  box-shadow: var(--shadow-xl);
+  border-color: var(--border-strong);
+}
+
+.add-provider-modal:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-xl);
+}
+
+.add-provider-modal .field input,
+.add-provider-modal .field select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .agent-chip-input {
   display: flex;
   flex-wrap: wrap;

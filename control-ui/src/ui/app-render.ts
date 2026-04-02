@@ -81,6 +81,7 @@ import {
   updateExecApprovalsFormValue,
 } from "./controllers/exec-approvals";
 import { loadLogs } from "./controllers/logs";
+import { loadModels } from "./controllers/models";
 import { loadNodes } from "./controllers/nodes";
 import { loadPresence } from "./controllers/presence";
 import {
@@ -386,6 +387,49 @@ function resolveAssistantAvatarUrl(state: AppViewState): string | undefined {
     return candidate;
   }
   return identity?.avatarUrl;
+}
+
+async function submitAddProvider(state: AppViewState) {
+  const provider = state.addProviderProvider.trim();
+  const key = state.addProviderKey.trim();
+  if (!provider || !key || !state.client || !state.connected) return;
+
+  state.addProviderBusy = true;
+  state.addProviderError = null;
+
+  try {
+    if (!state.configSnapshot?.hash) {
+      await loadConfig(state as Parameters<typeof loadConfig>[0]);
+    }
+    const baseHash = state.configSnapshot?.hash;
+    if (!baseHash) {
+      state.addProviderError = "Could not load config hash. Please reload and try again.";
+      return;
+    }
+
+    const profileId = `${provider}:default`;
+    const patch = {
+      auth: {
+        profiles: {
+          [profileId]: { provider, mode: "api_key", key },
+        },
+        order: {
+          [provider]: [profileId],
+        },
+      },
+    };
+
+    await state.client.request("config.patch", { baseHash, raw: JSON.stringify(patch) });
+
+    state.addProviderOpen = false;
+    state.addProviderKey = "";
+    state.addProviderError = null;
+    // Gateway will restart; on reconnect chatModelCatalog is refreshed via app-settings
+  } catch (err) {
+    state.addProviderError = err instanceof Error ? err.message : String(err);
+  } finally {
+    state.addProviderBusy = false;
+  }
 }
 
 export function renderApp(state: AppViewState) {
@@ -1633,6 +1677,32 @@ export function renderApp(state: AppViewState) {
                     ["agents", "defaultId"],
                     agentId,
                   );
+                },
+                modelCatalog: state.chatModelCatalog,
+                addProvider: {
+                  open: state.addProviderOpen,
+                  provider: state.addProviderProvider,
+                  key: state.addProviderKey,
+                  busy: state.addProviderBusy,
+                  error: state.addProviderError,
+                },
+                onAddProviderOpen: () => {
+                  state.addProviderOpen = true;
+                  state.addProviderError = null;
+                },
+                onAddProviderClose: () => {
+                  state.addProviderOpen = false;
+                  state.addProviderKey = "";
+                  state.addProviderError = null;
+                },
+                onAddProviderProviderChange: (provider) => {
+                  state.addProviderProvider = provider;
+                },
+                onAddProviderKeyChange: (key) => {
+                  state.addProviderKey = key;
+                },
+                onAddProviderSubmit: () => {
+                  void submitAddProvider(state);
                 },
                   }),
                 )}

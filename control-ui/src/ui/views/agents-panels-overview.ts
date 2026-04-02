@@ -1,17 +1,29 @@
 import { html, nothing } from "lit";
 import { t } from "../../i18n/index";
 import { renderUiSelect } from "../components/ui-select";
-import type { AgentIdentityResult, AgentsFilesListResult, AgentsListResult } from "../types";
+import type { AgentIdentityResult, AgentsFilesListResult, AgentsListResult, ModelCatalogEntry } from "../types";
 import {
   normalizeModelValue,
   parseFallbackList,
-  resolveModelOptions,
+  resolveModelOptionsFromCatalog,
   resolveAgentConfig,
   resolveModelFallbacks,
   resolveModelLabel,
   resolveModelPrimary,
 } from "./agents-utils";
-import type { AgentsPanel } from "./agents";
+import type { AddProviderState, AgentsPanel } from "./agents";
+
+const PROVIDER_OPTIONS = [
+  { id: "openai", label: "OpenAI" },
+  { id: "anthropic", label: "Anthropic" },
+  { id: "google", label: "Google (Gemini)" },
+  { id: "openrouter", label: "OpenRouter" },
+  { id: "mistral", label: "Mistral" },
+  { id: "xai", label: "xAI (Grok)" },
+  { id: "together", label: "Together AI" },
+  { id: "groq", label: "Groq" },
+  { id: "kilocode", label: "Kilocode" },
+];
 
 export function renderAgentOverview(params: {
   agent: AgentsListResult["agents"][number];
@@ -30,6 +42,13 @@ export function renderAgentOverview(params: {
   onModelChange: (agentId: string, modelId: string | null) => void;
   onModelFallbacksChange: (agentId: string, fallbacks: string[]) => void;
   onSelectPanel: (panel: AgentsPanel) => void;
+  modelCatalog: ModelCatalogEntry[];
+  addProvider: AddProviderState;
+  onAddProviderOpen: () => void;
+  onAddProviderClose: () => void;
+  onAddProviderProviderChange: (provider: string) => void;
+  onAddProviderKeyChange: (key: string) => void;
+  onAddProviderSubmit: () => void;
 }) {
   const {
     agent,
@@ -43,6 +62,13 @@ export function renderAgentOverview(params: {
     onModelChange,
     onModelFallbacksChange,
     onSelectPanel,
+    modelCatalog,
+    addProvider,
+    onAddProviderOpen,
+    onAddProviderClose,
+    onAddProviderProviderChange,
+    onAddProviderKeyChange,
+    onAddProviderSubmit,
   } = params;
   const config = resolveAgentConfig(configForm, agent.id);
   const workspaceFromFiles =
@@ -82,6 +108,9 @@ export function renderAgentOverview(params: {
     }
   };
 
+  const catalogOptions = resolveModelOptionsFromCatalog(modelCatalog, effectivePrimary ?? undefined);
+  const noCatalog = modelCatalog.length === 0;
+
   return html`
     <section class="card">
       <div class="card-title">${t("agents.overview.title")}</div>
@@ -118,13 +147,26 @@ export function renderAgentOverview(params: {
       }
 
       <div class="agent-model-select" style="margin-top: 20px;">
-        <div class="label">${t("agents.overview.modelSelection")}</div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <div class="label" style="margin-bottom: 0;">${t("agents.overview.modelSelection")}</div>
+          <button
+            type="button"
+            class="btn btn--sm"
+            @click=${onAddProviderOpen}
+          >${t("agents.overview.addApiProvider")}</button>
+        </div>
+
+        ${noCatalog
+          ? html`<div class="callout" style="margin-top: 8px; margin-bottom: 8px;">${t("agents.overview.noProviders")}</div>`
+          : nothing
+        }
+
         <div class="agent-model-fields">
           <label class="field">
             <span>${isDefault ? t("agents.overview.primaryModelDefault") : t("agents.overview.primaryModel")}</span>
             ${renderUiSelect({
               value: isDefault ? (effectivePrimary ?? "") : (entryPrimary ?? ""),
-              disabled,
+              disabled: disabled || noCatalog,
               options: [
                 ...(!isDefault
                   ? [{
@@ -134,7 +176,7 @@ export function renderAgentOverview(params: {
                         : t("agents.overview.inheritDefault"),
                     }]
                   : []),
-                ...resolveModelOptions(configForm, effectivePrimary ?? undefined),
+                ...catalogOptions,
               ],
               onChange: (next) => onModelChange(agent.id, next || null),
             })}
@@ -192,5 +234,68 @@ export function renderAgentOverview(params: {
         </div>
       </div>
     </section>
+
+    ${addProvider.open ? html`
+      <div class="add-provider-overlay" @click=${(e: MouseEvent) => {
+        if ((e.target as HTMLElement).classList.contains("add-provider-overlay")) {
+          onAddProviderClose();
+        }
+      }}>
+        <div class="add-provider-modal card">
+          <div class="card-title">${t("agents.overview.addApiProvider")}</div>
+          <div class="card-sub" style="margin-bottom: 16px;">${t("agents.overview.addApiProviderSub")}</div>
+
+          <label class="field" style="margin-bottom: 12px;">
+            <span>${t("agents.overview.providerLabel")}</span>
+            <select
+              .value=${addProvider.provider}
+              @change=${(e: Event) => onAddProviderProviderChange((e.target as HTMLSelectElement).value)}
+            >
+              ${PROVIDER_OPTIONS.map(
+                (p) => html`<option value=${p.id} ?selected=${p.id === addProvider.provider}>${p.label}</option>`
+              )}
+            </select>
+          </label>
+
+          <label class="field" style="margin-bottom: 16px;">
+            <span>${t("agents.overview.apiKeyLabel")}</span>
+            <input
+              type="password"
+              .value=${addProvider.key}
+              placeholder=${t("agents.overview.apiKeyPlaceholder")}
+              ?disabled=${addProvider.busy}
+              @input=${(e: Event) => onAddProviderKeyChange((e.target as HTMLInputElement).value)}
+              @keydown=${(e: KeyboardEvent) => {
+                if (e.key === "Enter" && !addProvider.busy && addProvider.key.trim()) {
+                  onAddProviderSubmit();
+                }
+              }}
+            />
+          </label>
+
+          ${addProvider.error
+            ? html`<div class="callout danger" style="margin-bottom: 12px;">${addProvider.error}</div>`
+            : nothing
+          }
+
+          <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button
+              type="button"
+              class="btn btn--sm"
+              ?disabled=${addProvider.busy}
+              @click=${onAddProviderClose}
+            >${t("agents.overview.cancel")}</button>
+            <button
+              type="button"
+              class="btn btn--sm primary"
+              ?disabled=${addProvider.busy || !addProvider.key.trim()}
+              @click=${onAddProviderSubmit}
+            >
+              ${addProvider.busy ? t("agents.overview.saving") : t("agents.overview.addApiProviderConfirm")}
+            </button>
+          </div>
+        </div>
+      </div>
+    ` : nothing}
   `;
 }
