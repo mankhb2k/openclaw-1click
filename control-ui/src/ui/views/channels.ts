@@ -22,7 +22,7 @@ import { renderDiscordCard } from "./channels.discord";
 import { renderGoogleChatCard } from "./channels.googlechat";
 import { renderIMessageCard } from "./channels.imessage";
 import { renderNostrCard } from "./channels.nostr";
-import { channelEnabled, renderChannelAccountCount } from "./channels.shared";
+import { channelEnabled, formatConnectedLabel, renderChannelAccountCount } from "./channels.shared";
 import { renderSignalCard } from "./channels.signal";
 import { renderSlackCard } from "./channels.slack";
 import { renderTelegramCard } from "./channels.telegram";
@@ -227,6 +227,7 @@ function renderGenericChannelCard(
   const lastError = typeof status?.lastError === "string" ? status.lastError : undefined;
   const accounts = channelAccounts[key] ?? [];
   const accountCountLabel = renderChannelAccountCount(key, channelAccounts);
+  const connectedLabel = formatConnectedLabel(connected, accounts);
 
   return html`
     <div class="card">
@@ -253,7 +254,7 @@ function renderGenericChannelCard(
               </div>
               <div>
                 <span class="label">${t("channels.labels.connected")}</span>
-                <span>${channelTriState(connected)}</span>
+                <span>${connectedLabel}</span>
               </div>
             </div>
           `

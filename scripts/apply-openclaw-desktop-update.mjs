@@ -66,14 +66,18 @@ const EXEC_HIDE_DONE =
   "process$1.platform === \"win32\" ? { ...options, windowsHide: true } : options);";
 
 function patchUpdateRunnerFiles() {
-  const files = fs.readdirSync(distDir).filter((f) => /^update-runner-.+\.js$/.test(f));
+  const needle = '\treturn {\n\t\tstatus: "skipped",\n\t\tmode: "unknown",\n\t\troot: pkgRoot,\n\t\treason: "not-git-install",';
+  const files = fs.readdirSync(distDir).filter((f) => {
+    if (!f.endsWith(".js")) return false;
+    const c = fs.readFileSync(path.join(distDir, f), "utf8");
+    return c.includes(needle) && !c.includes(MARKER);
+  });
   for (const name of files) {
     const p = path.join(distDir, name);
     let s = fs.readFileSync(p, "utf8");
     if (s.includes(MARKER)) {
       continue;
     }
-    const needle = '\treturn {\n\t\tstatus: "skipped",\n\t\tmode: "unknown",\n\t\troot: pkgRoot,\n\t\treason: "not-git-install",';
     if (!s.includes(needle)) {
       continue;
     }

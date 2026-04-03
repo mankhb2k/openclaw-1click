@@ -3,7 +3,7 @@ import { t } from "../../i18n/index";
 import { formatRelativeTimestamp } from "../format";
 import type { SignalStatus } from "../types";
 import { renderChannelConfigSection } from "./channels.config";
-import { formatProbeStatusLead } from "./channels.shared";
+import { formatConnectedLabel, formatProbeStatusLead, renderChannelStatusPill } from "./channels.shared";
 import type { ChannelsProps } from "./channels.types";
 
 export function renderSignalCard(params: {
@@ -12,11 +12,30 @@ export function renderSignalCard(params: {
   accountCountLabel: unknown;
 }) {
   const { props, signal, accountCountLabel } = params;
+  const connectedLabel = formatConnectedLabel(
+    signal?.connected,
+    props.snapshot?.channelAccounts?.signal ?? null,
+  );
+
+  const isRunning = signal?.running ?? false;
+  const isConfigured = signal?.configured ?? false;
+  const statusPill = isRunning
+    ? renderChannelStatusPill("running", t("channels.status.yes"))
+    : isConfigured
+      ? renderChannelStatusPill("stopped", t("channels.status.no"))
+      : renderChannelStatusPill("inactive", t("common.na"));
 
   return html`
     <div class="card">
-      <div class="card-title">Signal</div>
-      <div class="card-sub">${t("channels.cardSub.signal")}</div>
+      <div class="card-header-top">
+        <div>
+          <div class="card-title">Signal</div>
+          <div class="card-sub">${t("channels.cardSub.signal")}</div>
+        </div>
+        <div class="card-actions">
+          ${statusPill}
+        </div>
+      </div>
       ${accountCountLabel}
 
       <div class="status-list" style="margin-top: 16px;">
@@ -27,6 +46,10 @@ export function renderSignalCard(params: {
         <div>
           <span class="label">${t("channels.labels.running")}</span>
           <span>${signal?.running ? t("channels.status.yes") : t("channels.status.no")}</span>
+        </div>
+        <div>
+          <span class="label">${t("channels.labels.connected")}</span>
+          <span>${connectedLabel}</span>
         </div>
         <div>
           <span class="label">${t("channels.labels.baseUrl")}</span>

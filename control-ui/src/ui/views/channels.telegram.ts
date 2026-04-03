@@ -3,7 +3,7 @@ import { t } from "../../i18n/index";
 import { formatRelativeTimestamp } from "../format";
 import type { ChannelAccountSnapshot, TelegramStatus } from "../types";
 import { renderChannelConfigSection } from "./channels.config";
-import { formatProbeStatusLead, renderChannelStatusPill } from "./channels.shared";
+import { formatConnectedLabel, formatProbeStatusLead, renderChannelStatusPill } from "./channels.shared";
 import type { ChannelsProps } from "./channels.types";
 
 export function renderTelegramCard(params: {
@@ -14,11 +14,13 @@ export function renderTelegramCard(params: {
 }) {
   const { props, telegram, telegramAccounts, accountCountLabel } = params;
   const hasMultipleAccounts = telegramAccounts.length > 1;
+  const connectedLabel = formatConnectedLabel(telegram?.connected, telegramAccounts);
 
   const renderAccountCard = (account: ChannelAccountSnapshot) => {
     const probe = account.probe as { bot?: { username?: string } } | undefined;
     const botUsername = probe?.bot?.username;
     const label = account.name || account.accountId;
+    const accountConnectedLabel = formatConnectedLabel(account.connected);
     return html`
       <div class="account-card">
         <div class="account-card-header">
@@ -35,6 +37,10 @@ export function renderTelegramCard(params: {
           <div>
             <span class="label">${t("channels.labels.configured")}</span>
             <span>${account.configured ? t("channels.status.yes") : t("channels.status.no")}</span>
+          </div>
+          <div>
+            <span class="label">${t("channels.labels.connected")}</span>
+            <span>${accountConnectedLabel}</span>
           </div>
           <div>
             <span class="label">${t("channels.labels.lastInbound")}</span>
@@ -91,6 +97,10 @@ export function renderTelegramCard(params: {
               <div>
                 <span class="label">${t("channels.labels.running")}</span>
                 <span>${telegram?.running ? t("channels.status.yes") : t("channels.status.no")}</span>
+              </div>
+              <div>
+                <span class="label">${t("channels.labels.connected")}</span>
+                <span>${connectedLabel}</span>
               </div>
               <div>
                 <span class="label">${t("channels.labels.mode")}</span>

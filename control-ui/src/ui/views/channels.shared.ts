@@ -20,6 +20,49 @@ export function channelEnabled(key: ChannelKey, props: ChannelsProps) {
   return configured || running || connected || accountActive;
 }
 
+function resolveConnectedFromAccounts(
+  accounts?: ChannelAccountSnapshot[] | null,
+): boolean | null | undefined {
+  if (!accounts?.length) {
+    return undefined;
+  }
+  let sawFalse = false;
+  for (const account of accounts) {
+    if (account.connected === true) {
+      return true;
+    }
+    if (account.connected === false) {
+      sawFalse = true;
+    }
+  }
+  return sawFalse ? false : undefined;
+}
+
+export function resolveChannelConnected(
+  connected: boolean | null | undefined,
+  accounts?: ChannelAccountSnapshot[] | null,
+): boolean | null | undefined {
+  if (typeof connected === "boolean") {
+    return connected;
+  }
+  const fromAccounts = resolveConnectedFromAccounts(accounts);
+  if (typeof fromAccounts === "boolean") {
+    return fromAccounts;
+  }
+  return connected ?? undefined;
+}
+
+export function formatConnectedLabel(
+  connected: boolean | null | undefined,
+  accounts?: ChannelAccountSnapshot[] | null,
+): string {
+  const resolved = resolveChannelConnected(connected, accounts);
+  if (resolved == null) {
+    return t("common.na");
+  }
+  return resolved ? t("channels.status.yes") : t("channels.status.no");
+}
+
 export function getChannelAccountCount(
   key: ChannelKey,
   channelAccounts?: Record<string, ChannelAccountSnapshot[]> | null,

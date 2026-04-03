@@ -135,6 +135,7 @@ export type TelegramStatus = {
   configured: boolean;
   tokenSource?: string | null;
   running: boolean;
+  connected?: boolean | null;
   mode?: string | null;
   lastStartAt?: number | null;
   lastStopAt?: number | null;
@@ -160,6 +161,7 @@ export type DiscordStatus = {
   configured: boolean;
   tokenSource?: string | null;
   running: boolean;
+  connected?: boolean | null;
   lastStartAt?: number | null;
   lastStopAt?: number | null;
   lastError?: string | null;
@@ -182,6 +184,7 @@ export type GoogleChatStatus = {
   webhookPath?: string | null;
   webhookUrl?: string | null;
   running: boolean;
+  connected?: boolean | null;
   lastStartAt?: number | null;
   lastStopAt?: number | null;
   lastError?: string | null;
@@ -213,6 +216,7 @@ export type SlackStatus = {
   botTokenSource?: string | null;
   appTokenSource?: string | null;
   running: boolean;
+  connected?: boolean | null;
   lastStartAt?: number | null;
   lastStopAt?: number | null;
   lastError?: string | null;
@@ -232,6 +236,7 @@ export type SignalStatus = {
   configured: boolean;
   baseUrl: string;
   running: boolean;
+  connected?: boolean | null;
   lastStartAt?: number | null;
   lastStopAt?: number | null;
   lastError?: string | null;
@@ -247,6 +252,7 @@ export type IMessageProbe = {
 export type IMessageStatus = {
   configured: boolean;
   running: boolean;
+  connected?: boolean | null;
   lastStartAt?: number | null;
   lastStopAt?: number | null;
   lastError?: string | null;
@@ -271,6 +277,7 @@ export type NostrStatus = {
   configured: boolean;
   publicKey?: string | null;
   running: boolean;
+  connected?: boolean | null;
   lastStartAt?: number | null;
   lastStopAt?: number | null;
   lastError?: string | null;

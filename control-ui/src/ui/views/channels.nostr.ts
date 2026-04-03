@@ -3,6 +3,7 @@ import { t } from "../../i18n/index";
 import { formatRelativeTimestamp } from "../format";
 import type { ChannelAccountSnapshot, NostrStatus } from "../types";
 import { renderChannelConfigSection } from "./channels.config";
+import { formatConnectedLabel, renderChannelStatusPill } from "./channels.shared";
 import {
   renderNostrProfileForm,
   type NostrProfileFormState,
@@ -53,6 +54,15 @@ export function renderNostrCard(params: {
   const summaryLastError = nostr?.lastError ?? primaryAccount?.lastError ?? null;
   const hasMultipleAccounts = nostrAccounts.length > 1;
   const showingForm = profileFormState !== null && profileFormState !== undefined;
+  const connectedLabel = formatConnectedLabel(nostr?.connected, nostrAccounts);
+
+  const isRunning = summaryRunning;
+  const isConfigured = summaryConfigured;
+  const statusPill = isRunning
+    ? renderChannelStatusPill("running", t("channels.status.yes"))
+    : isConfigured
+      ? renderChannelStatusPill("stopped", t("channels.status.no"))
+      : renderChannelStatusPill("inactive", t("common.na"));
 
   const renderAccountCard = (account: ChannelAccountSnapshot) => {
     const publicKey = (account as { publicKey?: string }).publicKey;
@@ -69,6 +79,10 @@ export function renderNostrCard(params: {
           <div>
             <span class="label">${t("channels.labels.running")}</span>
             <span>${account.running ? t("channels.status.yes") : t("channels.status.no")}</span>
+          </div>
+          <div>
+            <span class="label">${t("channels.labels.connected")}</span>
+            <span>${formatConnectedLabel(account.connected)}</span>
           </div>
           <div>
             <span class="label">${t("channels.labels.configured")}</span>
@@ -185,8 +199,15 @@ export function renderNostrCard(params: {
 
   return html`
     <div class="card">
-      <div class="card-title">Nostr</div>
-      <div class="card-sub">${t("channels.cardSub.nostr")}</div>
+      <div class="card-header-top">
+        <div>
+          <div class="card-title">Nostr</div>
+          <div class="card-sub">${t("channels.cardSub.nostr")}</div>
+        </div>
+        <div class="card-actions">
+          ${statusPill}
+        </div>
+      </div>
       ${accountCountLabel}
 
       ${
@@ -205,6 +226,10 @@ export function renderNostrCard(params: {
               <div>
                 <span class="label">${t("channels.labels.running")}</span>
                 <span>${summaryRunning ? t("channels.status.yes") : t("channels.status.no")}</span>
+              </div>
+              <div>
+                <span class="label">${t("channels.labels.connected")}</span>
+                <span>${connectedLabel}</span>
               </div>
               <div>
                 <span class="label">${t("channels.labels.publicKey")}</span>
