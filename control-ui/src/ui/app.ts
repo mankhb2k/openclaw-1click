@@ -313,6 +313,7 @@ export class OpenClawApp extends LitElement {
   @state() addProviderOpen = false;
   @state() addProviderProvider = "openai";
   @state() addProviderKey = "";
+  @state() addProviderBaseUrl = "http://127.0.0.1:11434";
   @state() addProviderBusy = false;
   @state() addProviderError: string | null = null;
 

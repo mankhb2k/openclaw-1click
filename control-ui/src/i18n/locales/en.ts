@@ -1025,6 +1025,8 @@ export const en: TranslationMap = {
       providerLabel: "Provider",
       apiKeyLabel: "API Key",
       apiKeyPlaceholder: "Paste your API key here…",
+      baseUrlLabel: "Ollama Base URL",
+      baseUrlPlaceholder: "http://127.0.0.1:11434",
       cancel: "Cancel",
       saving: "Saving…",
     },

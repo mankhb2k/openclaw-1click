@@ -389,10 +389,17 @@ function resolveAssistantAvatarUrl(state: AppViewState): string | undefined {
   return identity?.avatarUrl;
 }
 
+const LOCAL_PROVIDERS = new Set(["ollama"]);
+
 async function submitAddProvider(state: AppViewState) {
   const provider = state.addProviderProvider.trim();
+  const isLocal = LOCAL_PROVIDERS.has(provider);
   const key = state.addProviderKey.trim();
-  if (!provider || !key || !state.client || !state.connected) return;
+  const baseUrl = state.addProviderBaseUrl.trim();
+
+  if (!provider || !state.client || !state.connected) return;
+  if (isLocal && !baseUrl) return;
+  if (!isLocal && !key) return;
 
   state.addProviderBusy = true;
   state.addProviderError = null;
@@ -408,21 +415,26 @@ async function submitAddProvider(state: AppViewState) {
     }
 
     const profileId = `${provider}:default`;
-    const patch = {
-      auth: {
-        profiles: {
-          [profileId]: { provider, mode: "api_key", key },
-        },
-        order: {
-          [provider]: [profileId],
-        },
-      },
-    };
+    const patch = isLocal
+      ? {
+          models: { providers: { [provider]: { baseUrl } } },
+          auth: {
+            profiles: { [profileId]: { provider, mode: "api_key", key: `${provider}-local` } },
+            order: { [provider]: [profileId] },
+          },
+        }
+      : {
+          auth: {
+            profiles: { [profileId]: { provider, mode: "api_key", key } },
+            order: { [provider]: [profileId] },
+          },
+        };
 
     await state.client.request("config.patch", { baseHash, raw: JSON.stringify(patch) });
 
     state.addProviderOpen = false;
     state.addProviderKey = "";
+    state.addProviderBaseUrl = "http://127.0.0.1:11434";
     state.addProviderError = null;
     // Gateway will restart; on reconnect chatModelCatalog is refreshed via app-settings
   } catch (err) {
@@ -1683,6 +1695,7 @@ export function renderApp(state: AppViewState) {
                   open: state.addProviderOpen,
                   provider: state.addProviderProvider,
                   key: state.addProviderKey,
+                  baseUrl: state.addProviderBaseUrl,
                   busy: state.addProviderBusy,
                   error: state.addProviderError,
                 },
@@ -1700,6 +1713,9 @@ export function renderApp(state: AppViewState) {
                 },
                 onAddProviderKeyChange: (key) => {
                   state.addProviderKey = key;
+                },
+                onAddProviderBaseUrlChange: (baseUrl) => {
+                  state.addProviderBaseUrl = baseUrl;
                 },
                 onAddProviderSubmit: () => {
                   void submitAddProvider(state);

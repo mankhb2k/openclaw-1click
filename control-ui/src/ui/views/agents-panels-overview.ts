@@ -25,7 +25,10 @@ const PROVIDER_OPTIONS = [
   { id: "together", label: "Together AI" },
   { id: "groq", label: "Groq" },
   { id: "kilocode", label: "Kilocode" },
+  { id: "ollama", label: "Ollama (Local)" },
 ];
+
+const LOCAL_PROVIDERS = new Set(["ollama"]);
 
 export function renderAgentOverview(params: {
   agent: AgentsListResult["agents"][number];
@@ -50,6 +53,7 @@ export function renderAgentOverview(params: {
   onAddProviderClose: () => void;
   onAddProviderProviderChange: (provider: string) => void;
   onAddProviderKeyChange: (key: string) => void;
+  onAddProviderBaseUrlChange: (baseUrl: string) => void;
   onAddProviderSubmit: () => void;
 }) {
   const {
@@ -70,6 +74,7 @@ export function renderAgentOverview(params: {
     onAddProviderClose,
     onAddProviderProviderChange,
     onAddProviderKeyChange,
+    onAddProviderBaseUrlChange,
     onAddProviderSubmit,
   } = params;
   const config = resolveAgentConfig(configForm, agent.id);
@@ -261,21 +266,39 @@ export function renderAgentOverview(params: {
             </select>
           </label>
 
-          <label class="field" style="margin-bottom: 16px;">
-            <span>${t("agents.overview.apiKeyLabel")}</span>
-            <input
-              type="password"
-              .value=${addProvider.key}
-              placeholder=${t("agents.overview.apiKeyPlaceholder")}
-              ?disabled=${addProvider.busy}
-              @input=${(e: Event) => onAddProviderKeyChange((e.target as HTMLInputElement).value)}
-              @keydown=${(e: KeyboardEvent) => {
-                if (e.key === "Enter" && !addProvider.busy && addProvider.key.trim()) {
-                  onAddProviderSubmit();
-                }
-              }}
-            />
-          </label>
+          ${LOCAL_PROVIDERS.has(addProvider.provider) ? html`
+            <label class="field" style="margin-bottom: 16px;">
+              <span>${t("agents.overview.baseUrlLabel")}</span>
+              <input
+                type="text"
+                .value=${addProvider.baseUrl}
+                placeholder=${t("agents.overview.baseUrlPlaceholder")}
+                ?disabled=${addProvider.busy}
+                @input=${(e: Event) => onAddProviderBaseUrlChange((e.target as HTMLInputElement).value)}
+                @keydown=${(e: KeyboardEvent) => {
+                  if (e.key === "Enter" && !addProvider.busy && addProvider.baseUrl.trim()) {
+                    onAddProviderSubmit();
+                  }
+                }}
+              />
+            </label>
+          ` : html`
+            <label class="field" style="margin-bottom: 16px;">
+              <span>${t("agents.overview.apiKeyLabel")}</span>
+              <input
+                type="password"
+                .value=${addProvider.key}
+                placeholder=${t("agents.overview.apiKeyPlaceholder")}
+                ?disabled=${addProvider.busy}
+                @input=${(e: Event) => onAddProviderKeyChange((e.target as HTMLInputElement).value)}
+                @keydown=${(e: KeyboardEvent) => {
+                  if (e.key === "Enter" && !addProvider.busy && addProvider.key.trim()) {
+                    onAddProviderSubmit();
+                  }
+                }}
+              />
+            </label>
+          `}
 
           ${addProvider.error
             ? html`<div class="callout danger" style="margin-bottom: 12px;">${addProvider.error}</div>`
@@ -292,7 +315,7 @@ export function renderAgentOverview(params: {
             <button
               type="button"
               class="btn btn--sm primary"
-              ?disabled=${addProvider.busy || !addProvider.key.trim()}
+              ?disabled=${addProvider.busy || (LOCAL_PROVIDERS.has(addProvider.provider) ? !addProvider.baseUrl.trim() : !addProvider.key.trim())}
               @click=${onAddProviderSubmit}
             >
               ${addProvider.busy ? t("agents.overview.saving") : t("agents.overview.addApiProviderConfirm")}

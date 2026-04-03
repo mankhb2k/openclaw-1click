@@ -10,32 +10,37 @@ import {
   globalShortcut,
   ipcMain,
   nativeImage,
+  nativeTheme,
   shell,
   type Event as ElectronEvent,
   type WebContents,
   type WebContentsConsoleMessageEventParams,
-} from 'electron';
-import axios from 'axios';
-import * as fs from 'fs';
-import * as path from 'path';
-import { spawn, ChildProcess } from 'child_process';
-import treeKill from 'tree-kill';
-import { autoUpdater, type NsisUpdater, type ProgressInfo } from 'electron-updater';
-import { ENV_DATA_ROOT } from '../backend/config';
-import { runFirstLaunchOnboardingIfNeeded } from './onboard';
-import { ENV_DESKTOP_RESOURCES } from '../backend/config';
-import { resolveWindowIconPath } from './app-icon';
-import { resolveElectronRunnerPath } from './electron-runner';
+} from "electron";
+import axios from "axios";
+import * as fs from "fs";
+import * as path from "path";
+import { spawn, ChildProcess } from "child_process";
+import treeKill from "tree-kill";
+import {
+  autoUpdater,
+  type NsisUpdater,
+  type ProgressInfo,
+} from "electron-updater";
+import { ENV_DATA_ROOT } from "../backend/config";
+import { runFirstLaunchOnboardingIfNeeded } from "./onboard";
+import { ENV_DESKTOP_RESOURCES } from "../backend/config";
+import { resolveWindowIconPath } from "./app-icon";
+import { resolveElectronRunnerPath } from "./electron-runner";
 
-const ENV_ELECTRON_RUNNER = 'OPENCLAW_ELECTRON_RUNNER';
+const ENV_ELECTRON_RUNNER = "OPENCLAW_ELECTRON_RUNNER";
 
 /**
  * Empty marker file for packaged builds (see resources/DEVTOOLS.txt).
  * Portable: electron-builder sets PORTABLE_EXECUTABLE_DIR next to the real portable .exe (not Temp).
  */
-const PACKAGED_DEVTOOLS_FLAG = 'openclaw-desktop.devtools';
-const ENV_PORTABLE_EXE_DIR = 'PORTABLE_EXECUTABLE_DIR';
-const ENV_PORTABLE_EXE_FILE = 'PORTABLE_EXECUTABLE_FILE';
+const PACKAGED_DEVTOOLS_FLAG = "openclaw-desktop.devtools";
+const ENV_PORTABLE_EXE_DIR = "PORTABLE_EXECUTABLE_DIR";
+const ENV_PORTABLE_EXE_FILE = "PORTABLE_EXECUTABLE_FILE";
 
 /**
  * Smallest window size the user can resize to (matches Control UI layout floor).
@@ -46,18 +51,18 @@ const MAIN_WINDOW_MIN_WIDTH = 1180;
 const MAIN_WINDOW_MIN_HEIGHT = 700;
 
 let mainWindow: BrowserWindow | null = null;
-const DESKTOP_UPDATE_EVENT = 'desktop:update-state';
+const DESKTOP_UPDATE_EVENT = "desktop:update-state";
 const UPDATE_NOTICE_URL =
-  'https://raw.githubusercontent.com/mankhb2k/openclaw-1click/main/update/update-notice.json';
+  "https://raw.githubusercontent.com/mankhb2k/openclaw-1click/main/update/update-notice.json";
 
 type DesktopUpdatePhase =
-  | 'idle'
-  | 'checking'
-  | 'available'
-  | 'downloading'
-  | 'downloaded'
-  | 'error'
-  | 'unsupported';
+  | "idle"
+  | "checking"
+  | "available"
+  | "downloading"
+  | "downloaded"
+  | "error"
+  | "unsupported";
 type DesktopUpdateState = {
   isPackaged: boolean;
   enabled: boolean;
@@ -73,7 +78,7 @@ type DesktopUpdateState = {
 let desktopUpdateState: DesktopUpdateState = {
   isPackaged: app.isPackaged,
   enabled: false,
-  phase: 'idle',
+  phase: "idle",
   currentVersion: app.getVersion(),
   availableVersion: null,
   announcementTitle: null,
@@ -105,16 +110,16 @@ function getDesktopUpdatePhaseNow(): DesktopUpdatePhase {
 }
 
 function normalizeLocale(locale: string): string[] {
-  const raw = (locale || '').trim().toLowerCase();
+  const raw = (locale || "").trim().toLowerCase();
   if (!raw) {
-    return ['en'];
+    return ["en"];
   }
-  const base = raw.split(/[-_]/)[0] ?? '';
+  const base = raw.split(/[-_]/)[0] ?? "";
   const candidates = [raw];
   if (base && base !== raw) {
     candidates.push(base);
   }
-  candidates.push('en');
+  candidates.push("en");
   return [...new Set(candidates)];
 }
 
@@ -123,17 +128,17 @@ function applyUpdateNoticePlaceholders(
   params?: { newVersion?: string | null; currentVersion?: string | null },
 ): string {
   return text
-    .replaceAll('{newVersion}', params?.newVersion ?? '')
-    .replaceAll('{currentVersion}', params?.currentVersion ?? '')
+    .replaceAll("{newVersion}", params?.newVersion ?? "")
+    .replaceAll("{currentVersion}", params?.currentVersion ?? "")
     .trim();
 }
 
 function getMessagesTable(payload: unknown): Record<string, unknown> | null {
-  if (!payload || typeof payload !== 'object') {
+  if (!payload || typeof payload !== "object") {
     return null;
   }
   const root = payload as Record<string, unknown>;
-  if (root.messages && typeof root.messages === 'object') {
+  if (root.messages && typeof root.messages === "object") {
     return root.messages as Record<string, unknown>;
   }
   return root;
@@ -142,17 +147,17 @@ function getMessagesTable(payload: unknown): Record<string, unknown> | null {
 function pickLocalizedNoticeField(
   messages: Record<string, unknown>,
   locale: string,
-  field: 'title' | 'description',
+  field: "title" | "description",
   params?: { newVersion?: string | null; currentVersion?: string | null },
 ): string | null {
   const candidates = normalizeLocale(locale);
   for (const key of candidates) {
     const entry = messages[key];
-    if (!entry || typeof entry !== 'object') {
+    if (!entry || typeof entry !== "object") {
       continue;
     }
     const raw = (entry as Record<string, unknown>)[field];
-    if (typeof raw === 'string' && raw.trim()) {
+    if (typeof raw === "string" && raw.trim()) {
       return applyUpdateNoticePlaceholders(raw, params);
     }
   }
@@ -167,15 +172,20 @@ async function fetchLocalizedUpdateNotice(params?: {
     const locale = app.getLocale();
     const response = await axios.get(UPDATE_NOTICE_URL, {
       timeout: 5000,
-      responseType: 'json',
+      responseType: "json",
     });
     const table = getMessagesTable(response.data);
     if (!table) {
       return { title: null, description: null };
     }
     return {
-      title: pickLocalizedNoticeField(table, locale, 'title', params),
-      description: pickLocalizedNoticeField(table, locale, 'description', params),
+      title: pickLocalizedNoticeField(table, locale, "title", params),
+      description: pickLocalizedNoticeField(
+        table,
+        locale,
+        "description",
+        params,
+      ),
     };
   } catch {
     return { title: null, description: null };
@@ -183,11 +193,13 @@ async function fetchLocalizedUpdateNotice(params?: {
 }
 
 function isPortableRuntime(): boolean {
-  return Boolean(process.env[ENV_PORTABLE_EXE_FILE] || process.env[ENV_PORTABLE_EXE_DIR]);
+  return Boolean(
+    process.env[ENV_PORTABLE_EXE_FILE] || process.env[ENV_PORTABLE_EXE_DIR],
+  );
 }
 
 function isElectronUpdaterEnabled(): boolean {
-  return app.isPackaged && process.platform === 'win32' && !isPortableRuntime();
+  return app.isPackaged && process.platform === "win32" && !isPortableRuntime();
 }
 
 /**
@@ -196,7 +208,7 @@ function isElectronUpdaterEnabled(): boolean {
  * same cert as the installed app. Env: OPENCLAW_SKIP_WINDOWS_UPDATE_SIGNATURE
  */
 function shouldSkipWindowsUpdateSignatureVerify(): boolean {
-  return process.env.OPENCLAW_SKIP_WINDOWS_UPDATE_SIGNATURE === '1';
+  return process.env.OPENCLAW_SKIP_WINDOWS_UPDATE_SIGNATURE === "1";
 }
 
 /** Serialize `downloadUpdate()` so rapid double-clicks / duplicate IPC cannot start two downloads. */
@@ -207,12 +219,15 @@ async function checkDesktopUpdates(): Promise<void> {
     return;
   }
   // Do not clobber an active or finished download with a new "checking" cycle.
-  if (desktopUpdateState.phase === 'downloading' || desktopUpdateState.phase === 'downloaded') {
+  if (
+    desktopUpdateState.phase === "downloading" ||
+    desktopUpdateState.phase === "downloaded"
+  ) {
     return;
   }
   setDesktopUpdateState({
     enabled: true,
-    phase: 'checking',
+    phase: "checking",
     availableVersion: null,
     announcementTitle: null,
     announcementDescription: null,
@@ -223,7 +238,7 @@ async function checkDesktopUpdates(): Promise<void> {
     await autoUpdater.checkForUpdates();
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    setDesktopUpdateState({ phase: 'error', message });
+    setDesktopUpdateState({ phase: "error", message });
   }
 }
 
@@ -231,21 +246,21 @@ async function downloadDesktopUpdate(): Promise<void> {
   if (!isElectronUpdaterEnabled()) {
     return;
   }
-  if (desktopUpdateState.phase === 'downloaded') {
+  if (desktopUpdateState.phase === "downloaded") {
     return;
   }
-  if (desktopUpdateState.phase === 'downloading') {
+  if (desktopUpdateState.phase === "downloading") {
     if (desktopDownloadInFlight) {
       await desktopDownloadInFlight;
     }
     return;
   }
-  if (desktopUpdateState.phase !== 'available') {
+  if (desktopUpdateState.phase !== "available") {
     return;
   }
   const run = async () => {
     setDesktopUpdateState({
-      phase: 'downloading',
+      phase: "downloading",
       progressPercent: 0,
       message: null,
     });
@@ -253,7 +268,7 @@ async function downloadDesktopUpdate(): Promise<void> {
       await autoUpdater.downloadUpdate();
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      setDesktopUpdateState({ phase: 'error', message, progressPercent: null });
+      setDesktopUpdateState({ phase: "error", message, progressPercent: null });
       throw error;
     }
   };
@@ -264,7 +279,10 @@ async function downloadDesktopUpdate(): Promise<void> {
 }
 
 function installDesktopUpdate(): void {
-  if (!isElectronUpdaterEnabled() || desktopUpdateState.phase !== 'downloaded') {
+  if (
+    !isElectronUpdaterEnabled() ||
+    desktopUpdateState.phase !== "downloaded"
+  ) {
     return;
   }
   // Windows NSIS: first arg must be `true` or the downloaded Setup.exe opens the full wizard (per-user vs all users, etc.).
@@ -278,17 +296,18 @@ function initDesktopUpdater(): void {
   if (!isElectronUpdaterEnabled()) {
     setDesktopUpdateState({
       enabled: false,
-      phase: 'unsupported',
+      phase: "unsupported",
       availableVersion: null,
       announcementTitle: null,
       announcementDescription: null,
       progressPercent: null,
-      message: 'Auto-update chỉ hỗ trợ bản cài NSIS, không hỗ trợ bản portable.',
+      message:
+        "Auto-update chỉ hỗ trợ bản cài NSIS, không hỗ trợ bản portable.",
     });
     return;
   }
 
-  setDesktopUpdateState({ enabled: true, phase: 'idle', message: null });
+  setDesktopUpdateState({ enabled: true, phase: "idle", message: null });
   autoUpdater.autoDownload = false;
   autoUpdater.autoInstallOnAppQuit = false;
 
@@ -296,12 +315,15 @@ function initDesktopUpdater(): void {
     (autoUpdater as NsisUpdater).verifyUpdateCodeSignature = async () => null;
   }
 
-  autoUpdater.on('checking-for-update', () => {
-    if (desktopUpdateState.phase === 'downloading' || desktopUpdateState.phase === 'downloaded') {
+  autoUpdater.on("checking-for-update", () => {
+    if (
+      desktopUpdateState.phase === "downloading" ||
+      desktopUpdateState.phase === "downloaded"
+    ) {
       return;
     }
     setDesktopUpdateState({
-      phase: 'checking',
+      phase: "checking",
       availableVersion: null,
       announcementTitle: null,
       announcementDescription: null,
@@ -309,12 +331,15 @@ function initDesktopUpdater(): void {
       message: null,
     });
   });
-  autoUpdater.on('update-not-available', () => {
-    if (desktopUpdateState.phase === 'downloading' || desktopUpdateState.phase === 'downloaded') {
+  autoUpdater.on("update-not-available", () => {
+    if (
+      desktopUpdateState.phase === "downloading" ||
+      desktopUpdateState.phase === "downloaded"
+    ) {
       return;
     }
     setDesktopUpdateState({
-      phase: 'idle',
+      phase: "idle",
       availableVersion: null,
       announcementTitle: null,
       announcementDescription: null,
@@ -322,19 +347,25 @@ function initDesktopUpdater(): void {
       message: null,
     });
   });
-  autoUpdater.on('update-available', async (info) => {
-    if (getDesktopUpdatePhaseNow() === 'downloading' || getDesktopUpdatePhaseNow() === 'downloaded') {
+  autoUpdater.on("update-available", async (info) => {
+    if (
+      getDesktopUpdatePhaseNow() === "downloading" ||
+      getDesktopUpdatePhaseNow() === "downloaded"
+    ) {
       return;
     }
     const { title, description } = await fetchLocalizedUpdateNotice({
       newVersion: info.version ?? null,
       currentVersion: app.getVersion(),
     });
-    if (getDesktopUpdatePhaseNow() === 'downloading' || getDesktopUpdatePhaseNow() === 'downloaded') {
+    if (
+      getDesktopUpdatePhaseNow() === "downloading" ||
+      getDesktopUpdatePhaseNow() === "downloaded"
+    ) {
       return;
     }
     setDesktopUpdateState({
-      phase: 'available',
+      phase: "available",
       availableVersion: info.version ?? null,
       announcementTitle: title,
       announcementDescription: description,
@@ -342,27 +373,30 @@ function initDesktopUpdater(): void {
       message: null,
     });
   });
-  autoUpdater.on('download-progress', (progress: ProgressInfo) => {
+  autoUpdater.on("download-progress", (progress: ProgressInfo) => {
     // electron-updater can emit extra progress after `update-downloaded` (e.g. NSIS / blockmap).
     // Never move back from `downloaded` → `downloading` or the UI looks like a second download.
-    if (getDesktopUpdatePhaseNow() === 'downloaded') {
+    if (getDesktopUpdatePhaseNow() === "downloaded") {
       return;
     }
     setDesktopUpdateState({
-      phase: 'downloading',
-      progressPercent: Number.isFinite(progress.percent) ? progress.percent : null,
+      phase: "downloading",
+      progressPercent: Number.isFinite(progress.percent)
+        ? progress.percent
+        : null,
     });
   });
-  autoUpdater.on('update-downloaded', () => {
+  autoUpdater.on("update-downloaded", () => {
     setDesktopUpdateState({
-      phase: 'downloaded',
+      phase: "downloaded",
       progressPercent: 100,
-      message: 'Bản cập nhật đã tải xong. Nhấn Update lần nữa để cài đặt và khởi động lại.',
+      message:
+        "Bản cập nhật đã tải xong. Nhấn Update lần nữa để cài đặt và khởi động lại.",
     });
   });
-  autoUpdater.on('error', (error) => {
+  autoUpdater.on("error", (error) => {
     const message = error instanceof Error ? error.message : String(error);
-    setDesktopUpdateState({ phase: 'error', message, progressPercent: null });
+    setDesktopUpdateState({ phase: "error", message, progressPercent: null });
   });
 }
 
@@ -378,7 +412,7 @@ if (app.isPackaged) {
 }
 
 /** Windows: some GPUs/drivers leave the WebContents black until this is set (try if the UI stays blank). */
-if (process.env.OPENCLAW_DESKTOP_DISABLE_GPU === '1') {
+if (process.env.OPENCLAW_DESKTOP_DISABLE_GPU === "1") {
   app.disableHardwareAcceleration();
 }
 
@@ -388,16 +422,16 @@ function getProjectRoot(): string {
   if (app.isPackaged) {
     return app.getAppPath();
   }
-  return path.resolve(__dirname, '..', '..');
+  return path.resolve(__dirname, "..", "..");
 }
 
 function getDataRoot(): string {
   const override = process.env[ENV_DATA_ROOT]?.trim();
   if (override) return path.resolve(override);
   if (!app.isPackaged) {
-    return path.resolve(getProjectRoot(), '.openclaw-desktop-data');
+    return path.resolve(getProjectRoot(), ".openclaw-desktop-data");
   }
-  return app.getPath('userData');
+  return app.getPath("userData");
 }
 
 function packagedDevtoolsFlagPaths(): string[] {
@@ -411,12 +445,14 @@ function packagedDevtoolsFlagPaths(): string[] {
     raw.push(path.join(path.dirname(portableFile), PACKAGED_DEVTOOLS_FLAG));
   }
   try {
-    raw.push(path.join(path.dirname(app.getPath('exe')), PACKAGED_DEVTOOLS_FLAG));
+    raw.push(
+      path.join(path.dirname(app.getPath("exe")), PACKAGED_DEVTOOLS_FLAG),
+    );
   } catch {
     /* ignore */
   }
   try {
-    raw.push(path.join(app.getPath('userData'), PACKAGED_DEVTOOLS_FLAG));
+    raw.push(path.join(app.getPath("userData"), PACKAGED_DEVTOOLS_FLAG));
   } catch {
     /* ignore */
   }
@@ -438,7 +474,7 @@ function isPackagedDevtoolsEnabled(): boolean {
   if (!app.isPackaged) {
     return false;
   }
-  if (process.env.OPENCLAW_DESKTOP_DEVTOOLS === '1') {
+  if (process.env.OPENCLAW_DESKTOP_DEVTOOLS === "1") {
     return true;
   }
   for (const p of packagedDevtoolsFlagPaths()) {
@@ -454,12 +490,15 @@ function isPackagedDevtoolsEnabled(): boolean {
 }
 
 function resolveOpenClawCliScript(appRoot: string): string {
-  return path.join(appRoot, 'node_modules', 'openclaw', 'openclaw.mjs');
+  return path.join(appRoot, "node_modules", "openclaw", "openclaw.mjs");
 }
 
-function readReadyState(dataRoot: string): { controlUiUrl: string; gatewayPort: number } {
-  const readyFile = path.join(dataRoot, 'launcher-ready.json');
-  const raw = fs.readFileSync(readyFile, 'utf8');
+function readReadyState(dataRoot: string): {
+  controlUiUrl: string;
+  gatewayPort: number;
+} {
+  const readyFile = path.join(dataRoot, "launcher-ready.json");
+  const raw = fs.readFileSync(readyFile, "utf8");
   const parsed = JSON.parse(raw) as {
     controlUiUrl?: string;
     /** @deprecated */
@@ -467,14 +506,17 @@ function readReadyState(dataRoot: string): { controlUiUrl: string; gatewayPort: 
     gatewayPort?: number;
   };
   const controlUiUrl = parsed.controlUiUrl || parsed.dashboardUrl;
-  if (!controlUiUrl || typeof parsed.gatewayPort !== 'number') {
-    throw new Error('Invalid launcher-ready.json');
+  if (!controlUiUrl || typeof parsed.gatewayPort !== "number") {
+    throw new Error("Invalid launcher-ready.json");
   }
   return { controlUiUrl, gatewayPort: parsed.gatewayPort };
 }
 
-async function waitForLauncherReady(dataRoot: string, timeoutMs: number): Promise<void> {
-  const readyFile = path.join(dataRoot, 'launcher-ready.json');
+async function waitForLauncherReady(
+  dataRoot: string,
+  timeoutMs: number,
+): Promise<void> {
+  const readyFile = path.join(dataRoot, "launcher-ready.json");
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     try {
@@ -487,11 +529,11 @@ async function waitForLauncherReady(dataRoot: string, timeoutMs: number): Promis
     }
     await new Promise((r) => setTimeout(r, 250));
   }
-  throw new Error('Backend launcher did not become ready in time');
+  throw new Error("Backend launcher did not become ready in time");
 }
 
 async function ensureBackendAndGetUrl(dataRoot: string): Promise<string> {
-  const readyFile = path.join(dataRoot, 'launcher-ready.json');
+  const readyFile = path.join(dataRoot, "launcher-ready.json");
   if (
     backendLauncher &&
     backendLauncher.exitCode === null &&
@@ -509,23 +551,23 @@ async function ensureBackendAndGetUrl(dataRoot: string): Promise<string> {
 }
 
 function startBackendLauncher(dataRoot: string): void {
-  const startScript = path.join(__dirname, '..', 'backend', 'start.js');
+  const startScript = path.join(__dirname, "..", "backend", "start.js");
   const appRoot = getProjectRoot();
   const cliScript = resolveOpenClawCliScript(appRoot);
 
   fs.mkdirSync(dataRoot, { recursive: true });
 
   try {
-    if (fs.existsSync(path.join(dataRoot, 'launcher-ready.json'))) {
-      fs.unlinkSync(path.join(dataRoot, 'launcher-ready.json'));
+    if (fs.existsSync(path.join(dataRoot, "launcher-ready.json"))) {
+      fs.unlinkSync(path.join(dataRoot, "launcher-ready.json"));
     }
   } catch {
     /* ignore */
   }
 
   const seedWorkspace = app.isPackaged
-    ? path.join(process.resourcesPath, 'resources', 'workspace')
-    : path.resolve(getProjectRoot(), 'resources', 'workspace');
+    ? path.join(process.resourcesPath, "resources", "workspace")
+    : path.resolve(getProjectRoot(), "resources", "workspace");
 
   const electronRunner = resolveElectronRunnerPath();
   // Windows: cwd must be a real directory — never rely on default when paths contain spaces / asar.
@@ -534,23 +576,25 @@ function startBackendLauncher(dataRoot: string): void {
     cwd: backendCwd,
     env: {
       ...process.env,
-      ELECTRON_RUN_AS_NODE: '1',
+      ELECTRON_RUN_AS_NODE: "1",
       [ENV_DATA_ROOT]: dataRoot,
       OPENCLAW_APP_ROOT: appRoot,
       OPENCLAW_CLI_SCRIPT: cliScript,
-      OPENCLAW_SEED_WORKSPACE: fs.existsSync(seedWorkspace) ? seedWorkspace : '',
+      OPENCLAW_SEED_WORKSPACE: fs.existsSync(seedWorkspace)
+        ? seedWorkspace
+        : "",
       [ENV_ELECTRON_RUNNER]: electronRunner,
     },
-    stdio: ['ignore', 'pipe', 'pipe'],
+    stdio: ["ignore", "pipe", "pipe"],
     windowsHide: true,
   });
 
   const forward = (label: string, chunk: Buffer) => {
     process.stdout.write(`[backend] ${label} ${chunk.toString()}`);
   };
-  backendLauncher.stdout?.on('data', (c) => forward('out', c));
-  backendLauncher.stderr?.on('data', (c) => forward('err', c));
-  backendLauncher.on('exit', (code, signal) => {
+  backendLauncher.stdout?.on("data", (c) => forward("out", c));
+  backendLauncher.stderr?.on("data", (c) => forward("err", c));
+  backendLauncher.on("exit", (code, signal) => {
     console.error(`[backend] launcher exited code=${code} signal=${signal}`);
     backendLauncher = null;
   });
@@ -558,11 +602,11 @@ function startBackendLauncher(dataRoot: string): void {
 
 async function openControlUiInBrowser(): Promise<void> {
   const dataRoot = getDataRoot();
-  const readyPath = path.join(dataRoot, 'launcher-ready.json');
+  const readyPath = path.join(dataRoot, "launcher-ready.json");
   if (!fs.existsSync(readyPath)) {
     dialog.showErrorBox(
-      'OpenClaw Control UI',
-      'launcher-ready.json was not found. Wait until the app has finished starting the backend.',
+      "OpenClaw Control UI",
+      "launcher-ready.json was not found. Wait until the app has finished starting the backend.",
     );
     return;
   }
@@ -571,14 +615,20 @@ async function openControlUiInBrowser(): Promise<void> {
     ({ controlUiUrl } = readReadyState(dataRoot));
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    dialog.showErrorBox('OpenClaw Control UI', `Could not read launcher state: ${msg}`);
+    dialog.showErrorBox(
+      "OpenClaw Control UI",
+      `Could not read launcher state: ${msg}`,
+    );
     return;
   }
   try {
     await shell.openExternal(controlUiUrl);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    dialog.showErrorBox('OpenClaw Control UI', `Could not open browser: ${msg}`);
+    dialog.showErrorBox(
+      "OpenClaw Control UI",
+      `Could not open browser: ${msg}`,
+    );
   }
 }
 
@@ -587,10 +637,10 @@ async function openControlUiInBrowser(): Promise<void> {
  * Mở Control UI trong browser: phím Ctrl+Shift+O / Cmd+Shift+O (globalShortcut).
  */
 function buildApplicationMenu(): void {
-  if (process.platform === 'darwin') {
+  if (process.platform === "darwin") {
     const openControlUi: Electron.MenuItemConstructorOptions = {
-      label: 'Open OpenClaw Control UI in browser…',
-      accelerator: 'CmdOrCtrl+Shift+O',
+      label: "Open OpenClaw Control UI in browser…",
+      accelerator: "CmdOrCtrl+Shift+O",
       click: () => {
         void openControlUiInBrowser();
       },
@@ -600,31 +650,31 @@ function buildApplicationMenu(): void {
         {
           label: app.name,
           submenu: [
-            { role: 'about' },
-            { type: 'separator' },
+            { role: "about" },
+            { type: "separator" },
             openControlUi,
-            { type: 'separator' },
-            { role: 'services' },
-            { type: 'separator' },
-            { role: 'hide' },
-            { role: 'hideOthers' },
-            { role: 'unhide' },
-            { type: 'separator' },
-            { role: 'quit' },
+            { type: "separator" },
+            { role: "services" },
+            { type: "separator" },
+            { role: "hide" },
+            { role: "hideOthers" },
+            { role: "unhide" },
+            { type: "separator" },
+            { role: "quit" },
           ],
         },
         {
-          label: 'Edit',
+          label: "Edit",
           submenu: [
-            { role: 'undo' },
-            { role: 'redo' },
-            { type: 'separator' },
-            { role: 'cut' },
-            { role: 'copy' },
-            { role: 'paste' },
+            { role: "undo" },
+            { role: "redo" },
+            { type: "separator" },
+            { role: "cut" },
+            { role: "copy" },
+            { role: "paste" },
           ],
         },
-      ])
+      ]),
     );
   } else {
     Menu.setApplicationMenu(null);
@@ -633,19 +683,21 @@ function buildApplicationMenu(): void {
 
 /** Windows/Linux: không có menu File nên đăng ký phím tắt toàn cục. macOS dùng accelerator trong menu app. */
 function registerGlobalShortcuts(): void {
-  if (process.platform === 'darwin') return;
-  const registered = globalShortcut.register('CommandOrControl+Shift+O', () => {
+  if (process.platform === "darwin") return;
+  const registered = globalShortcut.register("CommandOrControl+Shift+O", () => {
     void openControlUiInBrowser();
   });
   if (!registered) {
-    console.warn('[main] Could not register global shortcut CommandOrControl+Shift+O');
+    console.warn(
+      "[main] Could not register global shortcut CommandOrControl+Shift+O",
+    );
   }
 }
 
 function isHttpOrHttpsUrl(raw: string): boolean {
   try {
     const u = new URL(raw);
-    return u.protocol === 'http:' || u.protocol === 'https:';
+    return u.protocol === "http:" || u.protocol === "https:";
   } catch {
     return false;
   }
@@ -654,12 +706,15 @@ function isHttpOrHttpsUrl(raw: string): boolean {
 /**
  * Liên kết web (http/https) mở bằng trình duyệt hệ thống; không tạo BrowserWindow/tab mới trong Electron.
  */
-function wireControlUiExternalLinks(wc: WebContents, controlUiUrl: string): void {
+function wireControlUiExternalLinks(
+  wc: WebContents,
+  controlUiUrl: string,
+): void {
   wc.setWindowOpenHandler(({ url }) => {
     if (isHttpOrHttpsUrl(url)) {
       void shell.openExternal(url);
     }
-    return { action: 'deny' };
+    return { action: "deny" };
   });
 
   let sameOrigin: string;
@@ -669,7 +724,7 @@ function wireControlUiExternalLinks(wc: WebContents, controlUiUrl: string): void
     return;
   }
 
-  wc.on('will-navigate', (event, url) => {
+  wc.on("will-navigate", (event, url) => {
     try {
       const target = new URL(url);
       if (target.origin === sameOrigin) {
@@ -686,106 +741,111 @@ function wireControlUiExternalLinks(wc: WebContents, controlUiUrl: string): void
 }
 
 function registerDesktopUpdateHandler(): void {
-  ipcMain.removeHandler('desktop:run-update-openclaw');
-  ipcMain.removeHandler('desktop:update:get-state');
-  ipcMain.removeHandler('desktop:update:check');
-  ipcMain.removeHandler('desktop:update:download');
-  ipcMain.removeHandler('desktop:update:install');
-  ipcMain.handle('desktop:update:get-state', async () => desktopUpdateState);
-  ipcMain.handle('desktop:update:check', async () => {
+  ipcMain.removeHandler("desktop:run-update-openclaw");
+  ipcMain.removeHandler("desktop:update:get-state");
+  ipcMain.removeHandler("desktop:update:check");
+  ipcMain.removeHandler("desktop:update:download");
+  ipcMain.removeHandler("desktop:update:install");
+  ipcMain.handle("desktop:update:get-state", async () => desktopUpdateState);
+  ipcMain.handle("desktop:update:check", async () => {
     await checkDesktopUpdates();
     return desktopUpdateState;
   });
-  ipcMain.handle('desktop:update:download', async () => {
+  ipcMain.handle("desktop:update:download", async () => {
     await downloadDesktopUpdate();
     return desktopUpdateState;
   });
-  ipcMain.handle('desktop:update:install', async () => {
+  ipcMain.handle("desktop:update:install", async () => {
     installDesktopUpdate();
     return { ok: true as const };
   });
-  ipcMain.handle('desktop:run-update-openclaw', async () => {
+  ipcMain.handle("desktop:run-update-openclaw", async () => {
     if (app.isPackaged) {
       if (!isElectronUpdaterEnabled()) {
         return {
           ok: false as const,
-          error: 'Auto-update chỉ hỗ trợ bản cài NSIS. Bản portable vui lòng tải bản mới từ GitHub Releases.',
+          error:
+            "Auto-update chỉ hỗ trợ bản cài NSIS. Bản portable vui lòng tải bản mới từ GitHub Releases.",
         };
       }
-      if (desktopUpdateState.phase === 'downloaded') {
+      if (desktopUpdateState.phase === "downloaded") {
         installDesktopUpdate();
-        return { ok: true as const, message: 'Đang cài đặt bản mới và khởi động lại ứng dụng.' };
+        return {
+          ok: true as const,
+          message: "Đang cài đặt bản mới và khởi động lại ứng dụng.",
+        };
       }
       await downloadDesktopUpdate();
       return {
         ok: true as const,
         message:
-          desktopUpdateState.phase === 'downloading'
-            ? 'Đang tải bản cập nhật...'
-            : 'Chưa có bản cập nhật sẵn sàng.',
+          desktopUpdateState.phase === "downloading"
+            ? "Đang tải bản cập nhật..."
+            : "Chưa có bản cập nhật sẵn sàng.",
       };
     }
     const appRoot = getProjectRoot();
-    const pkgPath = path.join(appRoot, 'package.json');
+    const pkgPath = path.join(appRoot, "package.json");
     if (!fs.existsSync(pkgPath)) {
       return {
         ok: false as const,
-        error: 'Không tìm thấy package.json tại thư mục ứng dụng.',
+        error: "Không tìm thấy package.json tại thư mục ứng dụng.",
       };
     }
 
     return await new Promise<
-      { ok: true; message?: string } | { ok: false; error?: string; stderrTail?: string }
-    >(
-      (resolve) => {
-        const child = spawn('npm', ['run', 'update:openclaw'], {
-          cwd: appRoot,
-          shell: true,
-          windowsHide: true,
-          env: { ...process.env },
+      | { ok: true; message?: string }
+      | { ok: false; error?: string; stderrTail?: string }
+    >((resolve) => {
+      const child = spawn("npm", ["run", "update:openclaw"], {
+        cwd: appRoot,
+        shell: true,
+        windowsHide: true,
+        env: { ...process.env },
+      });
+      let stderr = "";
+      let stdout = "";
+      child.stderr?.on("data", (c: Buffer) => {
+        stderr += c.toString();
+        if (stderr.length > 24_000) {
+          stderr = stderr.slice(-24_000);
+        }
+      });
+      child.stdout?.on("data", (c: Buffer) => {
+        stdout += c.toString();
+        if (stdout.length > 16_000) {
+          stdout = stdout.slice(-16_000);
+        }
+      });
+      child.on("error", (err) => {
+        resolve({ ok: false, error: err.message });
+      });
+      child.on("close", (code) => {
+        if (code === 0) {
+          resolve({ ok: true });
+          return;
+        }
+        const tail = (stderr.trim() || stdout.trim() || `exit ${code}`).slice(
+          -4000,
+        );
+        resolve({
+          ok: false,
+          error: `npm run update:openclaw thất bại (mã ${code}).`,
+          stderrTail: tail,
         });
-        let stderr = '';
-        let stdout = '';
-        child.stderr?.on('data', (c: Buffer) => {
-          stderr += c.toString();
-          if (stderr.length > 24_000) {
-            stderr = stderr.slice(-24_000);
-          }
-        });
-        child.stdout?.on('data', (c: Buffer) => {
-          stdout += c.toString();
-          if (stdout.length > 16_000) {
-            stdout = stdout.slice(-16_000);
-          }
-        });
-        child.on('error', (err) => {
-          resolve({ ok: false, error: err.message });
-        });
-        child.on('close', (code) => {
-          if (code === 0) {
-            resolve({ ok: true });
-            return;
-          }
-          const tail = (stderr.trim() || stdout.trim() || `exit ${code}`).slice(-4000);
-          resolve({
-            ok: false,
-            error: `npm run update:openclaw thất bại (mã ${code}).`,
-            stderrTail: tail,
-          });
-        });
-      },
-    );
+      });
+    });
   });
 }
 
 function killBackendTree(): void {
   if (backendLauncher?.pid) {
     try {
-      treeKill(backendLauncher.pid, 'SIGTERM', (err) => {
-        if (err) console.error('[backend] tree-kill:', err.message);
+      treeKill(backendLauncher.pid, "SIGTERM", (err) => {
+        if (err) console.error("[backend] tree-kill:", err.message);
       });
     } catch (e) {
-      console.error('[backend] kill failed', e);
+      console.error("[backend] kill failed", e);
     }
   }
   backendLauncher = null;
@@ -806,10 +866,10 @@ async function createWindow(): Promise<void> {
     minWidth: MAIN_WINDOW_MIN_WIDTH,
     minHeight: MAIN_WINDOW_MIN_HEIGHT,
     show: false,
-    backgroundColor: '#0e1015',
+    backgroundColor: "#0e1015",
     title: dashboardWindowTitle(),
     // Windows: empty icon removes the small logo in the native title bar (exe/taskbar icon unchanged).
-    ...(process.platform === 'win32'
+    ...(process.platform === "win32"
       ? { icon: nativeImage.createEmpty() }
       : windowIcon
         ? { icon: windowIcon }
@@ -817,39 +877,46 @@ async function createWindow(): Promise<void> {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
-      preload: path.join(__dirname, 'preload-control-ui.js'),
+      preload: path.join(__dirname, "preload-control-ui.js"),
     },
   });
 
-  mainWindow.on('page-title-updated', (e) => {
+  mainWindow.on("page-title-updated", (e) => {
     e.preventDefault();
     mainWindow?.setTitle(dashboardWindowTitle());
   });
 
   wireControlUiExternalLinks(mainWindow.webContents, controlUiUrl);
 
-  mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL, isMainFrame) => {
-    if (isMainFrame) {
-      console.error('[main] Control UI failed to load:', { errorCode, errorDescription, validatedURL });
-    }
-  });
-  mainWindow.webContents.on('render-process-gone', (_event, details) => {
-    console.error('[main] renderer crashed:', details);
+  mainWindow.webContents.on(
+    "did-fail-load",
+    (_event, errorCode, errorDescription, validatedURL, isMainFrame) => {
+      if (isMainFrame) {
+        console.error("[main] Control UI failed to load:", {
+          errorCode,
+          errorDescription,
+          validatedURL,
+        });
+      }
+    },
+  );
+  mainWindow.webContents.on("render-process-gone", (_event, details) => {
+    console.error("[main] renderer crashed:", details);
   });
   mainWindow.webContents.on(
-    'console-message',
+    "console-message",
     (e: ElectronEvent<WebContentsConsoleMessageEventParams>) => {
-      if (e.level === 'warning' || e.level === 'error') {
+      if (e.level === "warning" || e.level === "error") {
         console.error(
-          '[control-ui]',
+          "[control-ui]",
           e.message,
-          e.sourceId ? `(${e.sourceId}:${e.lineNumber})` : '',
+          e.sourceId ? `(${e.sourceId}:${e.lineNumber})` : "",
         );
       }
     },
   );
 
-  mainWindow.once('ready-to-show', () => mainWindow?.show());
+  mainWindow.once("ready-to-show", () => mainWindow?.show());
   quitAppWhenAllWindowsClosed = true;
   await mainWindow.loadURL(controlUiUrl);
   mainWindow.setTitle(dashboardWindowTitle());
@@ -858,26 +925,27 @@ async function createWindow(): Promise<void> {
   // DevTools: detached Chromium window (not the system default browser).
   const devShortcuts = !app.isPackaged || isPackagedDevtoolsEnabled();
   const autoOpenDevtools =
-    (!app.isPackaged && process.env.OPENCLAW_DESKTOP_DEVTOOLS === '1') || isPackagedDevtoolsEnabled();
+    (!app.isPackaged && process.env.OPENCLAW_DESKTOP_DEVTOOLS === "1") ||
+    isPackagedDevtoolsEnabled();
   if (autoOpenDevtools) {
     // Harmless noise in terminal: Autofill.enable / Autofill.setAddresses (-32601) when DevTools is open.
-    mainWindow.webContents.openDevTools({ mode: 'detach' });
+    mainWindow.webContents.openDevTools({ mode: "detach" });
   }
   if (devShortcuts) {
-    mainWindow.webContents.on('before-input-event', (_event, input) => {
-      if (input.type !== 'keyDown') return;
-      if (input.key === 'F12') {
+    mainWindow.webContents.on("before-input-event", (_event, input) => {
+      if (input.type !== "keyDown") return;
+      if (input.key === "F12") {
         mainWindow?.webContents.toggleDevTools();
         return;
       }
-      const mod = process.platform === 'darwin' ? input.meta : input.control;
-      if (mod && input.shift && input.key.toLowerCase() === 'i') {
+      const mod = process.platform === "darwin" ? input.meta : input.control;
+      if (mod && input.shift && input.key.toLowerCase() === "i") {
         mainWindow?.webContents.toggleDevTools();
       }
     });
   }
 
-  mainWindow.on('closed', () => {
+  mainWindow.on("closed", () => {
     mainWindow = null;
   });
 }
@@ -886,7 +954,7 @@ const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
   app.quit();
 } else {
-  app.on('second-instance', () => {
+  app.on("second-instance", () => {
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
       mainWindow.focus();
@@ -894,6 +962,7 @@ if (!gotLock) {
   });
 
   app.whenReady().then(() => {
+    nativeTheme.themeSource = "system";
     registerDesktopUpdateHandler();
     initDesktopUpdater();
     void checkDesktopUpdates();
@@ -908,7 +977,7 @@ if (!gotLock) {
         createWindow().catch((err) => {
           console.error(err);
           app.quit();
-        })
+        }),
       )
       .catch((err) => {
         console.error(err);
@@ -916,23 +985,23 @@ if (!gotLock) {
       });
   });
 
-  app.on('activate', () => {
+  app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       void createWindow().catch(console.error);
     }
   });
 
-  app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin' && quitAppWhenAllWindowsClosed) {
+  app.on("window-all-closed", () => {
+    if (process.platform !== "darwin" && quitAppWhenAllWindowsClosed) {
       app.quit();
     }
   });
 
-  app.on('will-quit', () => {
+  app.on("will-quit", () => {
     globalShortcut.unregisterAll();
   });
 
-  app.on('before-quit', () => {
+  app.on("before-quit", () => {
     killBackendTree();
   });
 }

@@ -72,6 +72,7 @@ export type AddProviderState = {
   open: boolean;
   provider: string;
   key: string;
+  baseUrl: string;
   busy: boolean;
   error: string | null;
 };
@@ -121,6 +122,7 @@ export type AgentsProps = {
   onAddProviderClose: () => void;
   onAddProviderProviderChange: (provider: string) => void;
   onAddProviderKeyChange: (key: string) => void;
+  onAddProviderBaseUrlChange: (baseUrl: string) => void;
   onAddProviderSubmit: () => void;
 };
 
@@ -258,6 +260,7 @@ export function renderAgents(props: AgentsProps) {
                         onAddProviderClose: props.onAddProviderClose,
                         onAddProviderProviderChange: props.onAddProviderProviderChange,
                         onAddProviderKeyChange: props.onAddProviderKeyChange,
+                        onAddProviderBaseUrlChange: props.onAddProviderBaseUrlChange,
                         onAddProviderSubmit: props.onAddProviderSubmit,
                       })
                     : nothing

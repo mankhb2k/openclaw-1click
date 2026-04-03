@@ -1033,6 +1033,8 @@ export const vi: TranslationMap = {
       providerLabel: "Nhà cung cấp",
       apiKeyLabel: "API Key",
       apiKeyPlaceholder: "Dán API key vào đây…",
+      baseUrlLabel: "Ollama Base URL",
+      baseUrlPlaceholder: "http://127.0.0.1:11434",
       cancel: "Hủy",
       saving: "Đang lưu…",
     },

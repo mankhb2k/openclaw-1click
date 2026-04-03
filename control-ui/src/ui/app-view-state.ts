@@ -201,6 +201,7 @@ export type AppViewState = {
   addProviderOpen: boolean;
   addProviderProvider: string;
   addProviderKey: string;
+  addProviderBaseUrl: string;
   addProviderBusy: boolean;
   addProviderError: string | null;
   sessionsLoading: boolean;
