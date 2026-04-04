@@ -14,6 +14,7 @@ import {
   resolveServerChatModelValue,
 } from "./chat-model-ref.ts";
 import { ChatState, loadChatHistory } from "./controllers/chat.ts";
+import { saveConfig, updateConfigFormValue, type ConfigState } from "./controllers/config.ts";
 import { loadSessions } from "./controllers/sessions.ts";
 import { icons } from "./icons.ts";
 import { iconForTab, pathForTab, titleForTab, type Tab } from "./navigation.ts";
@@ -570,11 +571,22 @@ function renderChatModelSelect(state: AppViewState) {
   const defaultModel = resolveDefaultModelValue(state);
   const configuredProviders = resolveConfiguredProviders(state.configForm ?? null);
   const filteredCatalog = filterCatalogByProviders(state.chatModelCatalog ?? [], configuredProviders);
-  const options = buildChatModelOptions(
-    filteredCatalog,
-    currentOverride,
-    defaultModel,
-  );
+
+  // Build a set of valid model values for fast lookup.
+  const validModelValues = new Set(filteredCatalog.map((e) => buildChatModelOption(e).value));
+
+  // Auto-fix: if the session's stored model is no longer in the filtered catalog
+  // (e.g. gemini-1.5-flash was removed by Google), reset it to the default automatically.
+  // Guard: chatModelOverrides[key] === undefined means we haven't processed this session
+  // yet — prevents re-firing on every render while the RPC is in-flight.
+  const overrideIsDeprecated = Boolean(currentOverride) && !validModelValues.has(currentOverride);
+  if (overrideIsDeprecated && state.chatModelOverrides[state.sessionKey] === undefined) {
+    void switchChatModel(state, "");
+  }
+
+  // While deprecated, treat the effective override as "" so the select shows "Default".
+  const effectiveOverride = overrideIsDeprecated ? "" : currentOverride;
+  const options = buildChatModelOptions(filteredCatalog, effectiveOverride, defaultModel);
   const defaultDisplay = formatChatModelDisplay(defaultModel);
   const defaultLabel = defaultModel ? `Default (${defaultDisplay})` : "Default model";
   const busy =
@@ -584,7 +596,7 @@ function renderChatModelSelect(state: AppViewState) {
   return html`
     <label class="field chat-controls__session chat-controls__model">
       ${renderUiSelect({
-        value: currentOverride,
+        value: effectiveOverride,
         disabled,
         options: [
           { value: "", label: defaultLabel },
@@ -624,6 +636,18 @@ async function switchChatModel(state: AppViewState, nextModel: string) {
     // Roll back so the picker reflects the actual server model.
     state.chatModelOverrides = { ...state.chatModelOverrides, [targetSessionKey]: prevOverride };
     state.lastError = `Failed to set model: ${String(err)}`;
+    return;
+  }
+  // Auto-save: persist the selected model as the new default so it survives restarts.
+  if (nextModel) {
+    const configState = state as unknown as ConfigState;
+    const existingModel = configState.configForm?.agents?.defaults?.model;
+    const nextModelConfig =
+      existingModel && typeof existingModel === "object" && !Array.isArray(existingModel)
+        ? { ...(existingModel as Record<string, unknown>), primary: nextModel }
+        : { primary: nextModel };
+    updateConfigFormValue(configState, ["agents", "defaults", "model"], nextModelConfig);
+    void saveConfig(configState);
   }
 }
 

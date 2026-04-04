@@ -253,6 +253,111 @@ Locale file `vi.ts` (4045 dòng) là reference đầy đủ nhất. Các locale 
 
 ---
 
+## Nhóm 5: Kiến trúc Codebase — Ranh giới sửa đổi
+
+### Nguyên tắc cốt lõi: KHÔNG bao giờ sửa node_modules
+
+> **TUYỆT ĐỐI KHÔNG** sửa bất kỳ file nào trong `node_modules/`, kể cả `node_modules/openclaw/`.
+
+**Lý do:**
+- `npm install` hoặc `npm update` sẽ **ghi đè toàn bộ** thay đổi, không có cảnh báo
+- Không thể commit vào git (thường bị `.gitignore`)
+- Tạo ra trạng thái không nhất quán giữa các máy developer
+- Gây khó debug vì trông giống code gốc nhưng thực ra đã bị vá tay
+
+**Ngoại lệ duy nhất chấp nhận được:** `patch-package` tạo patch file được commit — nhưng dự án này KHÔNG dùng `patch-package`.
+
+---
+
+### Hiểu đúng: gateway chạy từ đâu?
+
+```
+node_modules/openclaw/openclaw.mjs   ← Gateway thực tế đang chạy (npm package đã build)
+openclaw-src/                        ← Source để publish lên npm, KHÔNG compile local
+app/**/*.ts                          ← Electron shell code, được compile bởi build:ts
+control-ui/src/                      ← Control UI (Lit + Vite), được build bởi control-ui:build
+```
+
+**`build:ts` KHÔNG compile `openclaw-src/`** — chỉ compile `app/**/*.ts`.
+
+Vì vậy:
+- Sửa `openclaw-src/plugins/*.ts` → **vô hiệu** với gateway đang chạy
+- Sửa `node_modules/openclaw/dist/**/*.js` → **rủi ro cao**, bị ghi đè khi update
+- Sửa `control-ui/src/**` + build → **đúng**, deploy ngay vào `vendor/control-ui/`
+
+---
+
+### Quy tắc chọn layer để sửa
+
+| Loại vấn đề | Layer đúng để sửa | KHÔNG sửa ở |
+|-------------|-------------------|-------------|
+| UI hiển thị sai (model list, label, filter) | `control-ui/src/` | node_modules, openclaw-src |
+| Logic xử lý event/RPC trong UI | `control-ui/src/` | node_modules, openclaw-src |
+| Config Electron (spawn, env, paths) | `app/` | node_modules |
+| Gateway behavior (API logic, provider) | Mở issue upstream / chờ version mới | **KHÔNG** sửa node_modules |
+
+---
+
+### Case study: Filter model dropdown Google
+
+**Vấn đề:** Google API trả 404 cho một số model cũ (ví dụ: `gemini-1.5-flash`). Dropdown UI vẫn hiển thị các model không còn tồn tại.
+
+**Cách sai đã thử:**
+```
+✗ Sửa openclaw-src/plugins/provider-catalog-metadata.ts
+  → Vô hiệu: gateway không đọc file này
+✗ Sửa node_modules/openclaw/dist/extensions/google/index.js
+  → Rủi ro: bị ghi đè khi npm update
+```
+
+**Cách đúng:**
+```
+✓ Sửa control-ui/src/ui/views/agents-utils.ts
+  → filterCatalogByProviders() chạy client-side
+  → Lọc model trước khi render dropdown
+  → Không cần thay đổi gateway
+```
+
+```typescript
+// agents-utils.ts — pattern đúng để filter model khỏi dropdown
+const HIDDEN_GOOGLE_MODEL_IDS = new Set<string>([
+  "gemini-1.5-flash", "gemini-1.5-flash-8b", "gemini-1.5-pro",
+  // ... các model đã bị Google xóa
+]);
+
+function filterDeprecatedModels(catalog: ModelCatalogEntry[]): ModelCatalogEntry[] {
+  return catalog.filter((entry) => {
+    if (entry.provider !== "google") return true;
+    if (HIDDEN_GOOGLE_MODEL_IDS.has(entry.id)) return false;
+    if (entry.id.startsWith("gemini-live-")) return false;
+    return true;
+  });
+}
+
+export function filterCatalogByProviders(catalog, configuredProviders) {
+  const active = filterDeprecatedModels(catalog); // ← lọc deprecated trước
+  if (!configuredProviders) return active;
+  return active.filter((entry) => configuredProviders.has(entry.provider));
+}
+```
+
+> **Nguyên tắc:** Control UI nhận catalog từ `models.list` RPC và có toàn quyền quyết định *hiển thị* cái gì. Đây là điểm duy nhất cần thay đổi cho mọi vấn đề liên quan đến model display.
+
+---
+
+### Pipeline build Control UI
+
+Khi sửa `control-ui/src/`, phải build và deploy để thấy thay đổi:
+
+```bash
+npm run control-ui:build    # Vite build → control-ui/dist/
+npm run control-ui:vendor   # Copy dist/ → vendor/control-ui/ (gateway serve từ đây)
+```
+
+Gateway serve Control UI từ `vendor/control-ui/` (cấu hình trong `openclaw.json` tại `gateway.controlUi.root`). Không cần restart gateway sau khi cập nhật static files.
+
+---
+
 ## Tổng hợp: Lỗi thường gặp & cách tránh
 
 | Lỗi | Nguyên nhân | Cách tránh |
@@ -267,6 +372,10 @@ Locale file `vi.ts` (4045 dòng) là reference đầy đủ nhất. Các locale 
 | Literal `"openclaw-control-ui"` | Không dùng constant | Import `GATEWAY_CLIENT_NAMES.CONTROL_UI` |
 | Literal `"tool-events"` | Không dùng constant | Import `GATEWAY_CLIENT_CAPS.TOOL_EVENTS` |
 | Literal `"webchat"` | Không dùng constant | Import `GATEWAY_CLIENT_MODES.WEBCHAT` |
+| Sửa `openclaw-src/*.ts` để fix UI | Nhầm layer — file không được compile | Sửa `control-ui/src/` + rebuild |
+| Sửa `node_modules/openclaw/**` | Nghĩ là "nhanh nhất" | Không bao giờ sửa node_modules |
+| Model cũ vẫn hiện trong dropdown | Chưa filter deprecated models | Thêm vào `HIDDEN_GOOGLE_MODEL_IDS` trong `agents-utils.ts` |
+| Model 404 khi call API | Default model trong config là model đã bị xóa | Cập nhật `agents.defaults.model.primary` trong `openclaw.json` |
 
 ---
 
@@ -282,3 +391,6 @@ Locale file `vi.ts` (4045 dòng) là reference đầy đủ nhất. Các locale 
 - Gateway constants: `openclaw-src/gateway/protocol/client-info.ts`
 - Gateway events: `openclaw-src/gateway/server-methods-list.ts`
 - Docs kho mã: `docs/gateway-inventory.md`
+- Model catalog filter: `control-ui/src/ui/views/agents-utils.ts` → `filterCatalogByProviders()`
+- Model switching + auto-save: `control-ui/src/ui/app-render.helpers.ts` → `switchChatModel()`
+- Gateway binary (chạy thực tế): `node_modules/openclaw/openclaw.mjs` — chỉ đọc, không sửa

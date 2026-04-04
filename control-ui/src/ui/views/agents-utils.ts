@@ -641,6 +641,46 @@ export function resolveConfiguredProviders(
 }
 
 /**
+ * Google Gemini model IDs that are deprecated, removed, or incompatible with
+ * the standard generateContent text API. Hidden from all model dropdowns.
+ * Last updated: 2026-04 based on Google deprecation notices and 404 responses.
+ */
+const HIDDEN_GOOGLE_MODEL_IDS = new Set<string>([
+  // Removed — returns 404
+  "gemini-1.5-flash",
+  "gemini-1.5-flash-8b",
+  "gemini-1.5-pro",
+  // Obsolete stable releases
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+  // Old dated preview snapshots superseded by stable releases
+  "gemini-2.5-flash-lite-preview-06-17",
+  "gemini-2.5-flash-lite-preview-09-2025",
+  "gemini-2.5-flash-preview-04-17",
+  "gemini-2.5-flash-preview-05-20",
+  "gemini-2.5-flash-preview-09-2025",
+  "gemini-2.5-pro-preview-05-06",
+  "gemini-2.5-pro-preview-06-05",
+  // Discontinued / specialized
+  "gemini-3-pro-preview",
+  "gemini-3.1-pro-preview-customtools",
+]);
+
+/**
+ * Remove deprecated or non-text-chat Google models from the catalog.
+ * gemini-live-* models use the Live Audio API and cannot handle text chat.
+ * Other providers are passed through unchanged.
+ */
+function filterDeprecatedModels(catalog: ModelCatalogEntry[]): ModelCatalogEntry[] {
+  return catalog.filter((entry) => {
+    if (entry.provider !== "google") return true;
+    if (HIDDEN_GOOGLE_MODEL_IDS.has(entry.id)) return false;
+    if (entry.id.startsWith("gemini-live-")) return false;
+    return true;
+  });
+}
+
+/**
  * Filter a model catalog to only entries whose provider is in the configured set.
  * Falls back to the full catalog when configuredProviders is null (nothing configured yet).
  */
@@ -648,8 +688,9 @@ export function filterCatalogByProviders(
   catalog: ModelCatalogEntry[],
   configuredProviders: Set<string> | null,
 ): ModelCatalogEntry[] {
-  if (!configuredProviders) return catalog;
-  return catalog.filter((entry) => configuredProviders.has(entry.provider));
+  const active = filterDeprecatedModels(catalog);
+  if (!configuredProviders) return active;
+  return active.filter((entry) => configuredProviders.has(entry.provider));
 }
 
 export function resolveModelOptionsFromCatalog(

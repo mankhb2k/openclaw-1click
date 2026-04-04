@@ -1585,6 +1585,7 @@ export function renderApp(state: AppViewState) {
                   const basePath = ["agents", "list", index, "model"];
                   if (!modelId) {
                     removeConfigFormValue(state, basePath);
+                    void saveConfig(state);
                     return;
                   }
                   const entry = Array.isArray(list)
@@ -1606,6 +1607,7 @@ export function renderApp(state: AppViewState) {
                   } else {
                     updateConfigFormValue(state, basePath, modelId);
                   }
+                  void saveConfig(state);
                 },
                 onModelFallbacksChange: (agentId, fallbacks) => {
                   const normalized = fallbacks
