@@ -313,5 +313,23 @@ export function buildOpenClawEnv(
   if (root) {
     env.OPENCLAW_DESKTOP_APP_ROOT = root;
   }
+  // If Ollama is configured in the config file but no OLLAMA_API_KEY is set in
+  // the system environment, inject a default key. Ollama does not require a real
+  // key — any non-empty value works. This avoids requiring users to manually
+  // write to auth-profiles.json after adding Ollama through the UI.
+  if (!env.OLLAMA_API_KEY) {
+    try {
+      const raw = fs.readFileSync(paths.openclawConfigFile, 'utf8');
+      const cfg = JSON.parse(raw) as { auth?: { profiles?: Record<string, unknown> } };
+      const hasOllamaProfile = Object.keys(cfg?.auth?.profiles ?? {}).some((k) =>
+        k.startsWith('ollama'),
+      );
+      if (hasOllamaProfile) {
+        env.OLLAMA_API_KEY = 'ollama-local';
+      }
+    } catch {
+      // Config unreadable at this point — skip, gateway will report missing key.
+    }
+  }
   return env;
 }

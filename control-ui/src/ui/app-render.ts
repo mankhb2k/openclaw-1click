@@ -415,19 +415,24 @@ async function submitAddProvider(state: AppViewState) {
     }
 
     const profileId = `${provider}:default`;
+    // Local providers (e.g. Ollama): auth profile only — no models.providers block.
+    // Defining models.providers.ollama requires a models[] array (schema enforced),
+    // but omitting it enables auto-discovery via /api/tags at the default baseUrl.
+    // Non-local providers: API key goes into models.providers.[provider].apiKey,
+    // not into the auth profile (auth profile schema has no "key" field).
     const patch = isLocal
       ? {
-          models: { providers: { [provider]: { baseUrl } } },
           auth: {
-            profiles: { [profileId]: { provider, mode: "api_key", key: `${provider}-local` } },
+            profiles: { [profileId]: { provider, mode: "api_key" } },
             order: { [provider]: [profileId] },
           },
         }
       : {
           auth: {
-            profiles: { [profileId]: { provider, mode: "api_key", key } },
+            profiles: { [profileId]: { provider, mode: "api_key" } },
             order: { [provider]: [profileId] },
           },
+          models: { providers: { [provider]: { apiKey: key } } },
         };
 
     await state.client.request("config.patch", { baseHash, raw: JSON.stringify(patch) });
